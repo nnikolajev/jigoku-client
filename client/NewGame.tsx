@@ -30,6 +30,32 @@ const pretrainedBotDecks = [
 ];
 const customBotDeck = "custom";
 
+// Bot difficulty seeds. The `value` is passed straight to the server as the bot
+// `seed` (blank = default heuristic). Keep in sync with jigoku
+// JigokuBotController seed handling.
+const botSeedOptions = [
+    {
+        value: "",
+        label: "Heuristic (default)",
+        desc: "Hand-written strategy bot. Fast, plays a solid fair game with no hidden information."
+    },
+    {
+        value: "4",
+        label: "Omniscient (cheating — hardest)",
+        desc: "Same heuristics as default but sees your hand and face-down provinces. Attacks your weakest province, presses when you cannot fight back, and holds when it cannot win. Requires the bot deck to be analyzed first."
+    },
+    {
+        value: "2",
+        label: "LLM-driven (experimental)",
+        desc: "A local LLM (LM Studio) picks every action. Slow and only as good as the model; experimental."
+    },
+    {
+        value: "3",
+        label: "Self-play ML (experimental)",
+        desc: "Learned evaluator trained by self-play. Not competitive — kept for research; do not expect a strong game."
+    }
+];
+
 export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket }) {
     const [spectators, setSpectators] = useState(true);
     const [spectatorSquelch, setSpectatorSquelch] = useState(false);
@@ -252,8 +278,19 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                         value={ botDeckId }
                                     />
                                 ) }
-                                <label>Bot seed</label>
-                                <input className="form-control" type="text" placeholder="blank = heuristic; 2 = LLM-driven (LM Studio)" onChange={ (event) => setBotSeed(event.target.value) } value={ botSeed } />
+                                <label>Bot difficulty</label>
+                                <select
+                                    className="form-control"
+                                    onChange={ (event) => setBotSeed(event.target.value) }
+                                    value={ botSeed }
+                                >
+                                    { botSeedOptions.map((opt) => (
+                                        <option key={ opt.value || "default" } value={ opt.value }>{ opt.label }</option>
+                                    )) }
+                                </select>
+                                <small className="text-muted">
+                                    { (botSeedOptions.find((opt) => opt.value === botSeed) || botSeedOptions[0]).desc }
+                                </small>
                             </div>
                         </div>
                     ) }
