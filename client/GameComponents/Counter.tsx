@@ -1,3 +1,4 @@
+import StatDelta from "./effects/StatDelta";
 
 interface CounterProps {
     cancel?: boolean;
@@ -8,7 +9,7 @@ interface CounterProps {
 }
 
 function Counter({ cancel, fade, name, shortName, value }: CounterProps) {
-    let className = `counter ${name}`;
+    let className = `counter stat-delta-host ${name}`;
 
     if(cancel) {
         className += " cancel";
@@ -22,6 +23,7 @@ function Counter({ cancel, fade, name, shortName, value }: CounterProps) {
         <div key={ name } className={ className }>
             { shortName ? <span>{ shortName }</span> : null }
             <span>{ value }</span>
+            <StatDelta value={ value } />
         </div>
     );
 }

@@ -1,5 +1,6 @@
 import Avatar from "../Avatar";
 import Clock from "./Clock";
+import StatDelta from "./effects/StatDelta";
 
 interface PlayerStatsRowProps {
     clockState?: any;
@@ -39,7 +40,7 @@ export function PlayerStatsRow({
         const imageStyle = { backgroundImage: `url(/img/${name}.png)` };
 
         return (
-            <div className="state">
+            <div className="state stat-delta-host">
                 { showControls && (
                     <button
                         className="btn btn-stat"
@@ -51,6 +52,7 @@ export function PlayerStatsRow({
                 <div className="stat-image" style={ imageStyle }>
                     <div className="stat-value">{ getStatValueOrDefault(stat) }</div>
                 </div>
+                <StatDelta value={ getStatValueOrDefault(stat) } />
                 { showControls && (
                     <button
                         className="btn btn-stat"

@@ -1,10 +1,12 @@
-import React, { useState, useRef, memo } from "react";
+import React, { useState, useRef, useEffect, memo } from "react";
 import { X } from "lucide-react";
 
 import CardMenu from "./CardMenu.jsx";
 import CardStats from "./CardStats.jsx";
 import CardCounters from "./CardCounters.jsx";
 import CardPile from "./CardPile.jsx";
+import FireEffect from "./effects/FireEffect.jsx";
+import { playCardFlip, playProvinceBreak } from "./effects/gameSounds.js";
 import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl.js";
 
 const shortNames = {
@@ -76,6 +78,41 @@ function Card(props) {
     const [showMenu, setShowMenu] = useState(false);
     const [touchStart, setTouchStart] = useState(null);
     const cardRef = useRef(null);
+
+    // Flip animation state: "out" shows the card back rotating away, "in" shows the face rotating in.
+    const [flipStage, setFlipStage] = useState(null);
+    const [breaking, setBreaking] = useState(false);
+    const facedownNow = !!(card && (card.facedown || !card.id));
+    const flippableNow = !!(card && (card.isDynasty || card.isProvince));
+    const brokenNow = !!(card && card.isBroken);
+    const prevFacedownRef = useRef(facedownNow);
+    const prevBrokenRef = useRef(brokenNow);
+
+    useEffect(() => {
+        const wasFacedown = prevFacedownRef.current;
+        prevFacedownRef.current = facedownNow;
+        if(wasFacedown && !facedownNow && flippableNow) {
+            playCardFlip();
+            setFlipStage("out");
+            const revealTimer = setTimeout(() => setFlipStage("in"), 160);
+            const doneTimer = setTimeout(() => setFlipStage(null), 480);
+            return () => {
+                clearTimeout(revealTimer);
+                clearTimeout(doneTimer);
+            };
+        }
+    }, [facedownNow, flippableNow]);
+
+    useEffect(() => {
+        const wasBroken = prevBrokenRef.current;
+        prevBrokenRef.current = brokenNow;
+        if(!wasBroken && brokenNow) {
+            playProvinceBreak();
+            setBreaking(true);
+            const timer = setTimeout(() => setBreaking(false), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [brokenNow]);
 
     const handleMouseOver = (cardData) => {
         if(onMouseOver) {
@@ -254,8 +291,8 @@ function Card(props) {
 
     const getWrapperStyle = () => {
         let wrapperStyle = {};
-        let attachmentOffset = 13;
-        let cardHeight = 84;
+        let attachmentOffset = 14.3;
+        let cardHeight = 92.4;
 
         const cardPile = player && card && player.cardPiles[card.uuid];
 
@@ -328,8 +365,8 @@ function Card(props) {
             return null;
         }
 
-        let attachmentOffset = 13;
-        let cardHeight = 84;
+        let attachmentOffset = 14.3;
+        let cardHeight = 92.4;
         let cardLayer = 45;
         switch(size) {
             case "large":
@@ -546,6 +583,9 @@ function Card(props) {
         } else if(card.isBroken) {
             cardClass += " vertical";
             imageClass += " vertical broken";
+            if(breaking) {
+                imageClass += " breaking";
+            }
         } else {
             cardClass += " vertical";
             imageClass += " vertical";
@@ -615,10 +655,14 @@ function Card(props) {
                 >
                     <div>
                         <span className="card-name">{ card.name }</span>
-                        <img className={ imageClass } src={ !isFacedown() && !card.isToken ? getCardImagePath() : getCardBackUrl(cardBack) } />
+                        <img
+                            className={ imageClass + (flipStage === "out" ? " card-flip-out" : flipStage === "in" ? " card-flip-in" : "") }
+                            src={ !(isFacedown() || flipStage === "out") && !card.isToken ? getCardImagePath() : getCardBackUrl(cardBack) }
+                        />
                     </div>
                     <CardCounters counters={ getCountersForCard(card) } />
                 </div>
+                { breaking ? <FireEffect /> : null }
                 { shouldShowMenu() ? <CardMenu menu={ card.menu } onMenuItemClick={ handleMenuItemClick } /> : null }
                 { !shouldShowMenu() && (showStats || card.strengthSummary?.stat) ?
                     <CardStats

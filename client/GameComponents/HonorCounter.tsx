@@ -1,3 +1,4 @@
+import StatDelta from "./effects/StatDelta";
 
 interface HonorCounterProps {
     cancel?: boolean;
@@ -7,7 +8,7 @@ interface HonorCounterProps {
 }
 
 function HonorCounter({ cancel, fade, name, value }: HonorCounterProps) {
-    let className = `honorcounter ${name}`;
+    let className = `honorcounter stat-delta-host ${name}`;
 
     if(cancel) {
         className += " cancel";
@@ -21,6 +22,7 @@ function HonorCounter({ cancel, fade, name, value }: HonorCounterProps) {
         <div key={ name } className={ className }>
             <img src="/img/Honor.png" title="Honor" alt="Honor" />
             <div className="honorcountertext">{ value }</div>
+            <StatDelta value={ value } />
         </div>
     );
 }

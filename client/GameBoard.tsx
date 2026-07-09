@@ -19,8 +19,10 @@ import Chat from "./GameComponents/Chat.jsx";
 import Controls from "./GameComponents/Controls.jsx";
 import CardPile from "./GameComponents/CardPile.jsx";
 import GameConfiguration from "./GameComponents/GameConfiguration.jsx";
+import StatDelta from "./GameComponents/effects/StatDelta.jsx";
 import { tryParseJSON } from "./util.js";
 import { downloadGameLog } from "./GameComponents/gameLogSerializer.js";
+import { captureGameStateSnapshot } from "./GameComponents/gameStateSnapshot.js";
 import GameModes from "./GameModes";
 import { getCardImageUrl } from "./cardImageUrl.js";
 
@@ -52,6 +54,8 @@ export class InnerGameBoard extends React.Component {
         this.onSettingsClick = this.onSettingsClick.bind(this);
         this.onToggleChatClick = this.onToggleChatClick.bind(this);
         this.onDownloadLogClick = this.onDownloadLogClick.bind(this);
+        this.onShowBotHandClick = this.onShowBotHandClick.bind(this);
+        this.onCaptureStateClick = this.onCaptureStateClick.bind(this);
         this.onTimerExpired = this.onTimerExpired.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
 
@@ -410,6 +414,17 @@ export class InnerGameBoard extends React.Component {
         }
     }
 
+    onShowBotHandClick(event) {
+        event.preventDefault();
+        this.props.sendGameMessage("toggleShowBotHand");
+    }
+
+    onCaptureStateClick() {
+        if(this.props.currentGame) {
+            captureGameStateSnapshot(this.props.currentGame, this.props.username);
+        }
+    }
+
     getRings(owner, className) {
         const thisPlayer = this.props.currentGame.players[this.props.username];
         const showRingEffects = thisPlayer?.optionSettings?.showRingEffects;
@@ -458,14 +473,16 @@ export class InnerGameBoard extends React.Component {
 
             conflictElement = (<div>
                 <div className="conflict-panel">
-                    <div className="phase-display conflict-count-top">
+                    <div className="phase-display conflict-count-top stat-delta-host">
                         { otherPlayerSkill }
+                        <StatDelta value={ otherPlayerSkill } />
                     </div>
                     <div className="phase-display conflict-separator">
                         vs
                     </div>
-                    <div className="phase-display conflict-count-bottom">
+                    <div className="phase-display conflict-count-bottom stat-delta-host">
                         { thisPlayerSkill }
+                        <StatDelta value={ thisPlayerSkill } />
                     </div>
                 </div>
                 <div className="conflict-panel">
@@ -922,10 +939,14 @@ export class InnerGameBoard extends React.Component {
                             onManualModeClick={ this.onManualModeClick }
                             onDownloadLogClick={ this.onDownloadLogClick }
                             onToggleChatClick={ this.onToggleChatClick }
+                            onShowBotHandClick={ this.onShowBotHandClick }
+                            onCaptureStateClick={ this.onCaptureStateClick }
                             showDownloadLog={ !!this.props.currentGame.winner }
                             showChatAlert={ this.state.showChatAlert }
                             manualModeEnabled={ manualMode }
                             showManualMode={ !this.state.spectating }
+                            showBotHandButton={ !this.state.spectating && !!otherPlayer?.user?.isBot }
+                            botHandRevealed={ !!this.props.currentGame.showBotHand }
                         />
                     </div>
                 </div>

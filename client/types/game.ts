@@ -74,6 +74,7 @@ export interface Player {
         name?: string;
         noAvatar?: boolean;
         settings?: UserSettings;
+        isBot?: boolean;
     };
     stats?: Record<string, number>;
     cardPiles: PlayerCardPiles;
@@ -174,7 +175,9 @@ export interface GameState {
     conflictDeclared?: boolean;
     phase?: string;
     manualMode?: boolean;
+    showBotHand?: boolean;
     skirmishMode?: boolean;
+    conflict?: any;
 }
 
 export interface UserSettings {

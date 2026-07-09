@@ -11,6 +11,25 @@ const defaultTime = {
     byoyomi: "0"
 };
 
+// Decks with hand-written bot playbooks (jigoku CardPlaybook.ts). The lobby
+// accepts either an EmeraldDB URL or a local deck id, so the dropdown just
+// fills the same field a custom URL would.
+const pretrainedBotDecks = [
+    {
+        label: "Copy of [Precon15] Unicorn Cavalry (v0.5)",
+        url: "https://www.emeralddb.org/decks/9a72e4b7-556a-457d-a891-2ed2d92ac5d5"
+    },
+    {
+        label: "[Precon15] Crab Defense",
+        url: "https://www.emeralddb.org/decks/3a8006b7-7e38-427b-97fd-2cc178b15191"
+    },
+    {
+        label: "[Precon15] Unicorn Military Rush",
+        url: "https://www.emeralddb.org/decks/ef93bae2-79c4-42b7-aa8c-bba55097c230"
+    }
+];
+const customBotDeck = "custom";
+
 export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket }) {
     const [spectators, setSpectators] = useState(true);
     const [spectatorSquelch, setSpectatorSquelch] = useState(false);
@@ -23,6 +42,10 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     const [selectedGameType, setSelectedGameType] = useState("casual");
     const [password, setPassword] = useState("");
     const [gameName, setGameName] = useState(defaultGameName || "");
+    const [botOpponent, setBotOpponent] = useState(false);
+    const [botDeckChoice, setBotDeckChoice] = useState(pretrainedBotDecks[0].url);
+    const [botDeckId, setBotDeckId] = useState("");
+    const [botSeed, setBotSeed] = useState("");
 
     const handleCancelClick = (event) => {
         event.preventDefault();
@@ -49,6 +72,13 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
         setClocks(event.target.checked);
     };
 
+    const handleBotOpponentClick = (event) => {
+        setBotOpponent(event.target.checked);
+        if(event.target.checked) {
+            setSelectedGameMode(GameModes.Stronghold);
+        }
+    };
+
     const handleSubmitClick = (event) => {
         event.preventDefault();
 
@@ -67,7 +97,12 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
             skirmishMode: selectedGameMode === GameModes.Skirmish, //TODO: Legacy support, remove in a bit
             gameMode: selectedGameMode,
             clocks: clockConfig,
-            password: password
+            password: password,
+            bot: {
+                enabled: botOpponent,
+                deckId: botDeckChoice === customBotDeck ? botDeckId.trim() : botDeckChoice,
+                seed: botSeed.trim()
+            }
         });
 
         loadDecks(selectedGameMode);
@@ -187,7 +222,41 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                 Timed game
                             </label>
                         </div>
+                        <div className="checkbox col-sm-8">
+                            <label>
+                                <input type="checkbox" onChange={ handleBotOpponentClick } checked={ botOpponent } />
+                                Human vs AI
+                            </label>
+                        </div>
                     </div>
+                    { botOpponent && (
+                        <div className="row game-password">
+                            <div className="col-sm-8">
+                                <label>Bot deck</label>
+                                <select
+                                    className="form-control"
+                                    onChange={ (event) => setBotDeckChoice(event.target.value) }
+                                    value={ botDeckChoice }
+                                >
+                                    { pretrainedBotDecks.map((deck) => (
+                                        <option key={ deck.url } value={ deck.url }>{ deck.label }</option>
+                                    )) }
+                                    <option value={ customBotDeck }>Custom deck id or EmeraldDB URL...</option>
+                                </select>
+                                { botDeckChoice === customBotDeck && (
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        placeholder="Deck id or https://www.emeralddb.org/decks/..."
+                                        onChange={ (event) => setBotDeckId(event.target.value) }
+                                        value={ botDeckId }
+                                    />
+                                ) }
+                                <label>Bot seed</label>
+                                <input className="form-control" type="text" placeholder="blank = heuristic; 2 = LLM-driven (LM Studio)" onChange={ (event) => setBotSeed(event.target.value) } value={ botSeed } />
+                            </div>
+                        </div>
+                    ) }
                     <div className="row">
                         <div className="col-sm-12">
                             <b>Format</b>

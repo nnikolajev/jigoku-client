@@ -1,0 +1,225 @@
+/* Animations and effect overlays for the game board. */
+
+/* --- Card flip (facedown -> faceup) --- */
+.card-image.card-flip-out {
+    animation: card-flip-out 0.16s ease-in both;
+}
+
+.card-image.card-flip-in {
+    animation: card-flip-in 0.32s ease-out both;
+}
+
+@keyframes card-flip-out {
+    from {
+        transform: perspective(600px) rotateY(0deg);
+    }
+
+    to {
+        transform: perspective(600px) rotateY(90deg);
+    }
+}
+
+@keyframes card-flip-in {
+    from {
+        transform: perspective(600px) rotateY(-90deg);
+    }
+
+    to {
+        transform: perspective(600px) rotateY(0deg);
+    }
+}
+
+/* --- Province break rotation --- */
+.card-image.broken.breaking {
+    animation: province-break 0.9s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+}
+
+@keyframes province-break {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    65% {
+        transform: rotate(197deg) scale(1.06);
+    }
+
+    100% {
+        transform: rotate(180deg) scale(1);
+    }
+}
+
+/* --- Fire overlay for broken provinces --- */
+.fire-effect {
+    position: absolute;
+    left: -8px;
+    right: -8px;
+    top: -12px;
+    bottom: -4px;
+    pointer-events: none;
+    overflow: visible;
+    z-index: calc(var(--layer-cards) + 5);
+    animation: fire-effect-fade 2s ease-out both;
+}
+
+.fire-effect__glow {
+    position: absolute;
+    inset: 8px;
+    border-radius: 8px;
+    box-shadow: 0 0 18px 6px rgba(255, 112, 67, 0.75), inset 0 0 22px 4px rgba(255, 152, 0, 0.55);
+    animation: fire-glow-pulse 0.4s ease-in-out infinite alternate;
+}
+
+.fire-effect__particle {
+    position: absolute;
+    bottom: 8px;
+    width: 12px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 60%, #ffe082 0%, #ff9800 45%, #ff5722 70%, transparent 100%);
+    filter: blur(1.5px);
+    mix-blend-mode: screen;
+    opacity: 0;
+    animation-name: fire-particle-rise;
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+}
+
+@keyframes fire-particle-rise {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.6);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-55px) scale(1.25);
+    }
+}
+
+@keyframes fire-glow-pulse {
+    from {
+        opacity: 0.65;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fire-effect-fade {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* --- Floating +N / -N stat change indicators --- */
+.stat-delta-host {
+    position: relative;
+}
+
+.stat-delta-anchor {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 1100;
+}
+
+.stat-delta {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+    animation: stat-delta-float 1.4s ease-out both;
+}
+
+.stat-delta--up {
+    color: #66bb6a;
+}
+
+.stat-delta--down {
+    color: #ef5350;
+}
+
+@keyframes stat-delta-float {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 6px) scale(0.7);
+    }
+
+    15% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1.2);
+    }
+
+    30% {
+        transform: translate(-50%, -4px) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -32px) scale(1);
+    }
+}
+
+/* --- Deal + flip in for newly drawn hand cards --- */
+.card.hand-deal {
+    animation: hand-deal 0.42s ease-out both;
+    animation-delay: var(--deal-delay, 0s);
+    transform-origin: center;
+}
+
+@keyframes hand-deal {
+    0% {
+        opacity: 0;
+        transform: perspective(700px) rotateY(-92deg) translateY(10px);
+    }
+
+    55% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+        transform: perspective(700px) rotateY(0deg) translateY(0);
+    }
+}
+
+/* --- Fade/scale in for cards entering the home row --- */
+.player-home.card-row .card-wrapper {
+    animation: card-enter 0.45s ease-out;
+}
+
+@keyframes card-enter {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

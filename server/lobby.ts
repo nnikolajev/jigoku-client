@@ -13,10 +13,63 @@ const validateDeck = require("../client/deck-validator").default;
 const Settings = require("./settings.js");
 const GetShadowlandsSummonables = require("./shadowLandsHelper.js");
 
+// Unicorn cavalry precon — the bot's playbook (jigoku CardPlaybook.ts) is
+// curated for this deck.
+const DEFAULT_BOT_DECKLIST_URL = "https://www.emeralddb.org/api/decklists/9a72e4b7-556a-457d-a891-2ed2d92ac5d5";
 const ONE_MINUTE = 60 * 1000;
 const FIVE_MINUTES = 5 * ONE_MINUTE;
 const ONE_HOUR = 60 * ONE_MINUTE;
 const FOUR_HOURS = 4 * ONE_HOUR;
+
+const factions = {
+    crab: { name: "Crab Clan", value: "crab" },
+    crane: { name: "Crane Clan", value: "crane" },
+    dragon: { name: "Dragon Clan", value: "dragon" },
+    lion: { name: "Lion Clan", value: "lion" },
+    phoenix: { name: "Phoenix Clan", value: "phoenix" },
+    scorpion: { name: "Scorpion Clan", value: "scorpion" },
+    unicorn: { name: "Unicorn Clan", value: "unicorn" }
+};
+
+const formats = {
+    emerald: { name: "Emerald", value: "emerald" },
+    sanctuary: { name: "Sanctuary", value: "sanctuary" },
+    stronghold: { name: "Imperial", value: "stronghold" },
+    skirmish: { name: "Skirmish", value: "skirmish" },
+    obsidian: { name: "Obsidian", value: "obsidian" }
+};
+
+const communityFormats = new Set(["emerald", "sanctuary", "obsidian"]);
+
+function buildBotUser(playerName) {
+    return {
+        username: playerName,
+        emailHash: "",
+        isBot: true,
+        settings: {
+            disableGravatar: true,
+            timerSettings: {},
+            windowTimer: false,
+            optionSettings: {}
+        },
+        promptedActionWindows: {
+            dynasty: true,
+            draw: true,
+            preConflict: true,
+            conflict: true,
+            fate: true,
+            regroup: true
+        }
+    };
+}
+
+function preferredPackId(card, formatValue) {
+    const versions = card?.versions;
+    if(!versions || versions.length === 0) {
+        return undefined;
+    }
+    return communityFormats.has(formatValue) ? versions[versions.length - 1].pack_id : versions[0].pack_id;
+}
 
 class Lobby {
     sockets: any;
@@ -250,12 +303,157 @@ class Lobby {
 
         Object.values(game.getPlayersAndSpectators()).forEach(player => {
             if(!this.sockets[player.id]) {
-                logger.info(`Wanted to send to ${player.id} but have no socket`);
+                // Bot seats never have a socket; only log for real players.
+                if(player.id !== "BOT" && !(player as any).isBot) {
+                    logger.info(`Wanted to send to ${player.id} but have no socket`);
+                }
                 return;
             }
 
             this.sockets[player.id].send("gamestate", game.getSummary(player.name));
         });
+    }
+
+    hydrateDeckCards(deck, cards) {
+        if(deck.stronghold) {
+            deck.stronghold.forEach(stronghold => {
+                stronghold.card = cards[stronghold.card.id];
+            });
+        }
+
+        if(deck.role) {
+            deck.role.forEach(role => {
+                role.card = cards[role.card.id];
+            });
+        }
+
+        if(deck.provinceCards) {
+            deck.provinceCards.forEach(province => {
+                province.card = cards[province.card.id];
+            });
+        }
+
+        if(deck.conflictCards) {
+            deck.conflictCards.forEach(conflict => {
+                conflict.card = cards[conflict.card.id];
+            });
+        }
+
+        if(deck.dynastyCards) {
+            deck.dynastyCards.forEach(dynasty => {
+                dynasty.card = cards[dynasty.card.id];
+            });
+        }
+    }
+
+    async hydrateDeck(deckId, gameMode) {
+        const [cards, packs, deck] = await Promise.all([this.cardService.getAllCards(), this.cardService.getAllPacks(), this.deckService.getById(deckId)]);
+        if(!deck) {
+            throw new Error(`No such deck ${deckId}`);
+        }
+
+        this.hydrateDeckCards(deck, cards);
+        deck.outsideTheGameCards = GetShadowlandsSummonables(cards);
+        deck.status = await validateDeck(deck, { packs: packs, includeExtendedStatus: false, gameMode: gameMode });
+        return deck;
+    }
+
+    toEmeraldDecklistApiUrl(url) {
+        return url.replace("/decks/", "/api/decklists/");
+    }
+
+    async fetchEmeraldDecklist(url) {
+        const response = await fetch(this.toEmeraldDecklistApiUrl(url));
+        if(!response.ok) {
+            throw new Error(`EmeraldDB deck fetch failed: HTTP ${response.status}`);
+        }
+        return response.json();
+    }
+
+    async buildDeckFromEmeraldDecklistUrl(url, gameMode) {
+        const decklist = await this.fetchEmeraldDecklist(url);
+        const [cards, packs] = await Promise.all([this.cardService.getAllCards(), this.cardService.getAllPacks()]);
+        let formatValue = decklist.format || gameMode || "emerald";
+        if(formatValue === "standard") {
+            formatValue = "stronghold";
+        }
+
+        const deck = {
+            name: decklist.name || "Jigoku Bot Deck",
+            faction: factions[decklist.primary_clan] || factions.lion,
+            alliance: decklist.secondary_clan ? factions[decklist.secondary_clan] : { name: "", value: "" },
+            format: formats[formatValue] || formats.emerald,
+            stronghold: [],
+            role: [],
+            provinceCards: [],
+            conflictCards: [],
+            dynastyCards: []
+        };
+
+        const cardPackIds = decklist.card_pack_ids || {};
+        Object.entries(decklist.cards || {}).forEach(([id, count]) => {
+            const card = cards[id];
+            if(!card) {
+                logger.warn(`Bot default deck skipped missing card ${id}`);
+                return;
+            }
+
+            const entry = { count: count, card: card, pack_id: cardPackIds[id] || preferredPackId(card, formatValue) };
+            if(card.type === "province") {
+                deck.provinceCards.push(entry);
+            } else if(card.side === "dynasty") {
+                deck.dynastyCards.push(entry);
+            } else if(card.side === "conflict") {
+                deck.conflictCards.push(entry);
+            } else if(card.type === "stronghold") {
+                deck.stronghold.push(entry);
+            } else {
+                deck.role.push(entry);
+            }
+        });
+
+        deck.outsideTheGameCards = GetShadowlandsSummonables(cards);
+        deck.status = await validateDeck(deck, { packs: packs, includeExtendedStatus: false, gameMode: gameMode });
+        return deck;
+    }
+
+    async addBotOpponent(game, botDetails: any = {}) {
+        if(!botDetails.enabled) {
+            return;
+        }
+
+        const botConfig = {
+            playerName: botDetails.playerName || "Jigoku Bot",
+            // The deck id doubles as the analysis-cache key on the game node,
+            // so the default deck must carry its decklist URL explicitly.
+            deckId: botDetails.deckId || DEFAULT_BOT_DECKLIST_URL,
+            seed: botDetails.seed || `${game.id}:bot`,
+            difficulty: botDetails.difficulty || "mvp",
+            trace: botDetails.trace !== false,
+            // Default LM Studio integration; the game node warns and falls
+            // back to pure heuristics when the server is unreachable.
+            llm: botDetails.llm || {
+                enabled: process.env.BOT_LLM_ENABLED !== "false",
+                baseUrl: process.env.BOT_LLM_BASE_URL || "http://localhost:1234",
+                model: process.env.BOT_LLM_MODEL || "qwen/qwen3.5-9b",
+                liveConsult: process.env.BOT_LLM_LIVE_CONSULT !== "false",
+                consultTimeoutMs: Number(process.env.BOT_LLM_CONSULT_TIMEOUT_MS) || 120000
+            }
+        };
+
+        const botUser = buildBotUser(botConfig.playerName);
+        game.addBot("BOT", botUser, botConfig);
+
+        let deck;
+        if(botConfig.deckId && /^https?:\/\//i.test(botConfig.deckId)) {
+            deck = await this.buildDeckFromEmeraldDecklistUrl(botConfig.deckId, game.gameMode);
+        } else if(botConfig.deckId) {
+            deck = await this.hydrateDeck(botConfig.deckId, game.gameMode);
+        } else {
+            deck = await this.buildDeckFromEmeraldDecklistUrl(DEFAULT_BOT_DECKLIST_URL, game.gameMode);
+        }
+
+        game.selectDeck(botConfig.playerName, deck);
     }
 
     clearGamesForNode(nodeName) {
@@ -415,11 +613,17 @@ class Lobby {
                 return;
             }
 
-            socket.joinChannel(game.id);
-            this.sendGameState(game);
+            this.addBotOpponent(game, gameDetails.bot)
+                .then(() => {
+                    socket.joinChannel(game.id);
+                    this.sendGameState(game);
 
-            this.games[game.id] = game;
-            this.broadcastGameList();
+                    this.games[game.id] = game;
+                    this.broadcastGameList();
+                })
+                .catch(err => {
+                    logger.info(`failed to add bot opponent: ${err}`);
+                });
         });
     }
 
@@ -547,43 +751,8 @@ class Lobby {
             return;
         }
 
-        Promise.all([this.cardService.getAllCards(), this.cardService.getAllPacks(), this.deckService.getById(deckId)])
-            .then(async results => {
-                let [cards, packs, deck] = results;
-
-                if(deck.stronghold) {
-                    deck.stronghold.forEach(stronghold => {
-                        stronghold.card = cards[stronghold.card.id];
-                    });
-                }
-
-                if(deck.role) {
-                    deck.role.forEach(role => {
-                        role.card = cards[role.card.id];
-                    });
-                }
-
-                if(deck.provinceCards) {
-                    deck.provinceCards.forEach(province => {
-                        province.card = cards[province.card.id];
-                    });
-                }
-
-                if(deck.conflictCards) {
-                    deck.conflictCards.forEach(conflict => {
-                        conflict.card = cards[conflict.card.id];
-                    });
-                }
-
-                if(deck.dynastyCards) {
-                    deck.dynastyCards.forEach(dynasty => {
-                        dynasty.card = cards[dynasty.card.id];
-                    });
-                }
-
-                deck.outsideTheGameCards = GetShadowlandsSummonables(cards);
-
-                deck.status = await validateDeck(deck, { packs: packs, includeExtendedStatus: false, gameMode: game.gameMode });
+        this.hydrateDeck(deckId, game.gameMode)
+            .then(deck => {
                 game.selectDeck(socket.user.username, deck);
 
                 this.sendGameState(game);

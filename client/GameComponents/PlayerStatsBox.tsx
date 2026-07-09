@@ -1,5 +1,6 @@
 import Clock from "./Clock";
 import ClockPopup from "./ClockPopup";
+import StatDelta from "./effects/StatDelta";
 
 interface PlayerStatsBoxProps {
     clockState?: any;
@@ -37,7 +38,7 @@ export function PlayerStatsBox({
         const imageStyle = { backgroundImage: `url(/img/${name}.png)` };
 
         return (
-            <div className="state">
+            <div className="state stat-delta-host">
                 { showControls && (
                     <button
                         className={ `btn btn-stat ${size}` }
@@ -49,6 +50,7 @@ export function PlayerStatsBox({
                 <div className={ `stat-image ${size}` } style={ imageStyle } />
                 <div>:</div>
                 <div className="stat-value">{ getStatValueOrDefault(stat) }</div>
+                <StatDelta value={ getStatValueOrDefault(stat) } />
                 { showControls && (
                     <button
                         className={ `btn btn-stat ${size}` }

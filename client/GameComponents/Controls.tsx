@@ -1,4 +1,4 @@
-import { Menu, AlertCircle, Wrench, Settings, Download } from "lucide-react";
+import { Menu, AlertCircle, Wrench, Settings, Download, Eye, EyeOff, Camera } from "lucide-react";
 
 interface ControlsProps {
     manualModeEnabled?: boolean;
@@ -6,9 +6,13 @@ interface ControlsProps {
     onManualModeClick?: () => void;
     onSettingsClick?: () => void;
     onToggleChatClick?: () => void;
+    onShowBotHandClick?: () => void;
+    onCaptureStateClick?: () => void;
     showChatAlert?: boolean;
     showDownloadLog?: boolean;
     showManualMode?: boolean;
+    showBotHandButton?: boolean;
+    botHandRevealed?: boolean;
 }
 
 function Controls({
@@ -17,9 +21,13 @@ function Controls({
     onManualModeClick,
     onSettingsClick,
     onToggleChatClick,
+    onShowBotHandClick,
+    onCaptureStateClick,
     showChatAlert,
     showDownloadLog,
-    showManualMode
+    showManualMode,
+    showBotHandButton,
+    botHandRevealed
 }: ControlsProps) {
     const laptopSize = window.innerWidth <= 1366;
 
@@ -46,6 +54,21 @@ function Controls({
                 <Settings size={ 16 } />
                 { laptopSize ? "" : " Settings" }
             </button>
+            { showBotHandButton && (
+                <button
+                    className={ `btn btn-transparent ${botHandRevealed ? "manual" : "auto"}` }
+                    onClick={ onShowBotHandClick }
+                >
+                    { botHandRevealed ? <Eye size={ 16 } /> : <EyeOff size={ 16 } /> }
+                    { laptopSize ? "" : ` Bot Hand ${botHandRevealed ? "Shown" : "Hidden"}` }
+                </button>
+            ) }
+            { showBotHandButton && (
+                <button className="btn btn-transparent" onClick={ onCaptureStateClick }>
+                    <Camera size={ 16 } />
+                    { laptopSize ? "" : " Capture State" }
+                </button>
+            ) }
             { showDownloadLog && (
                 <button className="btn btn-transparent" onClick={ onDownloadLogClick }>
                     <Download size={ 16 } />

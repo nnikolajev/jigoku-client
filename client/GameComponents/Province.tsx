@@ -57,8 +57,8 @@ function Province({
 
     const getWrapperStyle = (provinceCard) => {
         let wrapperStyle = {};
-        let attachmentOffset = 13;
-        let cardHeight = 84;
+        let attachmentOffset = 14.3;
+        let cardHeight = 92.4;
         switch(size) {
             case "large":
                 attachmentOffset *= 1.4;
@@ -150,7 +150,7 @@ function Province({
                 />
             ) : null }
             { dynastyCards.length > 0
-                ? dynastyCards.map((card) => {
+                ? dynastyCards.map((card, index) => {
                     return (
                         <Card
                             id={ card.uuid }
@@ -159,7 +159,7 @@ function Province({
                             source={ source }
                             popupLocation={ popupLocation }
                             isMe={ isMe }
-                            key={ card.uuid }
+                            key={ `${source}-dynasty-${index}` }
                             onMouseOver={ onMouseOver }
                             onMouseOut={ onMouseOut }
                             disableMouseOver={ card.facedown && !card.id }

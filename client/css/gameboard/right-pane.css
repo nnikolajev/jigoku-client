@@ -24,11 +24,11 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    top: auto;
+    top: 65px;
     bottom: auto;
     margin: 5px 0;
     right: 5px;
-    height: calc(100% - 360px);
+    height: calc(100% - 650px);
     -webkit-transition: width 1s ease, right 0.5s ease;
     transition: width 1s ease, right 0.5s ease;
     overflow: hidden;

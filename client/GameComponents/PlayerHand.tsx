@@ -1,7 +1,11 @@
+import { useEffect, useRef } from "react";
+
 import Card from "./Card.jsx";
+import { playCardFlip } from "./effects/gameSounds.js";
 import { tryParseJSON } from "../util";
 
 const EMPTY_STYLE = {};
+const DEAL_STAGGER = 0.12; // seconds between each newly drawn card
 
 interface PlayerHandProps {
     cardSize?: string;
@@ -14,6 +18,26 @@ interface PlayerHandProps {
 }
 
 function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut, onMouseOver }: PlayerHandProps) {
+    // Track hand contents across renders so freshly drawn cards can deal/flip in one by one.
+    const seenUuidsRef = useRef<Set<string> | null>(null);
+    const currentUuids = cards ? cards.map((card) => card.uuid).filter(Boolean) : [];
+    const seenUuids = seenUuidsRef.current;
+    // On first render treat everything as already present (avoid a full-hand deal on load/reconnect).
+    const newUuids = seenUuids ? currentUuids.filter((uuid) => !seenUuids.has(uuid)) : [];
+    const dealIndexByUuid = new Map<string, number>();
+    newUuids.forEach((uuid, index) => dealIndexByUuid.set(uuid, index));
+
+    useEffect(() => {
+        seenUuidsRef.current = new Set(currentUuids);
+        if(newUuids.length === 0) {
+            return;
+        }
+        const timers = newUuids.map((_, index) =>
+            setTimeout(() => playCardFlip(), index * DEAL_STAGGER * 1000)
+        );
+        return () => timers.forEach((timer) => clearTimeout(timer));
+    });
+
     const handleDragOver = (event: React.DragEvent) => {
         (event.target as HTMLElement).classList.add("highlight-panel");
         event.preventDefault();
@@ -104,12 +128,19 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
                 }
             }
 
+            const dealIndex = dealIndexByUuid.get(card.uuid);
+            let cardStyle = EMPTY_STYLE as React.CSSProperties;
+            if(dealIndex !== undefined) {
+                className += " hand-deal";
+                cardStyle = { "--deal-delay": `${dealIndex * DEAL_STAGGER}s` } as React.CSSProperties;
+            }
+
             return (
                 <Card
                     key={ card.uuid }
                     card={ card }
                     className={ className }
-                    style={ EMPTY_STYLE }
+                    style={ cardStyle }
                     disableMouseOver={ !isMe }
                     source="hand"
                     onMouseOver={ onMouseOver }

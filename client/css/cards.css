@@ -352,16 +352,16 @@
 }
 
 .card-large {
-    width: 220px;
-    height: 307px;
+    width: 338px;
+    height: 472px;
     position: absolute;
     top: 0;
     right: 0;
 }
 
 .card-large-horizontal {
-    width: 307px;
-    height: 220px;
+    width: 472px;
+    height: 338px;
     position: relative;
 }
 

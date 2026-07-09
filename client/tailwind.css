@@ -26,6 +26,7 @@
 @import "./css/gameboard/arrows.css";
 @import "./css/gameboard/conflict.css";
 @import "./css/gameboard/clock-popup.css";
+@import "./css/gameboard/effects.css";
 /* end gameboard */
 @import "./css/cards.css";
 @import "./css/cardStats.css";
@@ -66,17 +67,17 @@
 }
 
 :root {
-    /* Card dimensions */
-    --card-width: 64px;
-    --card-height: 84px;
-    --card-sm-width: 51.2px;
-    --card-sm-height: 67.2px;
-    --card-lg-width: 89.6px;
-    --card-lg-height: 117.6px;
-    --card-xl-width: 128px;
-    --card-xl-height: 168px;
-    --card-xxl-width: 160px;
-    --card-xxl-height: 210px;
+    /* Card dimensions (base sizes +10%, then +20%) */
+    --card-width: 84.48px;
+    --card-height: 110.88px;
+    --card-sm-width: 67.584px;
+    --card-sm-height: 88.704px;
+    --card-lg-width: 118.272px;
+    --card-lg-height: 155.232px;
+    --card-xl-width: 168.96px;
+    --card-xl-height: 221.76px;
+    --card-xxl-width: 211.2px;
+    --card-xxl-height: 277.2px;
 
     /* Layout */
     --chat-width: 410px;
@@ -87,13 +88,13 @@
     --scrollbar-width: 20px;
     --screen-lg-min: 1200px;
 
-    /* Attachment offsets */
-    --attachment-offset: 13px;
-    --attachment-offset-sm: 10.4px;
-    --attachment-offset-lg: 18.2px;
-    --attachment-offset-xl: 26px;
-    --attachment-offset-xxl: 32.5px;
-    --province-attachment-offset: 13px;
+    /* Attachment offsets (+10%, then +20%) */
+    --attachment-offset: 17.16px;
+    --attachment-offset-sm: 13.728px;
+    --attachment-offset-lg: 24.024px;
+    --attachment-offset-xl: 34.32px;
+    --attachment-offset-xxl: 42.9px;
+    --province-attachment-offset: 17.16px;
 
     /* Ring dimensions */
     --ring-height: 1em;
