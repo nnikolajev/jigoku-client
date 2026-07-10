@@ -26,6 +26,10 @@ const pretrainedBotDecks = [
     {
         label: "[Precon15] Unicorn Military Rush",
         url: "https://www.emeralddb.org/decks/ef93bae2-79c4-42b7-aa8c-bba55097c230"
+    },
+    {
+        label: "Scorpion Poison Mill (dishonor)",
+        url: "https://www.emeralddb.org/decks/5eb874cc-45a6-45d6-8c74-3729750d0b51"
     }
 ];
 const customBotDeck = "custom";
