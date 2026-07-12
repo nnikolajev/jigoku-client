@@ -55,6 +55,135 @@ export function playCardFlip(): void {
     noise.stop(now + 0.2);
 }
 
+// Soft table "thump" with a paper snap for any player playing a card.
+export function playCardPlay(): void {
+    const ctx = getContext();
+    if(!ctx) {
+        return;
+    }
+    const now = ctx.currentTime;
+
+    // Low felt thump.
+    const thump = ctx.createOscillator();
+    thump.type = "sine";
+    thump.frequency.setValueAtTime(190, now);
+    thump.frequency.exponentialRampToValueAtTime(70, now + 0.12);
+
+    const thumpGain = ctx.createGain();
+    thumpGain.gain.setValueAtTime(0.0001, now);
+    thumpGain.gain.exponentialRampToValueAtTime(0.25, now + 0.015);
+    thumpGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+
+    thump.connect(thumpGain).connect(ctx.destination);
+    thump.start(now);
+    thump.stop(now + 0.18);
+
+    // Short bright paper snap on top.
+    const snap = ctx.createBufferSource();
+    snap.buffer = createNoiseBuffer(ctx, 0.06);
+
+    const snapFilter = ctx.createBiquadFilter();
+    snapFilter.type = "bandpass";
+    snapFilter.frequency.value = 3200;
+    snapFilter.Q.value = 0.9;
+
+    const snapGain = ctx.createGain();
+    snapGain.gain.setValueAtTime(0.0001, now);
+    snapGain.gain.exponentialRampToValueAtTime(0.12, now + 0.008);
+    snapGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+    snap.connect(snapFilter).connect(snapGain).connect(ctx.destination);
+    snap.start(now);
+    snap.stop(now + 0.06);
+}
+
+// Big sword slash for a high-skill military conflict: air whoosh then a metallic ring.
+export function playSwordSlash(): void {
+    const ctx = getContext();
+    if(!ctx) {
+        return;
+    }
+    const now = ctx.currentTime;
+
+    // Air whoosh: highpass noise sweeping upward.
+    const whoosh = ctx.createBufferSource();
+    whoosh.buffer = createNoiseBuffer(ctx, 0.35);
+
+    const whooshFilter = ctx.createBiquadFilter();
+    whooshFilter.type = "bandpass";
+    whooshFilter.frequency.setValueAtTime(500, now);
+    whooshFilter.frequency.exponentialRampToValueAtTime(4500, now + 0.22);
+    whooshFilter.Q.value = 1.6;
+
+    const whooshGain = ctx.createGain();
+    whooshGain.gain.setValueAtTime(0.0001, now);
+    whooshGain.gain.exponentialRampToValueAtTime(0.35, now + 0.06);
+    whooshGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+
+    whoosh.connect(whooshFilter).connect(whooshGain).connect(ctx.destination);
+    whoosh.start(now);
+    whoosh.stop(now + 0.35);
+
+    // Metallic ring: detuned high partials with a long decay, starting at the slash impact.
+    const ringStart = now + 0.16;
+    for(const [frequency, level] of [[2093, 0.16], [3136, 0.1], [4699, 0.06]] as const) {
+        const ring = ctx.createOscillator();
+        ring.type = "triangle";
+        ring.frequency.setValueAtTime(frequency, ringStart);
+
+        const ringGain = ctx.createGain();
+        ringGain.gain.setValueAtTime(0.0001, ringStart);
+        ringGain.gain.exponentialRampToValueAtTime(level, ringStart + 0.01);
+        ringGain.gain.exponentialRampToValueAtTime(0.0001, ringStart + 0.9);
+
+        ring.connect(ringGain).connect(ctx.destination);
+        ring.start(ringStart);
+        ring.stop(ringStart + 0.95);
+    }
+}
+
+// Heavy fist punch for a high-skill political conflict: deep bass drop plus a body thud.
+export function playFistPunch(): void {
+    const ctx = getContext();
+    if(!ctx) {
+        return;
+    }
+    const now = ctx.currentTime;
+
+    // Deep bass drop.
+    const bass = ctx.createOscillator();
+    bass.type = "sine";
+    bass.frequency.setValueAtTime(150, now);
+    bass.frequency.exponentialRampToValueAtTime(38, now + 0.28);
+
+    const bassGain = ctx.createGain();
+    bassGain.gain.setValueAtTime(0.0001, now);
+    bassGain.gain.exponentialRampToValueAtTime(0.5, now + 0.02);
+    bassGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+    bass.connect(bassGain).connect(ctx.destination);
+    bass.start(now);
+    bass.stop(now + 0.5);
+
+    // Body thud: short lowpass noise burst.
+    const thud = ctx.createBufferSource();
+    thud.buffer = createNoiseBuffer(ctx, 0.12);
+
+    const thudFilter = ctx.createBiquadFilter();
+    thudFilter.type = "lowpass";
+    thudFilter.frequency.setValueAtTime(1200, now);
+    thudFilter.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+
+    const thudGain = ctx.createGain();
+    thudGain.gain.setValueAtTime(0.0001, now);
+    thudGain.gain.exponentialRampToValueAtTime(0.3, now + 0.01);
+    thudGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
+
+    thud.connect(thudFilter).connect(thudGain).connect(ctx.destination);
+    thud.start(now);
+    thud.stop(now + 0.12);
+}
+
 // Burning fire sound for a province being broken: a flame rumble plus random crackle pops.
 export function playProvinceBreak(): void {
     const ctx = getContext();

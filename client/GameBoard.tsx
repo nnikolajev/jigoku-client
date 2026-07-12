@@ -20,6 +20,9 @@ import Controls from "./GameComponents/Controls.jsx";
 import CardPile from "./GameComponents/CardPile.jsx";
 import GameConfiguration from "./GameComponents/GameConfiguration.jsx";
 import StatDelta from "./GameComponents/effects/StatDelta.jsx";
+import ConflictSlamEffect from "./GameComponents/effects/ConflictSlamEffect.jsx";
+import { countCardPlayMessages, detectConflictResolution } from "./GameComponents/effects/gameEvents.js";
+import { playCardPlay, playSwordSlash, playFistPunch } from "./GameComponents/effects/gameSounds.js";
 import { tryParseJSON } from "./util.js";
 import { downloadGameLog } from "./GameComponents/gameLogSerializer.js";
 import { captureGameStateSnapshot } from "./GameComponents/gameStateSnapshot.js";
@@ -58,6 +61,7 @@ export class InnerGameBoard extends React.Component {
         this.onCaptureStateClick = this.onCaptureStateClick.bind(this);
         this.onTimerExpired = this.onTimerExpired.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
+        this.clearSlamEffect = this.clearSlamEffect.bind(this);
 
         this.boundActions = bindActionCreators(actions, props.dispatch);
 
@@ -72,7 +76,8 @@ export class InnerGameBoard extends React.Component {
             spectating: true,
             showActionWindowsMenu: false,
             showCardMenu: {},
-            showSettingsModal: false
+            showSettingsModal: false,
+            slamEffect: null
         };
     }
 
@@ -85,6 +90,36 @@ export class InnerGameBoard extends React.Component {
             this.updateContextMenu(this.props);
         }
         this.notifyOfNewMessages(this.props, prevProps);
+        this.playGameEffects(prevProps);
+    }
+
+    playGameEffects(prevProps) {
+        const prevGame = prevProps.currentGame;
+        const currentGame = this.props.currentGame;
+        if(!prevGame || !currentGame || prevGame === currentGame || prevGame.name !== currentGame.name) {
+            return;
+        }
+
+        const prevPlays = countCardPlayMessages(prevGame.messages || []);
+        const currentPlays = countCardPlayMessages(currentGame.messages || []);
+        if(currentPlays > prevPlays) {
+            playCardPlay();
+        }
+
+        const resolution = detectConflictResolution(prevGame, currentGame);
+        if(resolution && resolution.winnerSkill >= 10) {
+            const variant = resolution.type === "political" ? "fist" : "sword";
+            if(variant === "sword") {
+                playSwordSlash();
+            } else {
+                playFistPunch();
+            }
+            this.setState({ slamEffect: { variant, key: Date.now() } });
+        }
+    }
+
+    clearSlamEffect() {
+        this.setState({ slamEffect: null });
     }
 
     notifyOfNewMessages(currentProps, prevProps) {
@@ -800,9 +835,15 @@ export class InnerGameBoard extends React.Component {
         let backdrop = this.state.showSettingsModal ? <div className="modal-backdrop fade in" onClick={ () => this.setState({ showSettingsModal: false }) } /> : null;
 
         return (
-            <div className="game-board">
+            <div className={ `game-board${this.state.slamEffect ? " screen-shake" : ""}` }>
                 { popup }
                 { backdrop }
+                { this.state.slamEffect ? (
+                    <ConflictSlamEffect
+                        key={ this.state.slamEffect.key }
+                        variant={ this.state.slamEffect.variant }
+                        onDone={ this.clearSlamEffect } />
+                ) : null }
                 { this.getPrompt(thisPlayer) }
                 { this.getPlayerHand(thisPlayer) }
                 { this.getOpponentHand(otherPlayer) }

@@ -20,16 +20,32 @@ const pretrainedBotDecks = [
         url: "https://www.emeralddb.org/decks/9a72e4b7-556a-457d-a891-2ed2d92ac5d5"
     },
     {
-        label: "[Precon15] Crab Defense",
-        url: "https://www.emeralddb.org/decks/3a8006b7-7e38-427b-97fd-2cc178b15191"
+        label: "[Precon15] Crab Defense (Flooded Waste)",
+        url: "https://www.emeralddb.org/decks/c9381e02-8fb2-46b8-b900-f102376c8cf0"
     },
     {
-        label: "[Precon15] Unicorn Military Rush",
-        url: "https://www.emeralddb.org/decks/ef93bae2-79c4-42b7-aa8c-bba55097c230"
+        label: "[Precon15] Unicorn Military Rush (Temple)",
+        url: "https://www.emeralddb.org/decks/52b78858-fce5-431a-a3e5-be4f2a921ed9"
     },
     {
         label: "Scorpion Poison Mill (dishonor)",
         url: "https://www.emeralddb.org/decks/5eb874cc-45a6-45d6-8c74-3729750d0b51"
+    },
+    {
+        label: "[Precon15] Lion Bushi (swarm, Rich Frog)",
+        url: "https://www.emeralddb.org/decks/c99f60e2-2f85-4c0f-aaa6-d7c16112cbbf"
+    },
+    {
+        label: "Phoenix For Honor and Glory",
+        url: "https://www.emeralddb.org/decks/7c5b9776-046d-4bc3-bd62-209b1cf4efa9"
+    },
+    {
+        label: "Dragon Monks (Togashi Mitsu)",
+        url: "https://www.emeralddb.org/decks/4fb91e58-9c3b-47e1-983e-133e0a4d9254"
+    },
+    {
+        label: "Crane Duels (upgraded, Tsuma)",
+        url: "https://www.emeralddb.org/decks/e2e443b5-77b1-41b4-8435-ededfb187311"
     }
 ];
 const customBotDeck = "custom";

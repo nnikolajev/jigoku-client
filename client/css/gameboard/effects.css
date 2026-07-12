@@ -128,6 +128,178 @@
     }
 }
 
+/* --- Fullscreen conflict resolution slam (sword slash / fist punch) --- */
+.conflict-slam {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 9000;
+}
+
+.conflict-slam__flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.18) 45%, transparent 75%);
+    animation: conflict-slam-flash 0.6s ease-out both;
+}
+
+.conflict-slam--fist .conflict-slam__flash {
+    background: radial-gradient(circle at 50% 50%, rgba(255, 138, 101, 0.5) 0%, rgba(255, 87, 34, 0.16) 45%, transparent 75%);
+}
+
+@keyframes conflict-slam-flash {
+    0% {
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.conflict-slam__slash {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160vmax;
+    height: 7px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.95) 30%, #e3f2fd 50%, rgba(255, 255, 255, 0.95) 70%, transparent 100%);
+    box-shadow: 0 0 26px 6px rgba(200, 230, 255, 0.85);
+    transform-origin: center;
+    animation: conflict-slam-slash 0.8s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.conflict-slam__slash--one {
+    --slash-angle: -28deg;
+}
+
+.conflict-slam__slash--two {
+    --slash-angle: 24deg;
+    animation-delay: 0.16s;
+}
+
+@keyframes conflict-slam-slash {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(0);
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    35% {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(1);
+    }
+}
+
+.conflict-slam__fist {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 20vmin;
+    line-height: 1;
+    filter: drop-shadow(0 0 24px rgba(255, 138, 101, 0.9));
+    animation: conflict-slam-fist 0.9s cubic-bezier(0.3, 1.4, 0.4, 1) both;
+}
+
+@keyframes conflict-slam-fist {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.15) rotate(-25deg);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.7) rotate(6deg);
+    }
+
+    45% {
+        transform: translate(-50%, -50%) scale(1.45) rotate(0deg);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.5) rotate(0deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.6) rotate(0deg);
+    }
+}
+
+.conflict-slam__shockwave {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12vmin;
+    height: 12vmin;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 171, 145, 0.9);
+    box-shadow: 0 0 30px rgba(255, 87, 34, 0.7);
+    animation: conflict-slam-shockwave 0.7s ease-out 0.22s both;
+}
+
+@keyframes conflict-slam-shockwave {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.3);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(9);
+    }
+}
+
+/* --- Screen shake while a conflict slam is showing --- */
+.game-board.screen-shake {
+    animation: screen-shake 0.45s ease-in-out 0.2s;
+}
+
+@keyframes screen-shake {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+
+    15% {
+        transform: translate(-9px, 5px);
+    }
+
+    30% {
+        transform: translate(8px, -6px);
+    }
+
+    45% {
+        transform: translate(-6px, 3px);
+    }
+
+    60% {
+        transform: translate(5px, -3px);
+    }
+
+    75% {
+        transform: translate(-3px, 2px);
+    }
+
+    90% {
+        transform: translate(2px, -1px);
+    }
+}
+
 /* --- Floating +N / -N stat change indicators --- */
 .stat-delta-host {
     position: relative;
