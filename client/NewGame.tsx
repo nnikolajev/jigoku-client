@@ -14,7 +14,7 @@ const defaultTime = {
 // Decks with hand-written bot playbooks (jigoku CardPlaybook.ts). The lobby
 // accepts either an EmeraldDB URL or a local deck id, so the dropdown just
 // fills the same field a custom URL would.
-const pretrainedBotDecks = [
+export const pretrainedBotDecks = [
     {
         label: "Copy of [Precon15] Unicorn Cavalry (v0.5)",
         url: "https://www.emeralddb.org/decks/9a72e4b7-556a-457d-a891-2ed2d92ac5d5"
@@ -46,6 +46,14 @@ const pretrainedBotDecks = [
     {
         label: "Crane Duels (upgraded, Tsuma)",
         url: "https://www.emeralddb.org/decks/e2e443b5-77b1-41b4-8435-ededfb187311"
+    },
+    {
+        label: "Phoenix Shugenja",
+        url: "https://www.emeralddb.org/decks/b260d778-0016-4d70-b1f9-5180daf340fc"
+    },
+    {
+        label: "Dragon Attachments",
+        url: "https://www.emeralddb.org/decks/46aaa220-2cf9-463b-bdf3-3019572432ff"
     }
 ];
 const customBotDeck = "custom";
@@ -278,8 +286,9 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                     { botOpponent && (
                         <div className="row game-password">
                             <div className="col-sm-8">
-                                <label>Bot deck</label>
+                                <label htmlFor="botDeckChoice">Bot deck</label>
                                 <select
+                                    id="botDeckChoice"
                                     className="form-control"
                                     onChange={ (event) => setBotDeckChoice(event.target.value) }
                                     value={ botDeckChoice }
@@ -298,8 +307,9 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                         value={ botDeckId }
                                     />
                                 ) }
-                                <label>Bot difficulty</label>
+                                <label htmlFor="botDifficulty">Bot difficulty</label>
                                 <select
+                                    id="botDifficulty"
                                     className="form-control"
                                     onChange={ (event) => setBotSeed(event.target.value) }
                                     value={ botSeed }
