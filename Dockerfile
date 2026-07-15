@@ -30,7 +30,8 @@ COPY --from=builder /app/config ./config
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/docker-entrypoint.sh ./
 
-RUN mkdir -p build/server/logs public/img/cards && chmod +x docker-entrypoint.sh \
+RUN sed -i 's/\r$//' docker-entrypoint.sh \
+    && mkdir -p build/server/logs public/img/cards && chmod +x docker-entrypoint.sh \
     && chown -R node:node /app
 
 ARG BUILD_VERSION=LOCAL
