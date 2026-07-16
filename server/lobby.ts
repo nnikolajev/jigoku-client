@@ -15,7 +15,7 @@ const GetShadowlandsSummonables = require("./shadowLandsHelper.js");
 
 // Unicorn cavalry precon — the bot's playbook (jigoku CardPlaybook.ts) is
 // curated for this deck.
-const DEFAULT_BOT_DECKLIST_URL = "https://www.emeralddb.org/api/decklists/9a72e4b7-556a-457d-a891-2ed2d92ac5d5";
+const DEFAULT_BOT_DECKLIST_URL = "https://www.emeralddb.org/api/decklists/52b78858-fce5-431a-a3e5-be4f2a921ed9";
 const ONE_MINUTE = 60 * 1000;
 const FIVE_MINUTES = 5 * ONE_MINUTE;
 const ONE_HOUR = 60 * ONE_MINUTE;

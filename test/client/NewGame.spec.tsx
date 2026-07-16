@@ -4,7 +4,7 @@ import React from "react";
 import { InnerNewGame, pretrainedBotDecks } from "../../client/NewGame";
 
 describe("the <InnerNewGame /> bot deck selector", () => {
-    it("lists every trained bot deck, including the two tower-era additions", () => {
+    it("lists every benchmarked bot deck with one option per deck", () => {
         render(
             <InnerNewGame
                 cancelNewGame={ vi.fn() }
@@ -23,7 +23,35 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(within(botDeckSelect).getByRole("option", { name: "Dragon Attachments" })).toHaveValue(
             "https://www.emeralddb.org/decks/46aaa220-2cf9-463b-bdf3-3019572432ff"
         );
-        expect(pretrainedBotDecks).toHaveLength(10);
+        expect(pretrainedBotDecks).toHaveLength(9);
+        expect(new Set(pretrainedBotDecks.map((deck) => deck.benchmarkDeck)).size).toBe(9);
+        expect(new Set(pretrainedBotDecks.map((deck) => deck.url)).size).toBe(9);
+    });
+
+    it("submits every pretrained bot deck, including the unchanged first option", () => {
+        const emit = vi.fn();
+        render(
+            <InnerNewGame
+                cancelNewGame={ vi.fn() }
+                defaultGameName="Bot test"
+                loadDecks={ vi.fn() }
+                socket={ { emit } }
+            />
+        );
+
+        fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI" }));
+        const botDeckSelect = screen.getByLabelText("Bot deck");
+
+        pretrainedBotDecks.forEach((deck, index) => {
+            if(index > 0) {
+                fireEvent.change(botDeckSelect, { target: { value: deck.url } });
+            }
+            fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+            expect(emit).toHaveBeenLastCalledWith("newgame", expect.objectContaining({
+                bot: expect.objectContaining({ enabled: true, deckId: deck.url })
+            }));
+        });
     });
 
     it("offers fate-aware seed 1 by default and submits it to the lobby", () => {

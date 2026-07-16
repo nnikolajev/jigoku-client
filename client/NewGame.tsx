@@ -17,28 +17,23 @@ const defaultTime = {
 // fills the same field a custom URL would.
 export const pretrainedBotDecks = [
     {
-        label: "Copy of [Precon15] Unicorn Cavalry (v0.5)",
-        url: "https://www.emeralddb.org/decks/9a72e4b7-556a-457d-a891-2ed2d92ac5d5",
-        benchmarkDeck: "Unicorn"
-    },
-    {
-        label: "[Precon15] Crab Defense (Flooded Waste)",
-        url: "https://www.emeralddb.org/decks/c9381e02-8fb2-46b8-b900-f102376c8cf0",
-        benchmarkDeck: "Crab"
-    },
-    {
         label: "[Precon15] Unicorn Military Rush (Temple)",
         url: "https://www.emeralddb.org/decks/52b78858-fce5-431a-a3e5-be4f2a921ed9",
         benchmarkDeck: "Unicorn"
     },
     {
+        label: "[Precon15] Crab Defense (Flooded Waste)",
+        url: "https://www.emeralddb.org/decks/61eedd28-17ee-4547-9ccd-3a9655198227",
+        benchmarkDeck: "Crab"
+    },
+    {
         label: "Scorpion Poison Mill (dishonor)",
-        url: "https://www.emeralddb.org/decks/5eb874cc-45a6-45d6-8c74-3729750d0b51",
+        url: "https://www.emeralddb.org/decks/914dc4d4-a63b-4a86-af15-e46ba55361fc",
         benchmarkDeck: "Scorpion"
     },
     {
         label: "[Precon15] Lion Bushi (swarm, Rich Frog)",
-        url: "https://www.emeralddb.org/decks/c99f60e2-2f85-4c0f-aaa6-d7c16112cbbf",
+        url: "https://www.emeralddb.org/decks/27a913d1-6a68-4641-a953-80a6ca373005",
         benchmarkDeck: "Lion"
     },
     {
@@ -53,7 +48,7 @@ export const pretrainedBotDecks = [
     },
     {
         label: "Crane Duels (upgraded, Tsuma)",
-        url: "https://www.emeralddb.org/decks/e2e443b5-77b1-41b4-8435-ededfb187311",
+        url: "https://www.emeralddb.org/decks/8a125b59-cfe0-4546-8b74-d5151ba5c710",
         benchmarkDeck: "CraneDuels"
     },
     {
