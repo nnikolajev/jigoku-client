@@ -93,3 +93,66 @@
         }
     }
 }
+
+.music-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    & audio {
+        display: none;
+    }
+
+    &:hover .music-volume-popover,
+    &:focus-within .music-volume-popover {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+}
+
+.music-volume-popover {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 210px;
+    padding: 9px 10px;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    background: rgba(14, 11, 16, 0.96);
+    box-shadow: 0 3px 10px rgb(0 0 0 / 45%);
+    color: var(--color-primary);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(5px);
+    transition: opacity 120ms ease, transform 120ms ease;
+    z-index: var(--layer-popups);
+
+    &::after {
+        position: absolute;
+        right: 18px;
+        bottom: -6px;
+        width: 10px;
+        height: 10px;
+        border-right: 1px solid var(--color-primary);
+        border-bottom: 1px solid var(--color-primary);
+        background: rgba(14, 11, 16, 0.96);
+        content: "";
+        transform: rotate(45deg);
+    }
+
+    & input[type="range"] {
+        width: 125px;
+        accent-color: var(--color-primary);
+        cursor: pointer;
+    }
+
+    & span {
+        min-width: 34px;
+        text-align: right;
+        font-size: 12px;
+    }
+}

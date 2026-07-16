@@ -1031,6 +1031,7 @@ export class InnerGameBoard extends React.Component {
                             onCaptureStateClick={ this.onCaptureStateClick }
                             onTestAnimationClick={ this.onTestAnimationClick }
                             onToggleWinEffectsClick={ this.onToggleWinEffectsClick }
+                            musicActive={ !!this.props.currentGame.started && !this.props.currentGame.winner }
                             showDownloadLog={ !!this.props.currentGame.winner }
                             showChatAlert={ this.state.showChatAlert }
                             manualModeEnabled={ manualMode }
@@ -1039,6 +1040,7 @@ export class InnerGameBoard extends React.Component {
                             botHandRevealed={ !!this.props.currentGame.showBotHand }
                             showAnimationTest
                             showWinEffectsToggle
+                            showMusicControl={ !this.props.replayMode && !!this.props.currentGame.started && !this.props.currentGame.winner }
                             winEffectsEnabled={ this.state.winEffectsEnabled }
                             animationTestVariant={ this.state.animationTestVariant }
                         />

@@ -1,4 +1,5 @@
 import { Menu, AlertCircle, Wrench, Settings, Download, Eye, EyeOff, Camera, Sparkles, Volume2, VolumeX } from "lucide-react";
+import GameMusic from "./GameMusic.jsx";
 
 interface ControlsProps {
     manualModeEnabled?: boolean;
@@ -10,6 +11,7 @@ interface ControlsProps {
     onCaptureStateClick?: () => void;
     onTestAnimationClick?: () => void;
     onToggleWinEffectsClick?: () => void;
+    musicActive?: boolean;
     showChatAlert?: boolean;
     showDownloadLog?: boolean;
     showManualMode?: boolean;
@@ -17,6 +19,7 @@ interface ControlsProps {
     botHandRevealed?: boolean;
     showAnimationTest?: boolean;
     showWinEffectsToggle?: boolean;
+    showMusicControl?: boolean;
     winEffectsEnabled?: boolean;
     animationTestVariant?: "military" | "political";
 }
@@ -31,6 +34,7 @@ function Controls({
     onCaptureStateClick,
     onTestAnimationClick,
     onToggleWinEffectsClick,
+    musicActive = false,
     showChatAlert,
     showDownloadLog,
     showManualMode,
@@ -38,6 +42,7 @@ function Controls({
     botHandRevealed,
     showAnimationTest,
     showWinEffectsToggle,
+    showMusicControl = false,
     winEffectsEnabled = true,
     animationTestVariant = "military"
 }: ControlsProps) {
@@ -66,6 +71,7 @@ function Controls({
                 <Settings size={ 16 } />
                 { laptopSize ? "" : " Settings" }
             </button>
+            { showMusicControl && <GameMusic active={ musicActive } compact={ laptopSize } /> }
             { showWinEffectsToggle && (
                 <button
                     type="button"
