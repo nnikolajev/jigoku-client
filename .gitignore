@@ -6,6 +6,7 @@ typings
 coverage
 *.log
 *.json
+!client/botBenchmarkResults.json
 server/events.txt
 .DS_Store
 config/local*

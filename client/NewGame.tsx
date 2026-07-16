@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { connect } from "react-redux";
 import GameModes from "./GameModes";
+import botBenchmarkResults from "./botBenchmarkResults.json";
 
 import * as actions from "./actions";
 
@@ -17,74 +18,105 @@ const defaultTime = {
 export const pretrainedBotDecks = [
     {
         label: "Copy of [Precon15] Unicorn Cavalry (v0.5)",
-        url: "https://www.emeralddb.org/decks/9a72e4b7-556a-457d-a891-2ed2d92ac5d5"
+        url: "https://www.emeralddb.org/decks/9a72e4b7-556a-457d-a891-2ed2d92ac5d5",
+        benchmarkDeck: "Unicorn"
     },
     {
         label: "[Precon15] Crab Defense (Flooded Waste)",
-        url: "https://www.emeralddb.org/decks/c9381e02-8fb2-46b8-b900-f102376c8cf0"
+        url: "https://www.emeralddb.org/decks/c9381e02-8fb2-46b8-b900-f102376c8cf0",
+        benchmarkDeck: "Crab"
     },
     {
         label: "[Precon15] Unicorn Military Rush (Temple)",
-        url: "https://www.emeralddb.org/decks/52b78858-fce5-431a-a3e5-be4f2a921ed9"
+        url: "https://www.emeralddb.org/decks/52b78858-fce5-431a-a3e5-be4f2a921ed9",
+        benchmarkDeck: "Unicorn"
     },
     {
         label: "Scorpion Poison Mill (dishonor)",
-        url: "https://www.emeralddb.org/decks/5eb874cc-45a6-45d6-8c74-3729750d0b51"
+        url: "https://www.emeralddb.org/decks/5eb874cc-45a6-45d6-8c74-3729750d0b51",
+        benchmarkDeck: "Scorpion"
     },
     {
         label: "[Precon15] Lion Bushi (swarm, Rich Frog)",
-        url: "https://www.emeralddb.org/decks/c99f60e2-2f85-4c0f-aaa6-d7c16112cbbf"
+        url: "https://www.emeralddb.org/decks/c99f60e2-2f85-4c0f-aaa6-d7c16112cbbf",
+        benchmarkDeck: "Lion"
     },
     {
         label: "Phoenix For Honor and Glory",
-        url: "https://www.emeralddb.org/decks/7c5b9776-046d-4bc3-bd62-209b1cf4efa9"
+        url: "https://www.emeralddb.org/decks/7c5b9776-046d-4bc3-bd62-209b1cf4efa9",
+        benchmarkDeck: "Phoenix"
     },
     {
         label: "Dragon Monks (Togashi Mitsu)",
-        url: "https://www.emeralddb.org/decks/4fb91e58-9c3b-47e1-983e-133e0a4d9254"
+        url: "https://www.emeralddb.org/decks/4fb91e58-9c3b-47e1-983e-133e0a4d9254",
+        benchmarkDeck: "Dragon"
     },
     {
         label: "Crane Duels (upgraded, Tsuma)",
-        url: "https://www.emeralddb.org/decks/e2e443b5-77b1-41b4-8435-ededfb187311"
+        url: "https://www.emeralddb.org/decks/e2e443b5-77b1-41b4-8435-ededfb187311",
+        benchmarkDeck: "CraneDuels"
     },
     {
         label: "Phoenix Shugenja",
-        url: "https://www.emeralddb.org/decks/b260d778-0016-4d70-b1f9-5180daf340fc"
+        url: "https://www.emeralddb.org/decks/b260d778-0016-4d70-b1f9-5180daf340fc",
+        benchmarkDeck: "PhoenixShugenja"
     },
     {
         label: "Dragon Attachments",
-        url: "https://www.emeralddb.org/decks/46aaa220-2cf9-463b-bdf3-3019572432ff"
+        url: "https://www.emeralddb.org/decks/46aaa220-2cf9-463b-bdf3-3019572432ff",
+        benchmarkDeck: "DragonAttachments"
     }
 ];
 const customBotDeck = "custom";
 
 // Bot difficulty seeds. The `value` is passed straight to the server as the bot
-// `seed` (blank = default heuristic). Keep in sync with jigoku
+// `seed` (1 = default fate-aware heuristic). Keep in sync with jigoku
 // JigokuBotController seed handling.
 const botSeedOptions = [
     {
-        value: "",
-        label: "Heuristic (default)",
-        desc: "Hand-written strategy bot. Fast, plays a solid fair game with no hidden information."
-    },
-    {
-        value: "4",
-        label: "Omniscient (cheating — hardest)",
-        desc: "Same heuristics as default but sees your hand and face-down provinces. Attacks your weakest province, presses when you cannot fight back, and holds when it cannot win. Requires the bot deck to be analyzed first."
+        value: "1",
+        label: "Fate-aware heuristic (default)",
+        desc: "Preserves fate, invests in durable expensive characters, builds a wider board after round 2, and prioritizes rings holding fate."
     },
     {
         value: "2",
+        label: "Old heuristic",
+        desc: "Previous hand-written strategy, retained for comparisons. It spends fate more aggressively during dynasty."
+    },
+    {
+        value: "3",
         label: "LLM-driven (experimental)",
         desc: "A local LLM (LM Studio) picks every action. Slow and only as good as the model; experimental."
     },
     {
-        value: "3",
+        value: "4",
         label: "Self-play ML (experimental)",
         desc: "Learned evaluator trained by self-play. Not competitive — kept for research; do not expect a strong game."
+    },
+    {
+        value: "5",
+        label: "Omniscient (cheating — hardest)",
+        desc: "Sees your hand and face-down provinces. Attacks your weakest province, presses when you cannot fight back, and holds when it cannot win. Requires the bot deck to be analyzed first."
     }
 ];
+const hiddenBotSeeds = new Set(["3", "4"]);
 
-export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket }) {
+export function getBotBenchmark(results, seed, benchmarkDeck) {
+    const seedResult = results?.seeds?.[String(seed)];
+    return {
+        seedLabel: seedResult?.label,
+        winRates: seedResult?.winRates?.decks?.[benchmarkDeck],
+        winRateGames: seedResult?.winRates?.gamesPerDeck,
+        roundRobin: seedResult?.roundRobin?.decks?.[benchmarkDeck],
+        roundRobinGames: seedResult?.roundRobin?.gamesPerMatchup
+    };
+}
+
+function percentage(rate) {
+    return rate === null || rate === undefined ? "--" : `${(rate * 100).toFixed(1)}%`;
+}
+
+export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket, benchmarkResults = botBenchmarkResults }) {
     const [spectators, setSpectators] = useState(true);
     const [spectatorSquelch, setSpectatorSquelch] = useState(false);
     const [selectedGameMode, setSelectedGameMode] = useState(GameModes.Emerald);
@@ -99,7 +131,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     const [botOpponent, setBotOpponent] = useState(false);
     const [botDeckChoice, setBotDeckChoice] = useState(pretrainedBotDecks[0].url);
     const [botDeckId, setBotDeckId] = useState("");
-    const [botSeed, setBotSeed] = useState("");
+    const [botSeed, setBotSeed] = useState("1");
 
     const handleCancelClick = (event) => {
         event.preventDefault();
@@ -234,6 +266,10 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     };
 
     const charsLeft = 140 - gameName.length;
+    const selectedBotDeck = pretrainedBotDecks.find((deck) => deck.url === botDeckChoice);
+    const benchmark = selectedBotDeck
+        ? getBotBenchmark(benchmarkResults, botSeed, selectedBotDeck.benchmarkDeck)
+        : null;
 
     if(!socket) {
         return (
@@ -314,13 +350,38 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                     onChange={ (event) => setBotSeed(event.target.value) }
                                     value={ botSeed }
                                 >
-                                    { botSeedOptions.map((opt) => (
+                                    { botSeedOptions.filter((opt) => !hiddenBotSeeds.has(opt.value)).map((opt) => (
                                         <option key={ opt.value || "default" } value={ opt.value }>{ opt.label }</option>
                                     )) }
                                 </select>
                                 <small className="text-muted">
                                     { (botSeedOptions.find((opt) => opt.value === botSeed) || botSeedOptions[0]).desc }
                                 </small>
+                                <div aria-label="Standard bot benchmark">
+                                    <small className="text-muted">
+                                        { !selectedBotDeck ? (
+                                            "Standard benchmark unavailable for custom decks."
+                                        ) : benchmark.winRates || benchmark.roundRobin ? (
+                                            <>
+                                                { benchmark.seedLabel && (
+                                                    <>
+                                                        { `Standard self-play (${benchmark.seedLabel}).` }
+                                                        <br />
+                                                    </>
+                                                ) }
+                                                { benchmark.winRates
+                                                    ? `Vs Crane: ${percentage(benchmark.winRates.winRate)} (${benchmark.winRates.wins}-${benchmark.winRates.losses}, N=${benchmark.winRateGames}).`
+                                                    : "Vs Crane: not recorded." }
+                                                <br />
+                                                { benchmark.roundRobin
+                                                    ? `Round robin: ${percentage(benchmark.roundRobin.averageOpponentWinRate)} average vs opponents, ${percentage(benchmark.roundRobin.overallWinRate)} overall (${benchmark.roundRobin.wins}-${benchmark.roundRobin.losses}, N=${benchmark.roundRobinGames}/matchup).`
+                                                    : "Round robin: not recorded." }
+                                            </>
+                                        ) : (
+                                            "No standardized 100-game benchmark recorded for this seed."
+                                        ) }
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     ) }

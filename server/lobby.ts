@@ -427,8 +427,9 @@ class Lobby {
             // The deck id doubles as the analysis-cache key on the game node,
             // so the default deck must carry its decklist URL explicitly.
             deckId: botDetails.deckId || DEFAULT_BOT_DECKLIST_URL,
-            seed: botDetails.seed || `${game.id}:bot`,
+            seed: botDetails.seed || 1,
             difficulty: botDetails.difficulty || "mvp",
+            policy: botDetails.policy,
             trace: botDetails.trace !== false,
             // Default LM Studio integration; the game node warns and falls
             // back to pure heuristics when the server is unreachable.
