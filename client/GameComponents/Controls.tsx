@@ -1,4 +1,4 @@
-import { Menu, AlertCircle, Wrench, Settings, Download, Eye, EyeOff, Camera } from "lucide-react";
+import { Menu, AlertCircle, Wrench, Settings, Download, Eye, EyeOff, Camera, Sparkles, Volume2, VolumeX } from "lucide-react";
 
 interface ControlsProps {
     manualModeEnabled?: boolean;
@@ -8,11 +8,17 @@ interface ControlsProps {
     onToggleChatClick?: () => void;
     onShowBotHandClick?: () => void;
     onCaptureStateClick?: () => void;
+    onTestAnimationClick?: () => void;
+    onToggleWinEffectsClick?: () => void;
     showChatAlert?: boolean;
     showDownloadLog?: boolean;
     showManualMode?: boolean;
     showBotHandButton?: boolean;
     botHandRevealed?: boolean;
+    showAnimationTest?: boolean;
+    showWinEffectsToggle?: boolean;
+    winEffectsEnabled?: boolean;
+    animationTestVariant?: "military" | "political";
 }
 
 function Controls({
@@ -23,11 +29,17 @@ function Controls({
     onToggleChatClick,
     onShowBotHandClick,
     onCaptureStateClick,
+    onTestAnimationClick,
+    onToggleWinEffectsClick,
     showChatAlert,
     showDownloadLog,
     showManualMode,
     showBotHandButton,
-    botHandRevealed
+    botHandRevealed,
+    showAnimationTest,
+    showWinEffectsToggle,
+    winEffectsEnabled = true,
+    animationTestVariant = "military"
 }: ControlsProps) {
     const laptopSize = window.innerWidth <= 1366;
 
@@ -54,6 +66,31 @@ function Controls({
                 <Settings size={ 16 } />
                 { laptopSize ? "" : " Settings" }
             </button>
+            { showWinEffectsToggle && (
+                <button
+                    type="button"
+                    className={ `btn btn-transparent ${winEffectsEnabled ? "manual" : "auto"}` }
+                    aria-label="Conflict win effects"
+                    aria-pressed={ winEffectsEnabled }
+                    title={ `Turn conflict win effects ${winEffectsEnabled ? "off" : "on"}` }
+                    onClick={ onToggleWinEffectsClick }
+                >
+                    { winEffectsEnabled ? <Volume2 size={ 16 } /> : <VolumeX size={ 16 } /> }
+                    { laptopSize ? "" : ` Win FX ${winEffectsEnabled ? "On" : "Off"}` }
+                </button>
+            ) }
+            { showAnimationTest && (
+                <button
+                    type="button"
+                    className="btn btn-transparent"
+                    aria-label={ `Test ${animationTestVariant} win animation` }
+                    title={ `Test ${animationTestVariant} win animation` }
+                    onClick={ onTestAnimationClick }
+                >
+                    <Sparkles size={ 16 } />
+                    { laptopSize ? "" : ` Test ${animationTestVariant === "military" ? "Military" : "Political"}` }
+                </button>
+            ) }
             { showBotHandButton && (
                 <button
                     className={ `btn btn-transparent ${botHandRevealed ? "manual" : "auto"}` }

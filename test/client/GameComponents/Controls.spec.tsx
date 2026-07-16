@@ -7,11 +7,15 @@ describe("the <Controls /> component", () => {
     let onSettingsClick;
     let onManualModeClick;
     let onToggleChatClick;
+    let onTestAnimationClick;
+    let onToggleWinEffectsClick;
 
     beforeEach(() => {
         onSettingsClick = vi.fn();
         onManualModeClick = vi.fn();
         onToggleChatClick = vi.fn();
+        onTestAnimationClick = vi.fn();
+        onToggleWinEffectsClick = vi.fn();
     });
 
     describe("when rendered with default props", () => {
@@ -143,6 +147,60 @@ describe("the <Controls /> component", () => {
             const buttons = screen.getAllByRole("button");
             fireEvent.click(buttons[2]);
             expect(onSettingsClick).toHaveBeenCalled();
+        });
+    });
+
+    describe("when animation testing is enabled", () => {
+        it("renders one cycling animation button and invokes its callback", () => {
+            render(
+                <Controls
+                    onSettingsClick={ onSettingsClick }
+                    onToggleChatClick={ onToggleChatClick }
+                    onTestAnimationClick={ onTestAnimationClick }
+                    showAnimationTest
+                    animationTestVariant="military"
+                />
+            );
+
+            const button = screen.getByRole("button", { name: "Test military win animation" });
+            fireEvent.click(button);
+            expect(onTestAnimationClick).toHaveBeenCalledOnce();
+        });
+    });
+
+    describe("when the win-effects toggle is shown", () => {
+        it("shows the enabled state and invokes its callback", () => {
+            render(
+                <Controls
+                    onSettingsClick={ onSettingsClick }
+                    onToggleChatClick={ onToggleChatClick }
+                    onToggleWinEffectsClick={ onToggleWinEffectsClick }
+                    showWinEffectsToggle
+                    winEffectsEnabled
+                />
+            );
+
+            const button = screen.getByRole("button", { name: "Conflict win effects" });
+            expect(button).toHaveAttribute("aria-pressed", "true");
+            expect(button).toHaveAttribute("title", "Turn conflict win effects off");
+            fireEvent.click(button);
+            expect(onToggleWinEffectsClick).toHaveBeenCalledOnce();
+        });
+
+        it("shows the disabled state", () => {
+            render(
+                <Controls
+                    onSettingsClick={ onSettingsClick }
+                    onToggleChatClick={ onToggleChatClick }
+                    onToggleWinEffectsClick={ onToggleWinEffectsClick }
+                    showWinEffectsToggle
+                    winEffectsEnabled={ false }
+                />
+            );
+
+            const button = screen.getByRole("button", { name: "Conflict win effects" });
+            expect(button).toHaveAttribute("aria-pressed", "false");
+            expect(button).toHaveAttribute("title", "Turn conflict win effects on");
         });
     });
 });

@@ -41,24 +41,51 @@ export function countCardPlayMessages(messages: any[]): number {
     return messages.reduce((count, message) => count + (isCardPlayMessage(message) ? 1 : 0), 0);
 }
 
-export interface ConflictResolution {
+export interface ConflictProvinceBreak {
     type: string;
-    winnerSkill: number;
+    skillDifference: number;
 }
 
-// A conflict summary disappearing from the game state means the conflict just resolved.
-// The last summary seen still carries the final skill totals.
-export function detectConflictResolution(prevGame: any, currentGame: any): ConflictResolution | null {
-    const prevConflict = prevGame?.conflict;
-    if(!prevConflict || currentGame?.conflict) {
+function collectProvinceBrokenState(game: any): Map<string, boolean> {
+    const provinces = new Map<string, boolean>();
+    for(const player of Object.values(game?.players || {}) as any[]) {
+        const provincePiles = [
+            ...Object.values(player?.provinces || {}),
+            player?.strongholdProvince || []
+        ];
+        for(const pile of provincePiles as any[][]) {
+            for(const card of pile || []) {
+                if(card?.isProvince && card.uuid) {
+                    provinces.set(card.uuid, !!card.isBroken);
+                }
+            }
+        }
+    }
+    return provinces;
+}
+
+// Province cards become broken before any resulting reaction/discard prompt.
+// Detect that exact transition so the effect does not wait for conflict cleanup.
+export function detectConflictProvinceBreak(prevGame: any, currentGame: any): ConflictProvinceBreak | null {
+    const previousProvinces = collectProvinceBrokenState(prevGame);
+    const currentProvinces = collectProvinceBrokenState(currentGame);
+    const provinceJustBroke = [...currentProvinces].some(
+        ([uuid, isBroken]) => isBroken && previousProvinces.get(uuid) === false
+    );
+    if(!provinceJustBroke) {
         return null;
     }
-    if(!prevConflict.declarationComplete) {
+
+    const currentConflict = currentGame?.conflict;
+    const conflict = currentConflict && Object.keys(currentConflict).length > 0
+        ? currentConflict
+        : prevGame?.conflict;
+    if(!conflict?.declarationComplete) {
         return null;
     }
 
     return {
-        type: prevConflict.type,
-        winnerSkill: Math.max(prevConflict.attackerSkill || 0, prevConflict.defenderSkill || 0)
+        type: conflict.type,
+        skillDifference: Math.abs((conflict.attackerSkill || 0) - (conflict.defenderSkill || 0))
     };
 }

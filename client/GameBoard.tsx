@@ -21,8 +21,8 @@ import CardPile from "./GameComponents/CardPile.jsx";
 import GameConfiguration from "./GameComponents/GameConfiguration.jsx";
 import StatDelta from "./GameComponents/effects/StatDelta.jsx";
 import ConflictSlamEffect from "./GameComponents/effects/ConflictSlamEffect.jsx";
-import { countCardPlayMessages, detectConflictResolution } from "./GameComponents/effects/gameEvents.js";
-import { playCardPlay, playSwordSlash, playFistPunch } from "./GameComponents/effects/gameSounds.js";
+import { countCardPlayMessages, detectConflictProvinceBreak } from "./GameComponents/effects/gameEvents.js";
+import { playCardPlay, playMilitaryWin, playPoliticalWin } from "./GameComponents/effects/gameSounds.js";
 import { tryParseJSON } from "./util.js";
 import { downloadGameLog } from "./GameComponents/gameLogSerializer.js";
 import { captureGameStateSnapshot } from "./GameComponents/gameStateSnapshot.js";
@@ -30,6 +30,24 @@ import GameModes from "./GameModes";
 import { getCardImageUrl } from "./cardImageUrl.js";
 
 import * as actions from "./actions";
+
+const WIN_EFFECTS_STORAGE_KEY = "jigoku.conflictWinEffectsEnabled";
+
+function loadWinEffectsPreference() {
+    try {
+        return typeof window === "undefined" || window.localStorage.getItem(WIN_EFFECTS_STORAGE_KEY) !== "false";
+    } catch{
+        return true;
+    }
+}
+
+function saveWinEffectsPreference(enabled) {
+    try {
+        window.localStorage.setItem(WIN_EFFECTS_STORAGE_KEY, String(enabled));
+    } catch{
+        // Storage can be unavailable in private browsing; current-session state still works.
+    }
+}
 
 export class InnerGameBoard extends React.Component {
     constructor(props) {
@@ -62,10 +80,13 @@ export class InnerGameBoard extends React.Component {
         this.onTimerExpired = this.onTimerExpired.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
         this.clearSlamEffect = this.clearSlamEffect.bind(this);
+        this.onTestAnimationClick = this.onTestAnimationClick.bind(this);
+        this.onToggleWinEffectsClick = this.onToggleWinEffectsClick.bind(this);
 
         this.boundActions = bindActionCreators(actions, props.dispatch);
 
         this._cardsInPlayCache = {};
+        this._slamEffectSequence = 0;
 
         this.state = {
             cardToZoom: undefined,
@@ -77,7 +98,9 @@ export class InnerGameBoard extends React.Component {
             showActionWindowsMenu: false,
             showCardMenu: {},
             showSettingsModal: false,
-            slamEffect: null
+            slamEffect: null,
+            animationTestVariant: "military",
+            winEffectsEnabled: loadWinEffectsPreference()
         };
     }
 
@@ -106,16 +129,40 @@ export class InnerGameBoard extends React.Component {
             playCardPlay();
         }
 
-        const resolution = detectConflictResolution(prevGame, currentGame);
-        if(resolution && resolution.winnerSkill >= 10) {
-            const variant = resolution.type === "political" ? "fist" : "sword";
-            if(variant === "sword") {
-                playSwordSlash();
-            } else {
-                playFistPunch();
-            }
-            this.setState({ slamEffect: { variant, key: Date.now() } });
+        if(!this.state.winEffectsEnabled) {
+            return;
         }
+
+        const provinceBreak = detectConflictProvinceBreak(prevGame, currentGame);
+        if(provinceBreak && provinceBreak.skillDifference >= 5) {
+            this.playSlamEffect(provinceBreak.type === "political" ? "political" : "military");
+        }
+    }
+
+    playSlamEffect(variant, additionalState = {}) {
+        if(variant === "military") {
+            playMilitaryWin();
+        } else {
+            playPoliticalWin();
+        }
+        this._slamEffectSequence += 1;
+        this.setState({ ...additionalState, slamEffect: { variant, key: this._slamEffectSequence } });
+    }
+
+    onTestAnimationClick() {
+        const variant = this.state.animationTestVariant;
+        this.playSlamEffect(variant, {
+            animationTestVariant: variant === "military" ? "political" : "military"
+        });
+    }
+
+    onToggleWinEffectsClick() {
+        const winEffectsEnabled = !this.state.winEffectsEnabled;
+        saveWinEffectsPreference(winEffectsEnabled);
+        this.setState({
+            winEffectsEnabled,
+            slamEffect: winEffectsEnabled ? this.state.slamEffect : null
+        });
     }
 
     clearSlamEffect() {
@@ -835,7 +882,7 @@ export class InnerGameBoard extends React.Component {
         let backdrop = this.state.showSettingsModal ? <div className="modal-backdrop fade in" onClick={ () => this.setState({ showSettingsModal: false }) } /> : null;
 
         return (
-            <div className={ `game-board${this.state.slamEffect ? " screen-shake" : ""}` }>
+            <div className={ `game-board${this.state.slamEffect?.variant === "military" ? " screen-shake" : ""}` }>
                 { popup }
                 { backdrop }
                 { this.state.slamEffect ? (
@@ -982,12 +1029,18 @@ export class InnerGameBoard extends React.Component {
                             onToggleChatClick={ this.onToggleChatClick }
                             onShowBotHandClick={ this.onShowBotHandClick }
                             onCaptureStateClick={ this.onCaptureStateClick }
+                            onTestAnimationClick={ this.onTestAnimationClick }
+                            onToggleWinEffectsClick={ this.onToggleWinEffectsClick }
                             showDownloadLog={ !!this.props.currentGame.winner }
                             showChatAlert={ this.state.showChatAlert }
                             manualModeEnabled={ manualMode }
                             showManualMode={ !this.state.spectating }
                             showBotHandButton={ !this.state.spectating && !!otherPlayer?.user?.isBot }
                             botHandRevealed={ !!this.props.currentGame.showBotHand }
+                            showAnimationTest
+                            showWinEffectsToggle
+                            winEffectsEnabled={ this.state.winEffectsEnabled }
+                            animationTestVariant={ this.state.animationTestVariant }
                         />
                     </div>
                 </div>

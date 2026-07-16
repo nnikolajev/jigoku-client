@@ -6,7 +6,7 @@
     "sameSeedOpponents": true,
     "seatsAlternate": true
   },
-  "updatedAt": "2026-07-16T09:31:17.530Z",
+  "updatedAt": "2026-07-16T12:21:44.502Z",
   "seeds": {
     "1": {
       "seed": 1,
@@ -376,82 +376,82 @@
       "seed": 5,
       "label": "omniscient",
       "winRates": {
-        "generatedAt": "2026-07-16T09:08:10.219Z",
+        "generatedAt": "2026-07-16T12:21:44.502Z",
         "gamesPerDeck": 100,
         "challengerSeed": 5,
         "opponent": "Crane",
         "opponentSeed": 5,
         "seatsAlternate": true,
         "totals": {
-          "wins": 503,
-          "losses": 397,
+          "wins": 500,
+          "losses": 400,
           "other": 0,
           "played": 900,
-          "winRate": 0.5588888888888889
+          "winRate": 0.5555555555555556
         },
         "decks": {
           "Scorpion": {
-            "wins": 81,
-            "losses": 19,
+            "wins": 77,
+            "losses": 23,
             "other": 0,
             "played": 100,
-            "winRate": 0.81
-          },
-          "PhoenixShugenja": {
-            "wins": 72,
-            "losses": 28,
-            "other": 0,
-            "played": 100,
-            "winRate": 0.72
+            "winRate": 0.77
           },
           "Unicorn": {
-            "wins": 64,
-            "losses": 36,
+            "wins": 68,
+            "losses": 32,
             "other": 0,
             "played": 100,
-            "winRate": 0.64
+            "winRate": 0.68
           },
-          "Dragon": {
-            "wins": 61,
-            "losses": 39,
+          "PhoenixShugenja": {
+            "wins": 66,
+            "losses": 34,
             "other": 0,
             "played": 100,
-            "winRate": 0.61
+            "winRate": 0.66
           },
           "Phoenix": {
-            "wins": 60,
-            "losses": 40,
+            "wins": 59,
+            "losses": 41,
             "other": 0,
             "played": 100,
-            "winRate": 0.6
+            "winRate": 0.59
+          },
+          "Dragon": {
+            "wins": 57,
+            "losses": 43,
+            "other": 0,
+            "played": 100,
+            "winRate": 0.57
           },
           "Lion": {
-            "wins": 54,
-            "losses": 46,
+            "wins": 49,
+            "losses": 51,
             "other": 0,
             "played": 100,
-            "winRate": 0.54
+            "winRate": 0.49
           },
           "CraneDuels": {
-            "wins": 45,
-            "losses": 55,
+            "wins": 47,
+            "losses": 53,
             "other": 0,
             "played": 100,
-            "winRate": 0.45
+            "winRate": 0.47
           },
           "DragonAttachments": {
-            "wins": 41,
-            "losses": 59,
+            "wins": 47,
+            "losses": 53,
             "other": 0,
             "played": 100,
-            "winRate": 0.41
+            "winRate": 0.47
           },
           "Crab": {
-            "wins": 25,
-            "losses": 75,
+            "wins": 30,
+            "losses": 70,
             "other": 0,
             "played": 100,
-            "winRate": 0.25
+            "winRate": 0.3
           }
         }
       },

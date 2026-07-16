@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
+
+const gameSoundMocks = vi.hoisted(() => ({
+    playCardPlay: vi.fn(),
+    playMilitaryWin: vi.fn(),
+    playPoliticalWin: vi.fn()
+}));
+
+vi.mock("../../client/GameComponents/effects/gameSounds.js", () => gameSoundMocks);
 
 // Mock jQuery and its plugins
 vi.mock("jquery", () => {
@@ -77,7 +85,20 @@ vi.mock("../../client/GameComponents/Chat.jsx", () => ({
 }));
 
 vi.mock("../../client/GameComponents/Controls.jsx", () => ({
-    default: () => <div data-testid="controls">Controls</div>
+    default: ({ onTestAnimationClick, onToggleWinEffectsClick, animationTestVariant, winEffectsEnabled }) => (
+        <div data-testid="controls">
+            Controls
+            <button
+                aria-label={ `Test ${animationTestVariant} win animation` }
+                onClick={ onTestAnimationClick }
+            >Test animation</button>
+            <button
+                aria-label="Conflict win effects"
+                aria-pressed={ winEffectsEnabled }
+                onClick={ onToggleWinEffectsClick }
+            >Toggle effects</button>
+        </div>
+    )
 }));
 
 vi.mock("../../client/GameComponents/CardPile.jsx", () => ({
@@ -97,6 +118,8 @@ describe("the <GameBoard /> component", () => {
     let mockConflict;
 
     beforeEach(() => {
+        vi.clearAllMocks();
+        window.localStorage.removeItem("jigoku.conflictWinEffectsEnabled");
         mockRings = {
             air: { element: "air", removedFromGame: false, attachments: [] },
             earth: { element: "earth", removedFromGame: false, attachments: [] },
@@ -346,6 +369,226 @@ describe("the <GameBoard /> component", () => {
 
         it("should display skill values", () => {
             expect(screen.getByText("5")).toBeInTheDocument();
+        });
+    });
+
+    describe("when a high-skill conflict resolves", () => {
+        function gameWithProvince(conflict, isBroken) {
+            return {
+                ...defaultProps.currentGame,
+                name: "Animation Test",
+                conflict,
+                players: {
+                    TestPlayer: {
+                        ...mockPlayer,
+                        provinces: {
+                            ...mockPlayer.provinces,
+                            one: [{ uuid: "province-1", isProvince: true, isBroken }]
+                        }
+                    }
+                }
+            };
+        }
+
+        it("shows the political fan as soon as the province becomes broken", () => {
+            const conflict = {
+                type: "political",
+                attackerSkill: 6,
+                defenderSkill: 0,
+                declarationComplete: true
+            };
+            const activeGame = {
+                ...defaultProps.currentGame,
+                name: "Animation Test",
+                conflict,
+                players: {
+                    TestPlayer: {
+                        ...mockPlayer,
+                        provinces: {
+                            ...mockPlayer.provinces,
+                            one: [{ uuid: "province-1", isProvince: true, isBroken: false }]
+                        }
+                    }
+                }
+            };
+            const { rerender } = render(
+                <InnerGameBoard { ...defaultProps } currentGame={ activeGame } />
+            );
+
+            rerender(
+                <InnerGameBoard
+                    { ...defaultProps }
+                    currentGame={ {
+                        ...activeGame,
+                        players: {
+                            TestPlayer: {
+                                ...activeGame.players.TestPlayer,
+                                provinces: {
+                                    ...activeGame.players.TestPlayer.provinces,
+                                    one: [{ uuid: "province-1", isProvince: true, isBroken: true }]
+                                }
+                            }
+                        }
+                    } } />
+            );
+
+            expect(document.querySelector(".conflict-slam--political")).toBeInTheDocument();
+            expect(document.querySelector(".conflict-slam__fan")).toBeInTheDocument();
+            expect(document.querySelector(".conflict-slam__wind")).toBeInTheDocument();
+            expect(document.querySelector(".game-board")).not.toHaveClass("screen-shake");
+            expect(gameSoundMocks.playPoliticalWin).toHaveBeenCalledOnce();
+            expect(gameSoundMocks.playMilitaryWin).not.toHaveBeenCalled();
+        });
+
+        it("shows the conflict slam at a 5-skill winning margin", () => {
+            const conflict = {
+                type: "military",
+                attackerSkill: 7,
+                defenderSkill: 2,
+                declarationComplete: true
+            };
+            const activeGame = {
+                ...defaultProps.currentGame,
+                name: "Animation Test",
+                conflict,
+                players: {
+                    TestPlayer: {
+                        ...mockPlayer,
+                        provinces: {
+                            ...mockPlayer.provinces,
+                            one: [{ uuid: "province-1", isProvince: true, isBroken: false }]
+                        }
+                    }
+                }
+            };
+            const { rerender } = render(
+                <InnerGameBoard { ...defaultProps } currentGame={ activeGame } />
+            );
+
+            rerender(
+                <InnerGameBoard
+                    { ...defaultProps }
+                    currentGame={ {
+                        ...activeGame,
+                        players: {
+                            TestPlayer: {
+                                ...activeGame.players.TestPlayer,
+                                provinces: {
+                                    ...activeGame.players.TestPlayer.provinces,
+                                    one: [{ uuid: "province-1", isProvince: true, isBroken: true }]
+                                }
+                            }
+                        }
+                    } } />
+            );
+
+            expect(document.querySelector(".conflict-slam--military")).toBeInTheDocument();
+            expect(document.querySelectorAll(".conflict-slam__slash")).toHaveLength(2);
+            expect(document.querySelector(".conflict-slam__fist")).toBeInTheDocument();
+            expect(document.querySelector(".game-board")).toHaveClass("screen-shake");
+            expect(gameSoundMocks.playMilitaryWin).toHaveBeenCalledOnce();
+            expect(gameSoundMocks.playPoliticalWin).not.toHaveBeenCalled();
+        });
+
+        it("does not show the conflict slam below a 5-skill winning margin", () => {
+            const conflict = {
+                type: "military",
+                attackerSkill: 5,
+                defenderSkill: 2,
+                declarationComplete: true
+            };
+            const activeGame = {
+                ...defaultProps.currentGame,
+                name: "Animation Test",
+                conflict,
+                players: {
+                    TestPlayer: {
+                        ...mockPlayer,
+                        provinces: {
+                            ...mockPlayer.provinces,
+                            one: [{ uuid: "province-1", isProvince: true, isBroken: false }]
+                        }
+                    }
+                }
+            };
+            const { rerender } = render(
+                <InnerGameBoard { ...defaultProps } currentGame={ activeGame } />
+            );
+
+            rerender(
+                <InnerGameBoard
+                    { ...defaultProps }
+                    currentGame={ {
+                        ...activeGame,
+                        players: {
+                            TestPlayer: {
+                                ...activeGame.players.TestPlayer,
+                                provinces: {
+                                    ...activeGame.players.TestPlayer.provinces,
+                                    one: [{ uuid: "province-1", isProvince: true, isBroken: true }]
+                                }
+                            }
+                        }
+                    } } />
+            );
+
+            expect(document.querySelector(".conflict-slam")).not.toBeInTheDocument();
+            expect(gameSoundMocks.playMilitaryWin).not.toHaveBeenCalled();
+            expect(gameSoundMocks.playPoliticalWin).not.toHaveBeenCalled();
+        });
+
+        it("does not play automatic win effects after they are turned off", () => {
+            const conflict = {
+                type: "military",
+                attackerSkill: 7,
+                defenderSkill: 1,
+                declarationComplete: true
+            };
+            const activeGame = gameWithProvince(conflict, false);
+            const { rerender } = render(<InnerGameBoard { ...defaultProps } currentGame={ activeGame } />);
+
+            fireEvent.click(screen.getByRole("button", { name: "Conflict win effects" }));
+            expect(screen.getByRole("button", { name: "Conflict win effects" })).toHaveAttribute("aria-pressed", "false");
+
+            rerender(
+                <InnerGameBoard
+                    { ...defaultProps }
+                    currentGame={ gameWithProvince(conflict, true) } />
+            );
+
+            expect(document.querySelector(".conflict-slam")).not.toBeInTheDocument();
+            expect(gameSoundMocks.playMilitaryWin).not.toHaveBeenCalled();
+            expect(gameSoundMocks.playPoliticalWin).not.toHaveBeenCalled();
+            expect(window.localStorage.getItem("jigoku.conflictWinEffectsEnabled")).toBe("false");
+        });
+    });
+
+    describe("animation test control", () => {
+        it("alternates military and political animations from one button", () => {
+            render(<InnerGameBoard { ...defaultProps } />);
+
+            fireEvent.click(screen.getByRole("button", { name: "Test military win animation" }));
+            expect(document.querySelector(".conflict-slam--military")).toBeInTheDocument();
+            expect(document.querySelector(".conflict-slam__fist")).toBeInTheDocument();
+
+            fireEvent.click(screen.getByRole("button", { name: "Test political win animation" }));
+            expect(document.querySelector(".conflict-slam--political")).toBeInTheDocument();
+            expect(document.querySelector(".conflict-slam__fan")).toBeInTheDocument();
+        });
+
+        it("clears an active animation and remembers when win effects are turned off", () => {
+            const { unmount } = render(<InnerGameBoard { ...defaultProps } />);
+
+            fireEvent.click(screen.getByRole("button", { name: "Test military win animation" }));
+            expect(document.querySelector(".conflict-slam")).toBeInTheDocument();
+
+            fireEvent.click(screen.getByRole("button", { name: "Conflict win effects" }));
+            expect(document.querySelector(".conflict-slam")).not.toBeInTheDocument();
+            expect(window.localStorage.getItem("jigoku.conflictWinEffectsEnabled")).toBe("false");
+
+            unmount();
+            render(<InnerGameBoard { ...defaultProps } />);
+            expect(screen.getByRole("button", { name: "Conflict win effects" })).toHaveAttribute("aria-pressed", "false");
         });
     });
 

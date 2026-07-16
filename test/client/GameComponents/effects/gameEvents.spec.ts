@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
     isCardPlayMessage,
     countCardPlayMessages,
-    detectConflictResolution
+    detectConflictProvinceBreak
 } from "../../../../client/GameComponents/effects/gameEvents.js";
 
 // GameChat.formatMessage on the server splits literal text into single-word
@@ -98,7 +98,7 @@ describe("countCardPlayMessages", () => {
     });
 });
 
-describe("detectConflictResolution", () => {
+describe("detectConflictProvinceBreak", () => {
     const activeConflict = {
         type: "military",
         attackerSkill: 12,
@@ -106,27 +106,61 @@ describe("detectConflictResolution", () => {
         declarationComplete: true
     };
 
-    it("reports a resolution when the conflict disappears", () => {
-        const result = detectConflictResolution({ conflict: activeConflict }, { conflict: null });
-        expect(result).toEqual({ type: "military", winnerSkill: 12 });
+    function gameState(conflict: any, isBroken: boolean) {
+        return {
+            conflict,
+            players: {
+                player1: {
+                    provinces: {
+                        one: [{ uuid: "province-1", isProvince: true, isBroken }]
+                    },
+                    strongholdProvince: []
+                }
+            }
+        };
+    }
+
+    it("reports a break while the conflict remains active", () => {
+        const result = detectConflictProvinceBreak(
+            gameState(activeConflict, false),
+            gameState(activeConflict, true)
+        );
+        expect(result).toEqual({ type: "military", skillDifference: 5 });
     });
 
-    it("uses the defender skill when the defender is higher", () => {
+    it("uses the previous conflict if cleanup happens in the same update", () => {
+        const result = detectConflictProvinceBreak(
+            gameState(activeConflict, false),
+            gameState({}, true)
+        );
+        expect(result).toEqual({ type: "military", skillDifference: 5 });
+    });
+
+    it("calculates the winning margin when defender is higher", () => {
         const conflict = { ...activeConflict, type: "political", attackerSkill: 4, defenderSkill: 11 };
-        const result = detectConflictResolution({ conflict }, {});
-        expect(result).toEqual({ type: "political", winnerSkill: 11 });
+        const result = detectConflictProvinceBreak(gameState(conflict, false), gameState(conflict, true));
+        expect(result).toEqual({ type: "political", skillDifference: 7 });
     });
 
-    it("returns null while the conflict is still active", () => {
-        expect(detectConflictResolution({ conflict: activeConflict }, { conflict: activeConflict })).toBe(null);
+    it("returns null while no province becomes broken", () => {
+        expect(detectConflictProvinceBreak(
+            gameState(activeConflict, false),
+            gameState(activeConflict, false)
+        )).toBe(null);
     });
 
-    it("returns null when there was no conflict", () => {
-        expect(detectConflictResolution({ conflict: null }, { conflict: null })).toBe(null);
+    it("returns null when a province was already broken", () => {
+        expect(detectConflictProvinceBreak(
+            gameState(activeConflict, true),
+            gameState(activeConflict, true)
+        )).toBe(null);
     });
 
     it("returns null when the conflict never completed declaration", () => {
         const undeclared = { ...activeConflict, declarationComplete: false };
-        expect(detectConflictResolution({ conflict: undeclared }, { conflict: null })).toBe(null);
+        expect(detectConflictProvinceBreak(
+            gameState(undeclared, false),
+            gameState(undeclared, true)
+        )).toBe(null);
     });
 });

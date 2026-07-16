@@ -1,27 +1,41 @@
 import { useEffect } from "react";
 
-const EFFECT_DURATION_MS = 1300;
+export type ConflictSlamVariant = "military" | "political";
 
-// Fullscreen flourish shown when a conflict resolves with high skill:
-// a sword slash for military conflicts, a fist punch for political ones.
-function ConflictSlamEffect({ variant, onDone }: { variant: "sword" | "fist"; onDone?: () => void }) {
+const EFFECT_DURATION_MS: Record<ConflictSlamVariant, number> = {
+    military: 1400,
+    political: 2300
+};
+
+// Fullscreen, presentation-only flourish shown when a province breaks by a large margin.
+function ConflictSlamEffect({ variant, onDone }: { variant: ConflictSlamVariant; onDone?: () => void }) {
     useEffect(() => {
-        const timer = setTimeout(() => onDone && onDone(), EFFECT_DURATION_MS);
+        const timer = setTimeout(() => onDone && onDone(), EFFECT_DURATION_MS[variant]);
         return () => clearTimeout(timer);
-    }, [onDone]);
+    }, [onDone, variant]);
 
     return (
-        <div className={ `conflict-slam conflict-slam--${variant}` }>
+        <div className={ `conflict-slam conflict-slam--${variant}` } aria-hidden="true">
             <div className="conflict-slam__flash" />
-            { variant === "sword" ? (
+            { variant === "military" ? (
                 <>
                     <div className="conflict-slam__slash conflict-slam__slash--one" />
                     <div className="conflict-slam__slash conflict-slam__slash--two" />
+                    <div className="conflict-slam__shockwave" />
+                    <div className="conflict-slam__fist">👊</div>
                 </>
             ) : (
                 <>
-                    <div className="conflict-slam__shockwave" />
-                    <div className="conflict-slam__fist">👊</div>
+                    <div className="conflict-slam__wind">
+                        { Array.from({ length: 6 }, (_, index) => <span key={ index } />) }
+                    </div>
+                    <div className="conflict-slam__fan">
+                        <div className="conflict-slam__fan-leaf" />
+                        <div className="conflict-slam__fan-ribs" />
+                        <div className="conflict-slam__fan-guard conflict-slam__fan-guard--left" />
+                        <div className="conflict-slam__fan-guard conflict-slam__fan-guard--right" />
+                        <div className="conflict-slam__fan-pivot" />
+                    </div>
                 </>
             ) }
         </div>
