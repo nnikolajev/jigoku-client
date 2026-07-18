@@ -156,9 +156,6 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
 
     const handleBotOpponentClick = (event) => {
         setBotOpponent(event.target.checked);
-        if(event.target.checked) {
-            setSelectedGameMode(GameModes.Stronghold);
-        }
     };
 
     const handleSubmitClick = (event) => {
@@ -196,6 +193,9 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
 
     const handleRulesRadioChange = (gameMode) => {
         setSelectedGameMode(gameMode);
+        if(gameMode !== GameModes.Stronghold) {
+            setBotOpponent(false);
+        }
     };
 
     const handleClockRadioChange = (clockType) => {
@@ -312,8 +312,13 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                         </div>
                         <div className="checkbox col-sm-8">
                             <label>
-                                <input type="checkbox" onChange={ handleBotOpponentClick } checked={ botOpponent } />
-                                Human vs AI
+                                <input
+                                    type="checkbox"
+                                    onChange={ handleBotOpponentClick }
+                                    checked={ botOpponent }
+                                    disabled={ selectedGameMode !== GameModes.Stronghold }
+                                />
+                                Human vs AI (only imperial)
                             </label>
                         </div>
                     </div>
@@ -341,21 +346,6 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                         value={ botDeckId }
                                     />
                                 ) }
-                                <label htmlFor="botDeckLink">Bot deck link</label>
-                                <div className="input-group">
-                                    <input
-                                        id="botDeckLink"
-                                        className="form-control"
-                                        type="text"
-                                        readOnly
-                                        value={ botDeckLink }
-                                    />
-                                    { isBotDeckLink && (
-                                        <span className="input-group-btn">
-                                            <a className="btn btn-default" href={ botDeckLink } target="_blank" rel="noreferrer">Open deck</a>
-                                        </span>
-                                    ) }
-                                </div>
                                 <label htmlFor="botType">Bot type</label>
                                 <select
                                     id="botType"
@@ -395,6 +385,11 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                         ) }
                                     </small>
                                 </div>
+                                { isBotDeckLink && (
+                                    <div>
+                                        <a href={ botDeckLink } target="_blank" rel="noreferrer">{ botDeckLink }</a>
+                                    </div>
+                                ) }
                             </div>
                         </div>
                     ) }

@@ -4,6 +4,11 @@ import React from "react";
 import { getBotBenchmark, InnerNewGame, pretrainedBotDecks } from "../../client/NewGame";
 
 describe("the <InnerNewGame /> bot deck selector", () => {
+    const enableBotOpponent = () => {
+        fireEvent.click(screen.getByRole("radio", { name: "Imperial" }));
+        fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI (only imperial)" }));
+    };
+
     it("ignores benchmark sections recorded for a retired baseline suite", () => {
         const benchmark = getBotBenchmark({
             seeds: { "1": { winRates: { decks: { Crane: { wins: 99 } } } } }
@@ -22,7 +27,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
             />
         );
 
-        fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI" }));
+        enableBotOpponent();
 
         const botDeckSelect = screen.getByLabelText("Bot deck");
         expect(within(botDeckSelect).getByRole("option", { name: "Crane Baseline" })).toHaveValue(
@@ -50,7 +55,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
             />
         );
 
-        fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI" }));
+        enableBotOpponent();
         const botDeckSelect = screen.getByLabelText("Bot deck");
 
         pretrainedBotDecks.forEach((deck, index) => {
@@ -76,7 +81,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
             />
         );
 
-        fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI" }));
+        enableBotOpponent();
         const botType = screen.getByLabelText("Bot type");
         expect(within(botType).getByRole("option", { name: "mixed" })).toHaveValue("1");
         expect(within(botType).getByRole("option", { name: "dynasty focused" })).toHaveValue("2");
@@ -99,10 +104,9 @@ describe("the <InnerNewGame /> bot deck selector", () => {
             />
         );
 
-        fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI" }));
+        enableBotOpponent();
 
-        expect(screen.getByLabelText("Bot deck link")).toHaveValue(pretrainedBotDecks[0].url);
-        expect(screen.getByRole("link", { name: "Open deck" })).toHaveAttribute("href", pretrainedBotDecks[0].url);
+        expect(screen.getByRole("link", { name: pretrainedBotDecks[0].url })).toHaveAttribute("href", pretrainedBotDecks[0].url);
 
         fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "2" } });
         expect(screen.getByText(/Focuses on dynasty purchases/)).toBeInTheDocument();
@@ -156,7 +160,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
             />
         );
 
-        fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI" }));
+        enableBotOpponent();
         fireEvent.change(screen.getByLabelText("Bot deck"), {
             target: { value: "https://www.emeralddb.org/decks/52b78858-fce5-431a-a3e5-be4f2a921ed9" }
         });
@@ -182,5 +186,34 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
             "No standardized 100-game benchmark recorded for this seed."
         );
+    });
+
+    it("only enables Human vs AI for Imperial games", () => {
+        const emit = vi.fn();
+        render(
+            <InnerNewGame
+                cancelNewGame={ vi.fn() }
+                defaultGameName="Bot test"
+                loadDecks={ vi.fn() }
+                socket={ { emit } }
+            />
+        );
+
+        const botCheckbox = screen.getByRole("checkbox", { name: "Human vs AI (only imperial)" });
+        expect(botCheckbox).toBeDisabled();
+
+        fireEvent.click(screen.getByRole("radio", { name: "Imperial" }));
+        expect(botCheckbox).toBeEnabled();
+        fireEvent.click(botCheckbox);
+        expect(botCheckbox).toBeChecked();
+
+        fireEvent.click(screen.getByRole("radio", { name: "Emerald" }));
+        expect(botCheckbox).toBeDisabled();
+        expect(botCheckbox).not.toBeChecked();
+
+        fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+        expect(emit).toHaveBeenCalledWith("newgame", expect.objectContaining({
+            bot: expect.objectContaining({ enabled: false })
+        }));
     });
 });
