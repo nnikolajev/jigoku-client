@@ -1,9 +1,17 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import React from "react";
-import { InnerNewGame, pretrainedBotDecks } from "../../client/NewGame";
+import { getBotBenchmark, InnerNewGame, pretrainedBotDecks } from "../../client/NewGame";
 
 describe("the <InnerNewGame /> bot deck selector", () => {
+    it("ignores benchmark sections recorded for a retired baseline suite", () => {
+        const benchmark = getBotBenchmark({
+            seeds: { "1": { winRates: { decks: { Crane: { wins: 99 } } } } }
+        }, 1, "Crane");
+
+        expect(benchmark.winRates).toBeUndefined();
+    });
+
     it("lists every benchmarked bot deck with one option per deck", () => {
         render(
             <InnerNewGame
@@ -17,15 +25,18 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI" }));
 
         const botDeckSelect = screen.getByLabelText("Bot deck");
+        expect(within(botDeckSelect).getByRole("option", { name: "Crane Baseline" })).toHaveValue(
+            "https://www.emeralddb.org/decks/4736f7c0-b4a6-4f17-9dde-b71614115c69"
+        );
         expect(within(botDeckSelect).getByRole("option", { name: "Phoenix Shugenja" })).toHaveValue(
             "https://www.emeralddb.org/decks/b260d778-0016-4d70-b1f9-5180daf340fc"
         );
         expect(within(botDeckSelect).getByRole("option", { name: "Dragon Attachments" })).toHaveValue(
             "https://www.emeralddb.org/decks/46aaa220-2cf9-463b-bdf3-3019572432ff"
         );
-        expect(pretrainedBotDecks).toHaveLength(9);
-        expect(new Set(pretrainedBotDecks.map((deck) => deck.benchmarkDeck)).size).toBe(9);
-        expect(new Set(pretrainedBotDecks.map((deck) => deck.url)).size).toBe(9);
+        expect(pretrainedBotDecks).toHaveLength(10);
+        expect(new Set(pretrainedBotDecks.map((deck) => deck.benchmarkDeck)).size).toBe(10);
+        expect(new Set(pretrainedBotDecks.map((deck) => deck.url)).size).toBe(10);
     });
 
     it("submits every pretrained bot deck, including the unchanged first option", () => {
@@ -54,7 +65,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         });
     });
 
-    it("offers fate-aware seed 1 by default and submits it to the lobby", () => {
+    it("offers the three bot types and submits mixed seed 1 by default", () => {
         const emit = vi.fn();
         render(
             <InnerNewGame
@@ -66,12 +77,11 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         );
 
         fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI" }));
-        const difficulty = screen.getByLabelText("Bot difficulty");
-        expect(within(difficulty).getByRole("option", { name: "Fate-aware heuristic (default)" })).toHaveValue("1");
-        expect(within(difficulty).getByRole("option", { name: "Old heuristic" })).toHaveValue("2");
-        expect(within(difficulty).queryByRole("option", { name: "LLM-driven (experimental)" })).not.toBeInTheDocument();
-        expect(within(difficulty).queryByRole("option", { name: "Self-play ML (experimental)" })).not.toBeInTheDocument();
-        expect(within(difficulty).getByRole("option", { name: "Omniscient (cheating — hardest)" })).toHaveValue("5");
+        const botType = screen.getByLabelText("Bot type");
+        expect(within(botType).getByRole("option", { name: "mixed" })).toHaveValue("1");
+        expect(within(botType).getByRole("option", { name: "dynasty focused" })).toHaveValue("2");
+        expect(within(botType).getByRole("option", { name: "omniscient (sees hidden cards)" })).toHaveValue("5");
+        expect(screen.getByText(/Balances dynasty development/)).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: "Submit" }));
 
         expect(emit).toHaveBeenCalledWith("newgame", expect.objectContaining({
@@ -79,11 +89,34 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         }));
     });
 
+    it("updates bot focus text and exposes the selected deck link", () => {
+        render(
+            <InnerNewGame
+                cancelNewGame={ vi.fn() }
+                defaultGameName="Bot test"
+                loadDecks={ vi.fn() }
+                socket={ { emit: vi.fn() } }
+            />
+        );
+
+        fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI" }));
+
+        expect(screen.getByLabelText("Bot deck link")).toHaveValue(pretrainedBotDecks[0].url);
+        expect(screen.getByRole("link", { name: "Open deck" })).toHaveAttribute("href", pretrainedBotDecks[0].url);
+
+        fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "2" } });
+        expect(screen.getByText(/Focuses on dynasty purchases/)).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "5" } });
+        expect(screen.getByText(/hidden information from your hand/)).toBeInTheDocument();
+    });
+
     it("shows generated Crane and round-robin results for the selected deck and seed", () => {
         const benchmarkResults = {
             seeds: {
                 "1": {
                     winRates: {
+                        suiteId: "crane-baseline-4736f7c0",
                         gamesPerDeck: 100,
                         decks: {
                             Unicorn: { wins: 68, losses: 31, other: 1, winRate: 0.68 },
@@ -91,6 +124,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
                         }
                     },
                     roundRobin: {
+                        suiteId: "crane-baseline-4736f7c0",
                         gamesPerMatchup: 100,
                         decks: {
                             Unicorn: {
@@ -123,9 +157,12 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         );
 
         fireEvent.click(screen.getByRole("checkbox", { name: "Human vs AI" }));
+        fireEvent.change(screen.getByLabelText("Bot deck"), {
+            target: { value: "https://www.emeralddb.org/decks/52b78858-fce5-431a-a3e5-be4f2a921ed9" }
+        });
 
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
-            "Vs Crane: 68.0% (68-31, N=100)."
+            "Vs Crane Baseline: 68.0% (68-31, N=100)."
         );
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
             "Round robin: 53.4% average vs opponents, 53.4% overall (480-419, N=100/matchup)."
@@ -135,13 +172,13 @@ describe("the <InnerNewGame /> bot deck selector", () => {
             target: { value: "https://www.emeralddb.org/decks/b260d778-0016-4d70-b1f9-5180daf340fc" }
         });
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
-            "Vs Crane: 72.0% (72-28, N=100)."
+            "Vs Crane Baseline: 72.0% (72-28, N=100)."
         );
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
             "Round robin: 59.6% average vs opponents, 59.6% overall (536-364, N=100/matchup)."
         );
 
-        fireEvent.change(screen.getByLabelText("Bot difficulty"), { target: { value: "2" } });
+        fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "2" } });
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
             "No standardized 100-game benchmark recorded for this seed."
         );

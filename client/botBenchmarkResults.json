@@ -1,44 +1,46 @@
 {
-  "version": 1,
+  "version": 2,
   "standard": {
+    "suiteId": "crane-baseline-4736f7c0",
     "gamesPerDeck": 100,
     "gamesPerMatchup": 100,
     "sameSeedOpponents": true,
     "seatsAlternate": true
   },
-  "updatedAt": "2026-07-17T19:32:17.008Z",
+  "updatedAt": "2026-07-18T02:04:28.467Z",
   "seeds": {
     "1": {
       "seed": 1,
       "label": "fate-aware",
       "winRates": {
-        "generatedAt": "2026-07-17T19:21:20.292Z",
+        "suiteId": "crane-baseline-4736f7c0",
+        "generatedAt": "2026-07-18T01:51:05.814Z",
         "gamesPerDeck": 100,
         "challengerSeed": 1,
         "opponent": "Crane",
         "opponentSeed": 1,
         "seatsAlternate": true,
         "totals": {
-          "wins": 495,
-          "losses": 405,
+          "wins": 446,
+          "losses": 454,
           "other": 0,
           "played": 900,
-          "winRate": 0.55
+          "winRate": 0.4955555555555556
         },
         "decks": {
           "Scorpion": {
-            "wins": 87,
-            "losses": 13,
+            "wins": 92,
+            "losses": 8,
             "other": 0,
             "played": 100,
-            "winRate": 0.87
+            "winRate": 0.92
           },
-          "Dragon": {
-            "wins": 63,
-            "losses": 37,
+          "PhoenixShugenja": {
+            "wins": 65,
+            "losses": 35,
             "other": 0,
             "played": 100,
-            "winRate": 0.63
+            "winRate": 0.65
           },
           "DragonAttachments": {
             "wins": 60,
@@ -47,26 +49,12 @@
             "played": 100,
             "winRate": 0.6
           },
-          "Phoenix": {
-            "wins": 60,
-            "losses": 40,
+          "Dragon": {
+            "wins": 59,
+            "losses": 41,
             "other": 0,
             "played": 100,
-            "winRate": 0.6
-          },
-          "PhoenixShugenja": {
-            "wins": 58,
-            "losses": 42,
-            "other": 0,
-            "played": 100,
-            "winRate": 0.58
-          },
-          "Unicorn": {
-            "wins": 46,
-            "losses": 54,
-            "other": 0,
-            "played": 100,
-            "winRate": 0.46
+            "winRate": 0.59
           },
           "Lion": {
             "wins": 45,
@@ -75,92 +63,107 @@
             "played": 100,
             "winRate": 0.45
           },
-          "CraneDuels": {
-            "wins": 40,
-            "losses": 60,
+          "Phoenix": {
+            "wins": 44,
+            "losses": 56,
             "other": 0,
             "played": 100,
-            "winRate": 0.4
+            "winRate": 0.44
+          },
+          "Unicorn": {
+            "wins": 32,
+            "losses": 68,
+            "other": 0,
+            "played": 100,
+            "winRate": 0.32
+          },
+          "CraneDuels": {
+            "wins": 28,
+            "losses": 72,
+            "other": 0,
+            "played": 100,
+            "winRate": 0.28
           },
           "Crab": {
-            "wins": 36,
-            "losses": 64,
+            "wins": 21,
+            "losses": 79,
             "other": 0,
             "played": 100,
-            "winRate": 0.36
+            "winRate": 0.21
           }
         }
       },
       "roundRobin": {
-        "generatedAt": "2026-07-17T19:32:17.008Z",
+        "suiteId": "crane-baseline-4736f7c0",
+        "generatedAt": "2026-07-18T02:04:28.467Z",
         "gamesPerMatchup": 100,
         "botSeed": 1,
         "seatsAlternate": true,
         "decks": {
           "Scorpion": {
-            "wins": 739,
-            "losses": 161,
+            "wins": 713,
+            "losses": 187,
             "other": 0,
             "played": 900,
-            "overallWinRate": 0.8211111111111111,
-            "averageOpponentWinRate": 0.8211111111111111,
+            "overallWinRate": 0.7922222222222223,
+            "averageOpponentWinRate": 0.7922222222222222,
             "opponentsCompleted": 9
           },
           "Lion": {
-            "wins": 528,
-            "losses": 372,
+            "wins": 533,
+            "losses": 367,
             "other": 0,
             "played": 900,
-            "overallWinRate": 0.5866666666666667,
-            "averageOpponentWinRate": 0.5866666666666666,
-            "opponentsCompleted": 9
-          },
-          "Phoenix": {
-            "wins": 509,
-            "losses": 391,
-            "other": 0,
-            "played": 900,
-            "overallWinRate": 0.5655555555555556,
-            "averageOpponentWinRate": 0.5655555555555556,
-            "opponentsCompleted": 9
-          },
-          "PhoenixShugenja": {
-            "wins": 466,
-            "losses": 434,
-            "other": 0,
-            "played": 900,
-            "overallWinRate": 0.5177777777777778,
-            "averageOpponentWinRate": 0.5177777777777778,
-            "opponentsCompleted": 9
-          },
-          "Dragon": {
-            "wins": 442,
-            "losses": 458,
-            "other": 0,
-            "played": 900,
-            "overallWinRate": 0.4911111111111111,
-            "averageOpponentWinRate": 0.4911111111111111,
+            "overallWinRate": 0.5922222222222222,
+            "averageOpponentWinRate": 0.5922222222222222,
             "opponentsCompleted": 9
           },
           "Crane": {
-            "wins": 405,
-            "losses": 495,
+            "wins": 506,
+            "losses": 394,
             "other": 0,
             "played": 900,
-            "overallWinRate": 0.45,
-            "averageOpponentWinRate": 0.45000000000000007,
+            "overallWinRate": 0.5622222222222222,
+            "averageOpponentWinRate": 0.5622222222222222,
             "opponentsCompleted": 9
           },
-          "CraneDuels": {
-            "wins": 394,
-            "losses": 506,
+          "Phoenix": {
+            "wins": 491,
+            "losses": 409,
             "other": 0,
             "played": 900,
-            "overallWinRate": 0.43777777777777777,
-            "averageOpponentWinRate": 0.4377777777777778,
+            "overallWinRate": 0.5455555555555556,
+            "averageOpponentWinRate": 0.5455555555555556,
+            "opponentsCompleted": 9
+          },
+          "PhoenixShugenja": {
+            "wins": 461,
+            "losses": 439,
+            "other": 0,
+            "played": 900,
+            "overallWinRate": 0.5122222222222222,
+            "averageOpponentWinRate": 0.5122222222222222,
             "opponentsCompleted": 9
           },
           "Unicorn": {
+            "wins": 412,
+            "losses": 488,
+            "other": 0,
+            "played": 900,
+            "overallWinRate": 0.4577777777777778,
+            "averageOpponentWinRate": 0.4577777777777778,
+            "opponentsCompleted": 9
+          },
+          "CraneDuels": {
+            "wins": 387,
+            "losses": 513,
+            "other": 0,
+            "played": 900,
+            "overallWinRate": 0.43,
+            "averageOpponentWinRate": 0.43,
+            "opponentsCompleted": 9
+          },
+          "Dragon": {
             "wins": 379,
             "losses": 521,
             "other": 0,
@@ -170,21 +173,21 @@
             "opponentsCompleted": 9
           },
           "DragonAttachments": {
-            "wins": 373,
-            "losses": 527,
+            "wins": 358,
+            "losses": 542,
             "other": 0,
             "played": 900,
-            "overallWinRate": 0.41444444444444445,
-            "averageOpponentWinRate": 0.41444444444444456,
+            "overallWinRate": 0.3977777777777778,
+            "averageOpponentWinRate": 0.3977777777777778,
             "opponentsCompleted": 9
           },
           "Crab": {
-            "wins": 265,
-            "losses": 635,
+            "wins": 260,
+            "losses": 640,
             "other": 0,
             "played": 900,
-            "overallWinRate": 0.29444444444444445,
-            "averageOpponentWinRate": 0.29444444444444445,
+            "overallWinRate": 0.28888888888888886,
+            "averageOpponentWinRate": 0.2888888888888889,
             "opponentsCompleted": 9
           }
         }

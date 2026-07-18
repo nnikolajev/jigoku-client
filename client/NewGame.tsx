@@ -5,6 +5,10 @@ import botBenchmarkResults from "./botBenchmarkResults.json";
 
 import * as actions from "./actions";
 
+// Must match tools/selfplay/standardBenchmark.js. A new baseline deck makes
+// old standardized results incomparable, so unmatched sections stay hidden.
+export const standardBenchmarkSuite = "crane-baseline-4736f7c0";
+
 const defaultTime = {
     timer: "60",
     chess: "40",
@@ -16,6 +20,11 @@ const defaultTime = {
 // accepts either an EmeraldDB URL or a local deck id, so the dropdown just
 // fills the same field a custom URL would.
 export const pretrainedBotDecks = [
+    {
+        label: "Crane Baseline",
+        url: "https://www.emeralddb.org/decks/4736f7c0-b4a6-4f17-9dde-b71614115c69",
+        benchmarkDeck: "Crane"
+    },
     {
         label: "[Precon15] Unicorn Military Rush (Temple)",
         url: "https://www.emeralddb.org/decks/52b78858-fce5-431a-a3e5-be4f2a921ed9",
@@ -64,46 +73,38 @@ export const pretrainedBotDecks = [
 ];
 const customBotDeck = "custom";
 
-// Bot difficulty seeds. The `value` is passed straight to the server as the bot
-// `seed` (1 = default fate-aware heuristic). Keep in sync with jigoku
-// JigokuBotController seed handling.
+// Player-facing bot types. Values pass straight to JigokuBotController.
 const botSeedOptions = [
     {
         value: "1",
-        label: "Fate-aware heuristic (default)",
-        desc: "Preserves fate, invests in durable expensive characters, builds a wider board after round 2, and prioritizes rings holding fate."
+        label: "mixed",
+        desc: "Balances dynasty development, fate efficiency, conflicts, ring value, and deck-specific tactics."
     },
     {
         value: "2",
-        label: "Old heuristic",
-        desc: "Previous hand-written strategy, retained for comparisons. It spends fate more aggressively during dynasty."
-    },
-    {
-        value: "3",
-        label: "LLM-driven (experimental)",
-        desc: "A local LLM (LM Studio) picks every action. Slow and only as good as the model; experimental."
-    },
-    {
-        value: "4",
-        label: "Self-play ML (experimental)",
-        desc: "Learned evaluator trained by self-play. Not competitive — kept for research; do not expect a strong game."
+        label: "dynasty focused",
+        desc: "Focuses on dynasty purchases and building a wide board, spending fate more aggressively before conflicts."
     },
     {
         value: "5",
-        label: "Omniscient (cheating — hardest)",
-        desc: "Sees your hand and face-down provinces. Attacks your weakest province, presses when you cannot fight back, and holds when it cannot win. Requires the bot deck to be analyzed first."
+        label: "omniscient (sees hidden cards)",
+        desc: "Uses hidden information from your hand and face-down provinces to choose attacks, defenses, and conflict actions."
     }
 ];
-const hiddenBotSeeds = new Set(["3", "4"]);
-
 export function getBotBenchmark(results, seed, benchmarkDeck) {
     const seedResult = results?.seeds?.[String(seed)];
+    const winRates = seedResult?.winRates?.suiteId === standardBenchmarkSuite
+        ? seedResult.winRates
+        : undefined;
+    const roundRobin = seedResult?.roundRobin?.suiteId === standardBenchmarkSuite
+        ? seedResult.roundRobin
+        : undefined;
     return {
         seedLabel: seedResult?.label,
-        winRates: seedResult?.winRates?.decks?.[benchmarkDeck],
-        winRateGames: seedResult?.winRates?.gamesPerDeck,
-        roundRobin: seedResult?.roundRobin?.decks?.[benchmarkDeck],
-        roundRobinGames: seedResult?.roundRobin?.gamesPerMatchup
+        winRates: winRates?.decks?.[benchmarkDeck],
+        winRateGames: winRates?.gamesPerDeck,
+        roundRobin: roundRobin?.decks?.[benchmarkDeck],
+        roundRobinGames: roundRobin?.gamesPerMatchup
     };
 }
 
@@ -262,6 +263,8 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
 
     const charsLeft = 140 - gameName.length;
     const selectedBotDeck = pretrainedBotDecks.find((deck) => deck.url === botDeckChoice);
+    const botDeckLink = botDeckChoice === customBotDeck ? botDeckId.trim() : selectedBotDeck?.url || "";
+    const isBotDeckLink = /^https?:\/\//i.test(botDeckLink);
     const benchmark = selectedBotDeck
         ? getBotBenchmark(benchmarkResults, botSeed, selectedBotDeck.benchmarkDeck)
         : null;
@@ -338,18 +341,33 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                         value={ botDeckId }
                                     />
                                 ) }
-                                <label htmlFor="botDifficulty">Bot difficulty</label>
+                                <label htmlFor="botDeckLink">Bot deck link</label>
+                                <div className="input-group">
+                                    <input
+                                        id="botDeckLink"
+                                        className="form-control"
+                                        type="text"
+                                        readOnly
+                                        value={ botDeckLink }
+                                    />
+                                    { isBotDeckLink && (
+                                        <span className="input-group-btn">
+                                            <a className="btn btn-default" href={ botDeckLink } target="_blank" rel="noreferrer">Open deck</a>
+                                        </span>
+                                    ) }
+                                </div>
+                                <label htmlFor="botType">Bot type</label>
                                 <select
-                                    id="botDifficulty"
+                                    id="botType"
                                     className="form-control"
                                     onChange={ (event) => setBotSeed(event.target.value) }
                                     value={ botSeed }
                                 >
-                                    { botSeedOptions.filter((opt) => !hiddenBotSeeds.has(opt.value)).map((opt) => (
+                                    { botSeedOptions.map((opt) => (
                                         <option key={ opt.value || "default" } value={ opt.value }>{ opt.label }</option>
                                     )) }
                                 </select>
-                                <small className="text-muted">
+                                <small className="text-muted" aria-live="polite">
                                     { (botSeedOptions.find((opt) => opt.value === botSeed) || botSeedOptions[0]).desc }
                                 </small>
                                 <div aria-label="Standard bot benchmark">
@@ -365,8 +383,8 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                                     </>
                                                 ) }
                                                 { benchmark.winRates
-                                                    ? `Vs Crane: ${percentage(benchmark.winRates.winRate)} (${benchmark.winRates.wins}-${benchmark.winRates.losses}, N=${benchmark.winRateGames}).`
-                                                    : "Vs Crane: not recorded." }
+                                                    ? `Vs Crane Baseline: ${percentage(benchmark.winRates.winRate)} (${benchmark.winRates.wins}-${benchmark.winRates.losses}, N=${benchmark.winRateGames}).`
+                                                    : "Vs Crane Baseline: not recorded." }
                                                 <br />
                                                 { benchmark.roundRobin
                                                     ? `Round robin: ${percentage(benchmark.roundRobin.averageOpponentWinRate)} average vs opponents, ${percentage(benchmark.roundRobin.overallWinRate)} overall (${benchmark.roundRobin.wins}-${benchmark.roundRobin.losses}, N=${benchmark.roundRobinGames}/matchup).`

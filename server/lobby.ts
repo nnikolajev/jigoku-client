@@ -13,9 +13,9 @@ const validateDeck = require("../client/deck-validator").default;
 const Settings = require("./settings.js");
 const GetShadowlandsSummonables = require("./shadowLandsHelper.js");
 
-// Unicorn cavalry precon — the bot's playbook (jigoku CardPlaybook.ts) is
-// curated for this deck.
-const DEFAULT_BOT_DECKLIST_URL = "https://www.emeralddb.org/api/decklists/52b78858-fce5-431a-a3e5-be4f2a921ed9";
+// Public Crane Baseline used by standardized bot benchmarks and as the default
+// playable bot deck. The per-deck tactics live in Jigoku's bot profile layer.
+const DEFAULT_BOT_DECKLIST_URL = "https://www.emeralddb.org/api/decklists/4736f7c0-b4a6-4f17-9dde-b71614115c69";
 const ONE_MINUTE = 60 * 1000;
 const FIVE_MINUTES = 5 * ONE_MINUTE;
 const ONE_HOUR = 60 * ONE_MINUTE;
