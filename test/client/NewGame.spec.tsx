@@ -129,7 +129,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
                     },
                     roundRobin: {
                         suiteId: "crane-baseline-4736f7c0",
-                        gamesPerMatchup: 100,
+                        gamesPerMatchup: 40,
                         decks: {
                             Unicorn: {
                                 wins: 480,
@@ -169,7 +169,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
             "Vs Crane Baseline: 68.0% (68-31, N=100)."
         );
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
-            "Round robin: 53.4% average vs opponents, 53.4% overall (480-419, N=100/matchup)."
+            "Round robin: 53.4% average vs opponents, 53.4% overall (480-419, N=40/matchup)."
         );
 
         fireEvent.change(screen.getByLabelText("Bot deck"), {
@@ -179,12 +179,12 @@ describe("the <InnerNewGame /> bot deck selector", () => {
             "Vs Crane Baseline: 72.0% (72-28, N=100)."
         );
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
-            "Round robin: 59.6% average vs opponents, 59.6% overall (536-364, N=100/matchup)."
+            "Round robin: 59.6% average vs opponents, 59.6% overall (536-364, N=40/matchup)."
         );
 
         fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "2" } });
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
-            "No standardized 100-game benchmark recorded for this seed."
+            "No standardized benchmark recorded for this seed."
         );
     });
 

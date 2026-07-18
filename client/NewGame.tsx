@@ -381,7 +381,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                                     : "Round robin: not recorded." }
                                             </>
                                         ) : (
-                                            "No standardized 100-game benchmark recorded for this seed."
+                                            "No standardized benchmark recorded for this seed."
                                         ) }
                                     </small>
                                 </div>
