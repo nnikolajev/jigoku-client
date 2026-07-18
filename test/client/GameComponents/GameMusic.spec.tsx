@@ -49,13 +49,31 @@ describe("the <GameMusic /> component", () => {
         await waitFor(() => expect(audio.getAttribute("src")).toBe("/two.mp3"));
     });
 
-    it("mutes only its audio element and persists volume", () => {
+    it("pauses and resumes music instead of muting audio", async () => {
         const { container } = render(<GameMusic active tracks={ ["/one.mp3"] } random={ () => 0 } />);
         const audio = container.querySelector("audio");
 
-        fireEvent.click(screen.getByRole("button", { name: "Mute game music" }));
-        expect(audio.muted).toBe(true);
+        Object.defineProperty(audio, "readyState", { configurable: true, value: HTMLMediaElement.HAVE_METADATA });
+        fireEvent.loadedMetadata(audio);
+        await waitFor(() => expect(playMock).toHaveBeenCalled());
+        playMock.mockClear();
+
+        fireEvent.click(screen.getByRole("button", { name: "Pause game music" }));
+        expect(pauseMock).toHaveBeenCalled();
+        expect(audio.muted).toBe(false);
         expect(window.localStorage.getItem(MUSIC_MUTED_STORAGE_KEY)).toBe("true");
+
+        fireEvent.pointerDown(document);
+        expect(playMock).not.toHaveBeenCalled();
+
+        fireEvent.click(screen.getByRole("button", { name: "Resume game music" }));
+        await waitFor(() => expect(playMock).toHaveBeenCalled());
+        expect(window.localStorage.getItem(MUSIC_MUTED_STORAGE_KEY)).toBe("false");
+    });
+
+    it("persists music volume", () => {
+        const { container } = render(<GameMusic active tracks={ ["/one.mp3"] } random={ () => 0 } />);
+        const audio = container.querySelector("audio");
 
         fireEvent.change(screen.getByRole("slider", { name: "Game music volume" }), { target: { value: "25" } });
         expect(audio.volume).toBe(0.25);

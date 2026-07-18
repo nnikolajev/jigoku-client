@@ -83,7 +83,7 @@ function GameMusic({
 
     const attemptPlay = useCallback(() => {
         const audio = audioRef.current;
-        if(!active || unavailable || !audio) {
+        if(!active || muted || unavailable || !audio) {
             return;
         }
 
@@ -93,7 +93,7 @@ function GameMusic({
             // Browsers can block autoplay. First pointer or keyboard action retries playback.
             playStartedRef.current = false;
         });
-    }, [active, unavailable]);
+    }, [active, muted, unavailable]);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -101,9 +101,8 @@ function GameMusic({
             return;
         }
 
-        audio.muted = muted;
         audio.volume = volume;
-    }, [muted, volume]);
+    }, [volume]);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -111,13 +110,13 @@ function GameMusic({
             return;
         }
 
-        if(!active) {
+        if(!active || muted) {
             audio.pause();
             playStartedRef.current = false;
         } else if(audio.readyState >= HTMLMediaElement.HAVE_METADATA) {
             attemptPlay();
         }
-    }, [active, attemptPlay]);
+    }, [active, attemptPlay, muted]);
 
     useEffect(() => {
         const resumeMusic = () => {
@@ -194,9 +193,6 @@ function GameMusic({
         const nextMuted = !muted;
         setMuted(nextMuted);
         savePreference(MUSIC_MUTED_STORAGE_KEY, String(nextMuted));
-        if(!nextMuted) {
-            attemptPlay();
-        }
     };
 
     const changeVolume = (event) => {
@@ -205,7 +201,7 @@ function GameMusic({
         savePreference(MUSIC_VOLUME_STORAGE_KEY, String(nextVolume));
     };
 
-    const buttonLabel = unavailable ? "Game music unavailable" : muted ? "Unmute game music" : "Mute game music";
+    const buttonLabel = unavailable ? "Game music unavailable" : muted ? "Resume game music" : "Pause game music";
 
     return (
         <div className="music-control">
@@ -219,7 +215,7 @@ function GameMusic({
                 onClick={ toggleMuted }
             >
                 { muted ? <VolumeX size={ 16 } /> : <Volume2 size={ 16 } /> }
-                { compact ? "" : ` Music ${muted ? "Muted" : "On"}` }
+                { compact ? "" : ` Music ${muted ? "Paused" : "On"}` }
             </button>
             <div className="music-volume-popover" role="group" aria-label="Game music volume controls">
                 <Volume2 size={ 16 } aria-hidden="true" />
