@@ -85,7 +85,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         const botType = screen.getByLabelText("Bot type");
         expect(within(botType).getByRole("option", { name: "mixed" })).toHaveValue("1");
         expect(within(botType).getByRole("option", { name: "dynasty focused" })).toHaveValue("2");
-        expect(within(botType).getByRole("option", { name: "omniscient (sees hidden cards)" })).toHaveValue("5");
+        expect(within(botType).getByRole("option", { name: "omniscient (sees hidden cards)" })).toHaveValue("3");
         expect(screen.getByText(/Balances dynasty development/)).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: "Submit" }));
 
@@ -111,8 +111,8 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "2" } });
         expect(screen.getByText(/Focuses on dynasty purchases/)).toBeInTheDocument();
 
-        fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "5" } });
-        expect(screen.getByText(/hidden information from your hand/)).toBeInTheDocument();
+        fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "3" } });
+        expect(screen.getByText(/hidden information from your hand and face-down provinces, plus adaptive opening/)).toBeInTheDocument();
     });
 
     it("shows generated Crane and round-robin results for the selected deck and seed", () => {

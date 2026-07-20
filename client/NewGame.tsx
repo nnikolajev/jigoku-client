@@ -86,9 +86,9 @@ const botSeedOptions = [
         desc: "Focuses on dynasty purchases and building a wide board, spending fate more aggressively before conflicts."
     },
     {
-        value: "5",
+        value: "3",
         label: "omniscient (sees hidden cards)",
-        desc: "Uses hidden information from your hand and face-down provinces to choose attacks, defenses, and conflict actions."
+        desc: "Uses hidden information from your hand and face-down provinces, plus adaptive opening and province mulligans."
     }
 ];
 export function getBotBenchmark(results, seed, benchmarkDeck) {
