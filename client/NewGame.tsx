@@ -88,7 +88,12 @@ const botSeedOptions = [
     {
         value: "3",
         label: "omniscient (sees hidden cards)",
-        desc: "Uses hidden information from your hand and face-down provinces, plus adaptive opening and province mulligans."
+        desc: "Uses hidden information from your hand and face-down provinces."
+    },
+    {
+        value: "4",
+        label: "board-aware dynasty",
+        desc: "Adapts character purchases and fate investment to board power, player order, hand costs, and victory pressure."
     }
 ];
 export function getBotBenchmark(results, seed, benchmarkDeck) {

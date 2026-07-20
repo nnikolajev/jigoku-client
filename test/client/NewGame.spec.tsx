@@ -70,7 +70,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         });
     });
 
-    it("offers the three bot types and submits mixed seed 1 by default", () => {
+    it("offers the four bot types and submits mixed seed 1 by default", () => {
         const emit = vi.fn();
         render(
             <InnerNewGame
@@ -86,6 +86,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(within(botType).getByRole("option", { name: "mixed" })).toHaveValue("1");
         expect(within(botType).getByRole("option", { name: "dynasty focused" })).toHaveValue("2");
         expect(within(botType).getByRole("option", { name: "omniscient (sees hidden cards)" })).toHaveValue("3");
+        expect(within(botType).getByRole("option", { name: "board-aware dynasty" })).toHaveValue("4");
         expect(screen.getByText(/Balances dynasty development/)).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: "Submit" }));
 
@@ -112,7 +113,10 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(screen.getByText(/Focuses on dynasty purchases/)).toBeInTheDocument();
 
         fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "3" } });
-        expect(screen.getByText(/hidden information from your hand and face-down provinces, plus adaptive opening/)).toBeInTheDocument();
+        expect(screen.getByText(/hidden information from your hand and face-down provinces/)).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "4" } });
+        expect(screen.getByText(/Adapts character purchases and fate investment to board power/)).toBeInTheDocument();
     });
 
     it("shows generated Crane and round-robin results for the selected deck and seed", () => {
