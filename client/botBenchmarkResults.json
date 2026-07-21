@@ -1,13 +1,14 @@
 {
-  "version": 4,
+  "version": 5,
   "standard": {
     "suiteId": "crane-baseline-4736f7c0",
     "gamesPerDeck": 100,
     "gamesPerMatchup": 40,
     "sameSeedOpponents": true,
-    "seatsAlternate": true
+    "seatsAlternate": true,
+    "gamesPerOmniscientMatchup": 20
   },
-  "updatedAt": "2026-07-20T22:15:01.561Z",
+  "updatedAt": "2026-07-21T00:32:31.323Z",
   "seeds": {
     "1": {
       "seed": 1,
@@ -192,6 +193,254 @@
             "overallWinRate": 0.3194444444444444,
             "averageOpponentWinRate": 0.3194444444444444,
             "opponentsCompleted": 9
+          }
+        }
+      },
+      "omniscient": {
+        "suiteId": "crane-baseline-4736f7c0",
+        "generatedAt": "2026-07-21T00:18:59.526Z",
+        "gamesPerMatchup": 20,
+        "botSeed": 1,
+        "opponentSeed": 1,
+        "omniscientSide": true,
+        "seatsAlternate": true,
+        "totals": {
+          "wins": 1010,
+          "losses": 987,
+          "other": 3,
+          "played": 2000,
+          "winRate": 0.5057586379569354
+        },
+        "decks": {
+          "Crane": {
+            "wins": 107,
+            "losses": 93,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.535,
+            "defaultPool": {
+              "deck": "Crane",
+              "wins": 87,
+              "losses": 112,
+              "other": 1,
+              "played": 200,
+              "winRate": 0.4371859296482412
+            },
+            "uplift": 0.09781407035175882,
+            "mirror": {
+              "wins": 12,
+              "losses": 8,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.6
+            }
+          },
+          "Scorpion": {
+            "wins": 122,
+            "losses": 78,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.61,
+            "defaultPool": {
+              "deck": "Scorpion",
+              "wins": 111,
+              "losses": 89,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.555
+            },
+            "uplift": 0.05499999999999994,
+            "mirror": {
+              "wins": 12,
+              "losses": 8,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.6
+            }
+          },
+          "CraneDuels": {
+            "wins": 75,
+            "losses": 125,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.375,
+            "defaultPool": {
+              "deck": "CraneDuels",
+              "wins": 66,
+              "losses": 133,
+              "other": 1,
+              "played": 200,
+              "winRate": 0.3316582914572864
+            },
+            "uplift": 0.043341708542713575,
+            "mirror": {
+              "wins": 9,
+              "losses": 11,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.45
+            }
+          },
+          "Lion": {
+            "wins": 108,
+            "losses": 92,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.54,
+            "defaultPool": {
+              "deck": "Lion",
+              "wins": 105,
+              "losses": 95,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.525
+            },
+            "uplift": 0.015000000000000013,
+            "mirror": {
+              "wins": 7,
+              "losses": 13,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.35
+            }
+          },
+          "Dragon": {
+            "wins": 127,
+            "losses": 70,
+            "other": 3,
+            "played": 200,
+            "winRate": 0.6446700507614214,
+            "defaultPool": {
+              "deck": "Dragon",
+              "wins": 126,
+              "losses": 74,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.63
+            },
+            "uplift": 0.01467005076142136,
+            "mirror": {
+              "wins": 10,
+              "losses": 10,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.5
+            }
+          },
+          "Phoenix": {
+            "wins": 119,
+            "losses": 81,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.595,
+            "defaultPool": {
+              "deck": "Phoenix",
+              "wins": 117,
+              "losses": 83,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.585
+            },
+            "uplift": 0.010000000000000009,
+            "mirror": {
+              "wins": 12,
+              "losses": 8,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.6
+            }
+          },
+          "DragonAttachments": {
+            "wins": 74,
+            "losses": 126,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.37,
+            "defaultPool": {
+              "deck": "DragonAttachments",
+              "wins": 76,
+              "losses": 124,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.38
+            },
+            "uplift": -0.010000000000000009,
+            "mirror": {
+              "wins": 10,
+              "losses": 10,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.5
+            }
+          },
+          "PhoenixShugenja": {
+            "wins": 104,
+            "losses": 96,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.52,
+            "defaultPool": {
+              "deck": "PhoenixShugenja",
+              "wins": 107,
+              "losses": 92,
+              "other": 1,
+              "played": 200,
+              "winRate": 0.5376884422110553
+            },
+            "uplift": -0.017688442211055255,
+            "mirror": {
+              "wins": 12,
+              "losses": 8,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.6
+            }
+          },
+          "Crab": {
+            "wins": 83,
+            "losses": 117,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.415,
+            "defaultPool": {
+              "deck": "Crab",
+              "wins": 88,
+              "losses": 112,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.44
+            },
+            "uplift": -0.025000000000000022,
+            "mirror": {
+              "wins": 12,
+              "losses": 8,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.6
+            }
+          },
+          "Unicorn": {
+            "wins": 91,
+            "losses": 109,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.455,
+            "defaultPool": {
+              "deck": "Unicorn",
+              "wins": 104,
+              "losses": 96,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.52
+            },
+            "uplift": -0.065,
+            "mirror": {
+              "wins": 9,
+              "losses": 11,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.45
+            }
           }
         }
       }
@@ -381,22 +630,266 @@
             "opponentsCompleted": 9
           }
         }
+      },
+      "omniscient": {
+        "suiteId": "crane-baseline-4736f7c0",
+        "generatedAt": "2026-07-21T00:25:37.564Z",
+        "gamesPerMatchup": 20,
+        "botSeed": 2,
+        "opponentSeed": 2,
+        "omniscientSide": true,
+        "seatsAlternate": true,
+        "totals": {
+          "wins": 989,
+          "losses": 1007,
+          "other": 4,
+          "played": 2000,
+          "winRate": 0.4954909819639279
+        },
+        "decks": {
+          "DragonAttachments": {
+            "wins": 119,
+            "losses": 81,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.595,
+            "defaultPool": {
+              "deck": "DragonAttachments",
+              "wins": 100,
+              "losses": 100,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.5
+            },
+            "uplift": 0.09499999999999997,
+            "mirror": {
+              "wins": 10,
+              "losses": 10,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.5
+            }
+          },
+          "Scorpion": {
+            "wins": 141,
+            "losses": 59,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.705,
+            "defaultPool": {
+              "deck": "Scorpion",
+              "wins": 132,
+              "losses": 68,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.66
+            },
+            "uplift": 0.04499999999999993,
+            "mirror": {
+              "wins": 12,
+              "losses": 8,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.6
+            }
+          },
+          "Lion": {
+            "wins": 128,
+            "losses": 72,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.64,
+            "defaultPool": {
+              "deck": "Lion",
+              "wins": 122,
+              "losses": 78,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.61
+            },
+            "uplift": 0.030000000000000027,
+            "mirror": {
+              "wins": 11,
+              "losses": 9,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.55
+            }
+          },
+          "CraneDuels": {
+            "wins": 93,
+            "losses": 107,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.465,
+            "defaultPool": {
+              "deck": "CraneDuels",
+              "wins": 91,
+              "losses": 108,
+              "other": 1,
+              "played": 200,
+              "winRate": 0.457286432160804
+            },
+            "uplift": 0.007713567839196023,
+            "mirror": {
+              "wins": 6,
+              "losses": 14,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.3
+            }
+          },
+          "PhoenixShugenja": {
+            "wins": 85,
+            "losses": 114,
+            "other": 1,
+            "played": 200,
+            "winRate": 0.4271356783919598,
+            "defaultPool": {
+              "deck": "PhoenixShugenja",
+              "wins": 85,
+              "losses": 114,
+              "other": 1,
+              "played": 200,
+              "winRate": 0.4271356783919598
+            },
+            "uplift": 0,
+            "mirror": {
+              "wins": 13,
+              "losses": 7,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.65
+            }
+          },
+          "Dragon": {
+            "wins": 88,
+            "losses": 109,
+            "other": 3,
+            "played": 200,
+            "winRate": 0.4467005076142132,
+            "defaultPool": {
+              "deck": "Dragon",
+              "wins": 94,
+              "losses": 105,
+              "other": 1,
+              "played": 200,
+              "winRate": 0.4723618090452261
+            },
+            "uplift": -0.025661301431012917,
+            "mirror": {
+              "wins": 12,
+              "losses": 8,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.6
+            }
+          },
+          "Crane": {
+            "wins": 98,
+            "losses": 102,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.49,
+            "defaultPool": {
+              "deck": "Crane",
+              "wins": 109,
+              "losses": 91,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.545
+            },
+            "uplift": -0.05500000000000005,
+            "mirror": {
+              "wins": 11,
+              "losses": 9,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.55
+            }
+          },
+          "Crab": {
+            "wins": 49,
+            "losses": 151,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.245,
+            "defaultPool": {
+              "deck": "Crab",
+              "wins": 61,
+              "losses": 139,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.305
+            },
+            "uplift": -0.06,
+            "mirror": {
+              "wins": 9,
+              "losses": 11,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.45
+            }
+          },
+          "Unicorn": {
+            "wins": 92,
+            "losses": 108,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.46,
+            "defaultPool": {
+              "deck": "Unicorn",
+              "wins": 104,
+              "losses": 95,
+              "other": 1,
+              "played": 200,
+              "winRate": 0.5226130653266332
+            },
+            "uplift": -0.06261306532663319,
+            "mirror": {
+              "wins": 5,
+              "losses": 15,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.25
+            }
+          },
+          "Phoenix": {
+            "wins": 96,
+            "losses": 104,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.48,
+            "defaultPool": {
+              "deck": "Phoenix",
+              "wins": 109,
+              "losses": 91,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.545
+            },
+            "uplift": -0.06500000000000006,
+            "mirror": {
+              "wins": 7,
+              "losses": 13,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.35
+            }
+          }
+        }
       }
     },
     "3": {
       "seed": 3,
-      "label": "omniscient"
-    },
-    "4": {
-      "seed": 4,
       "label": "board-aware dynasty",
       "winRates": {
         "suiteId": "crane-baseline-4736f7c0",
         "generatedAt": "2026-07-20T22:08:24.428Z",
         "gamesPerDeck": 100,
-        "challengerSeed": 4,
+        "challengerSeed": 3,
         "opponent": "Crane",
-        "opponentSeed": 4,
+        "opponentSeed": 3,
         "challengerDrawBidPolicy": "adaptive",
         "opponentDrawBidPolicy": "adaptive",
         "seatsAlternate": true,
@@ -477,7 +970,7 @@
         "suiteId": "crane-baseline-4736f7c0",
         "generatedAt": "2026-07-20T22:15:01.561Z",
         "gamesPerMatchup": 40,
-        "botSeed": 4,
+        "botSeed": 3,
         "drawBidPolicy": "adaptive",
         "seatsAlternate": true,
         "decks": {
@@ -570,6 +1063,254 @@
             "overallWinRate": 0.34818941504178275,
             "averageOpponentWinRate": 0.3480769230769231,
             "opponentsCompleted": 9
+          }
+        }
+      },
+      "omniscient": {
+        "suiteId": "crane-baseline-4736f7c0",
+        "generatedAt": "2026-07-21T00:32:31.323Z",
+        "gamesPerMatchup": 20,
+        "botSeed": 3,
+        "opponentSeed": 3,
+        "omniscientSide": true,
+        "seatsAlternate": true,
+        "totals": {
+          "wins": 1028,
+          "losses": 968,
+          "other": 4,
+          "played": 2000,
+          "winRate": 0.5150300601202404
+        },
+        "decks": {
+          "Lion": {
+            "wins": 118,
+            "losses": 82,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.59,
+            "defaultPool": {
+              "deck": "Lion",
+              "wins": 89,
+              "losses": 111,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.445
+            },
+            "uplift": 0.14499999999999996,
+            "mirror": {
+              "wins": 10,
+              "losses": 10,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.5
+            }
+          },
+          "PhoenixShugenja": {
+            "wins": 118,
+            "losses": 82,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.59,
+            "defaultPool": {
+              "deck": "PhoenixShugenja",
+              "wins": 97,
+              "losses": 102,
+              "other": 1,
+              "played": 200,
+              "winRate": 0.48743718592964824
+            },
+            "uplift": 0.10256281407035173,
+            "mirror": {
+              "wins": 13,
+              "losses": 7,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.65
+            }
+          },
+          "Scorpion": {
+            "wins": 121,
+            "losses": 79,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.605,
+            "defaultPool": {
+              "deck": "Scorpion",
+              "wins": 105,
+              "losses": 95,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.525
+            },
+            "uplift": 0.07999999999999996,
+            "mirror": {
+              "wins": 12,
+              "losses": 8,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.6
+            }
+          },
+          "CraneDuels": {
+            "wins": 82,
+            "losses": 117,
+            "other": 1,
+            "played": 200,
+            "winRate": 0.4120603015075377,
+            "defaultPool": {
+              "deck": "CraneDuels",
+              "wins": 71,
+              "losses": 127,
+              "other": 2,
+              "played": 200,
+              "winRate": 0.35858585858585856
+            },
+            "uplift": 0.05347444292167913,
+            "mirror": {
+              "wins": 14,
+              "losses": 6,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.7
+            }
+          },
+          "Crab": {
+            "wins": 86,
+            "losses": 114,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.43,
+            "defaultPool": {
+              "deck": "Crab",
+              "wins": 78,
+              "losses": 122,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.39
+            },
+            "uplift": 0.03999999999999998,
+            "mirror": {
+              "wins": 10,
+              "losses": 10,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.5
+            }
+          },
+          "DragonAttachments": {
+            "wins": 76,
+            "losses": 124,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.38,
+            "defaultPool": {
+              "deck": "DragonAttachments",
+              "wins": 71,
+              "losses": 129,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.355
+            },
+            "uplift": 0.025000000000000022,
+            "mirror": {
+              "wins": 8,
+              "losses": 12,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.4
+            }
+          },
+          "Crane": {
+            "wins": 108,
+            "losses": 92,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.54,
+            "defaultPool": {
+              "deck": "Crane",
+              "wins": 106,
+              "losses": 94,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.53
+            },
+            "uplift": 0.010000000000000009,
+            "mirror": {
+              "wins": 11,
+              "losses": 9,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.55
+            }
+          },
+          "Phoenix": {
+            "wins": 114,
+            "losses": 86,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.57,
+            "defaultPool": {
+              "deck": "Phoenix",
+              "wins": 123,
+              "losses": 77,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.615
+            },
+            "uplift": -0.04500000000000004,
+            "mirror": {
+              "wins": 10,
+              "losses": 10,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.5
+            }
+          },
+          "Dragon": {
+            "wins": 118,
+            "losses": 79,
+            "other": 3,
+            "played": 200,
+            "winRate": 0.5989847715736041,
+            "defaultPool": {
+              "deck": "Dragon",
+              "wins": 129,
+              "losses": 70,
+              "other": 1,
+              "played": 200,
+              "winRate": 0.6482412060301508
+            },
+            "uplift": -0.049256434456546705,
+            "mirror": {
+              "wins": 11,
+              "losses": 9,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.55
+            }
+          },
+          "Unicorn": {
+            "wins": 87,
+            "losses": 113,
+            "other": 0,
+            "played": 200,
+            "winRate": 0.435,
+            "defaultPool": {
+              "deck": "Unicorn",
+              "wins": 99,
+              "losses": 101,
+              "other": 0,
+              "played": 200,
+              "winRate": 0.495
+            },
+            "uplift": -0.06,
+            "mirror": {
+              "wins": 7,
+              "losses": 13,
+              "other": 0,
+              "played": 20,
+              "winRate": 0.35
+            }
           }
         }
       }

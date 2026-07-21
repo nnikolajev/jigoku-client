@@ -70,7 +70,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         });
     });
 
-    it("offers the four bot types and submits mixed seed 1 by default", () => {
+    it("offers three strategy seeds and submits omniscience separately", () => {
         const emit = vi.fn();
         render(
             <InnerNewGame
@@ -85,13 +85,16 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         const botType = screen.getByLabelText("Bot type");
         expect(within(botType).getByRole("option", { name: "mixed" })).toHaveValue("1");
         expect(within(botType).getByRole("option", { name: "dynasty focused" })).toHaveValue("2");
-        expect(within(botType).getByRole("option", { name: "omniscient (sees hidden cards)" })).toHaveValue("3");
-        expect(within(botType).getByRole("option", { name: "board-aware dynasty" })).toHaveValue("4");
+        expect(within(botType).getByRole("option", { name: "board-aware dynasty" })).toHaveValue("3");
+        expect(within(botType).queryByRole("option", { name: /omniscient/i })).not.toBeInTheDocument();
+        const omniscient = screen.getByRole("checkbox", { name: "Omniscient (sees hidden cards)" });
+        expect(omniscient).not.toBeChecked();
+        fireEvent.click(omniscient);
         expect(screen.getByText(/Balances dynasty development/)).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: "Submit" }));
 
         expect(emit).toHaveBeenCalledWith("newgame", expect.objectContaining({
-            bot: expect.objectContaining({ enabled: true, seed: "1" })
+            bot: expect.objectContaining({ enabled: true, seed: "1", omniscient: true })
         }));
     });
 
@@ -113,9 +116,6 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(screen.getByText(/Focuses on dynasty purchases/)).toBeInTheDocument();
 
         fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "3" } });
-        expect(screen.getByText(/hidden information from your hand and face-down provinces/)).toBeInTheDocument();
-
-        fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "4" } });
         expect(screen.getByText(/Adapts character purchases and fate investment to board power/)).toBeInTheDocument();
     });
 
@@ -150,6 +150,17 @@ describe("the <InnerNewGame /> bot deck selector", () => {
                                 overallWinRate: 0.596
                             }
                         }
+                    },
+                    omniscient: {
+                        suiteId: "crane-baseline-4736f7c0",
+                        gamesPerMatchup: 20,
+                        decks: {
+                            Unicorn: {
+                                wins: 123, losses: 77, other: 0, winRate: 0.615, uplift: 0.08,
+                                mirror: { wins: 12, losses: 8, other: 0, winRate: 0.6 }
+                            },
+                            PhoenixShugenja: { wins: 118, losses: 82, other: 0, winRate: 0.59 }
+                        }
                     }
                 }
             }
@@ -174,6 +185,10 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         );
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
             "Round robin: 53.4% average vs opponents, 53.4% overall (480-419, N=40/matchup)."
+        );
+        fireEvent.click(screen.getByRole("checkbox", { name: "Omniscient (sees hidden cards)" }));
+        expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
+            "Omniscient seed 1: 61.5% vs default pool (123-77), 8.0% uplift over normal [Precon15] Unicorn Military Rush (Temple); same-deck mirror 60.0% (12-8) (N=20/matchup)."
         );
 
         fireEvent.change(screen.getByLabelText("Bot deck"), {

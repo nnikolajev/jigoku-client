@@ -73,7 +73,7 @@ export const pretrainedBotDecks = [
 ];
 const customBotDeck = "custom";
 
-// Player-facing bot types. Values pass straight to JigokuBotController.
+// Player-facing strategy seeds. Hidden information is a separate capability.
 const botSeedOptions = [
     {
         value: "1",
@@ -87,11 +87,6 @@ const botSeedOptions = [
     },
     {
         value: "3",
-        label: "omniscient (sees hidden cards)",
-        desc: "Uses hidden information from your hand and face-down provinces."
-    },
-    {
-        value: "4",
         label: "board-aware dynasty",
         desc: "Adapts character purchases and fate investment to board power, player order, hand costs, and victory pressure."
     }
@@ -104,12 +99,17 @@ export function getBotBenchmark(results, seed, benchmarkDeck) {
     const roundRobin = seedResult?.roundRobin?.suiteId === standardBenchmarkSuite
         ? seedResult.roundRobin
         : undefined;
+    const omniscient = seedResult?.omniscient?.suiteId === standardBenchmarkSuite
+        ? seedResult.omniscient
+        : undefined;
     return {
         seedLabel: seedResult?.label,
         winRates: winRates?.decks?.[benchmarkDeck],
         winRateGames: winRates?.gamesPerDeck,
         roundRobin: roundRobin?.decks?.[benchmarkDeck],
-        roundRobinGames: roundRobin?.gamesPerMatchup
+        roundRobinGames: roundRobin?.gamesPerMatchup,
+        omniscient: omniscient?.decks?.[benchmarkDeck],
+        omniscientGames: omniscient?.gamesPerMatchup
     };
 }
 
@@ -133,6 +133,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     const [botDeckChoice, setBotDeckChoice] = useState(pretrainedBotDecks[0].url);
     const [botDeckId, setBotDeckId] = useState("");
     const [botSeed, setBotSeed] = useState("1");
+    const [botOmniscient, setBotOmniscient] = useState(false);
 
     const handleCancelClick = (event) => {
         event.preventDefault();
@@ -185,7 +186,8 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
             bot: {
                 enabled: botOpponent,
                 deckId: botDeckChoice === customBotDeck ? botDeckId.trim() : botDeckChoice,
-                seed: botSeed.trim()
+                seed: botSeed.trim(),
+                omniscient: botOmniscient
             }
         });
 
@@ -365,11 +367,22 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                 <small className="text-muted" aria-live="polite">
                                     { (botSeedOptions.find((opt) => opt.value === botSeed) || botSeedOptions[0]).desc }
                                 </small>
+                                <div className="checkbox">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            onChange={ (event) => setBotOmniscient(event.target.checked) }
+                                            checked={ botOmniscient }
+                                        />
+                                        Omniscient (sees hidden cards)
+                                    </label>
+                                </div>
                                 <div aria-label="Standard bot benchmark">
                                     <small className="text-muted">
                                         { !selectedBotDeck ? (
                                             "Standard benchmark unavailable for custom decks."
-                                        ) : benchmark.winRates || benchmark.roundRobin ? (
+                                        ) : benchmark.winRates || benchmark.roundRobin ||
+                                            (botOmniscient && benchmark.omniscient) ? (
                                             <>
                                                 { benchmark.seedLabel && (
                                                     <>
@@ -384,6 +397,21 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                                 { benchmark.roundRobin
                                                     ? `Round robin: ${percentage(benchmark.roundRobin.averageOpponentWinRate)} average vs opponents, ${percentage(benchmark.roundRobin.overallWinRate)} overall (${benchmark.roundRobin.wins}-${benchmark.roundRobin.losses}, N=${benchmark.roundRobinGames}/matchup).`
                                                     : "Round robin: not recorded." }
+                                                { botOmniscient && (
+                                                    <>
+                                                        <br />
+                                                        { benchmark.omniscient
+                                                            ? `Omniscient seed ${botSeed}: ${percentage(benchmark.omniscient.winRate)} vs default pool ` +
+                                                                `(${benchmark.omniscient.wins}-${benchmark.omniscient.losses}), ` +
+                                                                `${benchmark.omniscient.uplift === null || benchmark.omniscient.uplift === undefined
+                                                                    ? "uplift not recorded"
+                                                                    : `${percentage(benchmark.omniscient.uplift)} uplift over normal ${selectedBotDeck.label}`}` +
+                                                                `${benchmark.omniscient.mirror
+                                                                    ? `; same-deck mirror ${percentage(benchmark.omniscient.mirror.winRate)} (${benchmark.omniscient.mirror.wins}-${benchmark.omniscient.mirror.losses})`
+                                                                    : ""} (N=${benchmark.omniscientGames}/matchup).`
+                                                            : "Omniscient comparison: not recorded for this seed." }
+                                                    </>
+                                                ) }
                                             </>
                                         ) : (
                                             "No standardized benchmark recorded for this seed."
