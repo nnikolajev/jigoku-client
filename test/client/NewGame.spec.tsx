@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import React from "react";
-import { getBotBenchmark, InnerNewGame, pretrainedBotDecks } from "../../client/NewGame";
+import { getBotBenchmark, InnerNewGame, pretrainedBotDecks, standardBenchmarkSuite } from "../../client/NewGame";
 
 describe("the <InnerNewGame /> bot deck selector", () => {
     const enableBotOpponent = () => {
@@ -12,7 +12,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
     it("ignores benchmark sections recorded for a retired baseline suite", () => {
         const benchmark = getBotBenchmark({
             seeds: { "1": { winRates: { decks: { Crane: { wins: 99 } } } } }
-        }, 1, "Crane");
+        }, "v1", 1, "Crane");
 
         expect(benchmark.winRates).toBeUndefined();
     });
@@ -70,7 +70,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         });
     });
 
-    it("offers three strategy seeds and submits omniscience separately", () => {
+    it("offers engine version, three strategy seeds, and omniscience as independent controls", () => {
         const emit = vi.fn();
         render(
             <InnerNewGame
@@ -82,6 +82,9 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         );
 
         enableBotOpponent();
+        const botVersion = screen.getByLabelText("Bot version");
+        expect(within(botVersion).getByRole("option", { name: "Bot V1" })).toHaveValue("v1");
+        expect(within(botVersion).getByRole("option", { name: "Bot V2 (experimental)" })).toHaveValue("v2");
         const botType = screen.getByLabelText("Bot type");
         expect(within(botType).getByRole("option", { name: "mixed" })).toHaveValue("1");
         expect(within(botType).getByRole("option", { name: "dynasty focused" })).toHaveValue("2");
@@ -90,11 +93,15 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         const omniscient = screen.getByRole("checkbox", { name: "Omniscient (sees hidden cards)" });
         expect(omniscient).not.toBeChecked();
         fireEvent.click(omniscient);
+        fireEvent.change(botVersion, { target: { value: "v2" } });
+        expect(screen.getByText(/deterministic Bot V1 fallback/)).toBeInTheDocument();
         expect(screen.getByText(/Balances dynasty development/)).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: "Submit" }));
 
         expect(emit).toHaveBeenCalledWith("newgame", expect.objectContaining({
-            bot: expect.objectContaining({ enabled: true, seed: "1", omniscient: true })
+            bot: expect.objectContaining({
+                enabled: true, engineVersion: "v2", v2Mode: "enabled", seed: "1", omniscient: true
+            })
         }));
     });
 
@@ -190,6 +197,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
             "Omniscient seed 1: 61.5% vs default pool (123-77), 8.0% uplift over normal [Precon15] Unicorn Military Rush (Temple); same-deck mirror 60.0% (12-8) (N=20/matchup)."
         );
+        fireEvent.click(screen.getByRole("checkbox", { name: "Omniscient (sees hidden cards)" }));
 
         fireEvent.change(screen.getByLabelText("Bot deck"), {
             target: { value: "https://www.emeralddb.org/decks/b260d778-0016-4d70-b1f9-5180daf340fc" }
@@ -203,8 +211,44 @@ describe("the <InnerNewGame /> bot deck selector", () => {
 
         fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "2" } });
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
-            "No standardized benchmark recorded for this seed."
+            "No standardized Bot V1 benchmark recorded for seed 2 in fair mode."
         );
+    });
+
+    it("never mixes benchmark engine versions or information modes", () => {
+        const benchmarkResults = {
+            engines: {
+                v1: { status: "default", seeds: { "1": { label: "v1 seed", winRates: {
+                    suiteId: standardBenchmarkSuite, engineVersion: "v1", strategySeed: 1,
+                    informationMode: "fair", gamesPerDeck: 100, decks: { Crane: { wins: 60, losses: 40, winRate: 0.6 } }
+                } } } },
+                v2: { status: "experimental", seeds: { "1": { label: "v2 seed", winRates: {
+                    suiteId: standardBenchmarkSuite, engineVersion: "v2", strategySeed: 1,
+                    informationMode: "fair", gamesPerDeck: 20, decks: { Crane: { wins: 11, losses: 9, winRate: 0.55 } }
+                }, omniscient: {
+                    suiteId: standardBenchmarkSuite, engineVersion: "v2", strategySeed: 1,
+                    informationMode: "omniscient", gamesPerMatchup: 20,
+                    decks: { Crane: { wins: 12, losses: 8, winRate: 0.6 } }
+                } } } }
+            }
+        };
+        render(
+            <InnerNewGame
+                cancelNewGame={ vi.fn() }
+                defaultGameName="Bot test"
+                loadDecks={ vi.fn() }
+                socket={ { emit: vi.fn() } }
+                benchmarkResults={ benchmarkResults }
+            />
+        );
+        enableBotOpponent();
+        expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent("60.0% (60-40, N=100)");
+        fireEvent.change(screen.getByLabelText("Bot version"), { target: { value: "v2" } });
+        expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent("55.0% (11-9, N=20)");
+        expect(screen.getByLabelText("Standard bot benchmark")).not.toHaveTextContent("60.0% (60-40");
+        fireEvent.click(screen.getByRole("checkbox", { name: "Omniscient (sees hidden cards)" }));
+        expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent("Omniscient seed 1: 60.0%");
+        expect(screen.getByLabelText("Standard bot benchmark")).not.toHaveTextContent("Vs Crane Baseline");
     });
 
     it("only enables Human vs AI for Imperial games", () => {

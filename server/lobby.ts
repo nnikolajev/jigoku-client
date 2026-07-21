@@ -428,6 +428,9 @@ class Lobby {
             // so the default deck must carry its decklist URL explicitly.
             deckId: botDetails.deckId || DEFAULT_BOT_DECKLIST_URL,
             seed: botDetails.seed || 1,
+            engineVersion: botDetails.engineVersion === "v2" ? "v2" : "v1",
+            v2Mode: botDetails.engineVersion === "v2" ? "enabled" : undefined,
+            omniscient: botDetails.omniscient === true,
             difficulty: botDetails.difficulty || "mvp",
             policy: botDetails.policy,
             trace: botDetails.trace !== false,

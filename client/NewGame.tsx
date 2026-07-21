@@ -73,6 +73,11 @@ export const pretrainedBotDecks = [
 ];
 const customBotDeck = "custom";
 
+const botEngineOptions = [
+    { value: "v1", label: "Bot V1", desc: "Stable deterministic policy and current default." },
+    { value: "v2", label: "Bot V2 (experimental)", desc: "Opt-in tactical planner with deterministic Bot V1 fallback. Expect higher latency while experimental." }
+];
+
 // Player-facing strategy seeds. Hidden information is a separate capability.
 const botSeedOptions = [
     {
@@ -91,18 +96,38 @@ const botSeedOptions = [
         desc: "Adapts character purchases and fate investment to board power, player order, hand costs, and victory pressure."
     }
 ];
-export function getBotBenchmark(results, seed, benchmarkDeck) {
-    const seedResult = results?.seeds?.[String(seed)];
-    const winRates = seedResult?.winRates?.suiteId === standardBenchmarkSuite
-        ? seedResult.winRates
+function matchingBenchmark(section, engineVersion, seed, informationMode) {
+    if(!section || section.suiteId !== standardBenchmarkSuite) return undefined;
+    const recordedEngine = section.engineVersion || "v1";
+    const recordedSeed = section.strategySeed ?? section.botSeed ?? section.challengerSeed;
+    const engineMatches = recordedEngine === engineVersion;
+    const seedMatches = recordedSeed === undefined ? engineVersion === "v1" : String(recordedSeed) === String(seed);
+    const modeMatches = section.informationMode === undefined
+        ? engineVersion === "v1"
+        : section.informationMode === informationMode;
+    return engineMatches && seedMatches && modeMatches
+        ? section
         : undefined;
-    const roundRobin = seedResult?.roundRobin?.suiteId === standardBenchmarkSuite
-        ? seedResult.roundRobin
+}
+
+export function getBotBenchmark(results, engineVersion, seed, benchmarkDeck, informationMode = "fair") {
+    const versionedSeeds = results?.engines?.[engineVersion]?.seeds;
+    const seeds = versionedSeeds && Object.keys(versionedSeeds).length > 0
+        ? versionedSeeds
+        : engineVersion === "v1" ? results?.seeds : undefined;
+    const seedResult = seeds?.[String(seed)];
+    const winRates = informationMode === "fair"
+        ? matchingBenchmark(seedResult?.winRates, engineVersion, seed, "fair")
         : undefined;
-    const omniscient = seedResult?.omniscient?.suiteId === standardBenchmarkSuite
-        ? seedResult.omniscient
+    const roundRobin = informationMode === "fair"
+        ? matchingBenchmark(seedResult?.roundRobin, engineVersion, seed, "fair")
+        : undefined;
+    const omniscient = informationMode === "omniscient"
+        ? matchingBenchmark(seedResult?.omniscient, engineVersion, seed, "omniscient")
         : undefined;
     return {
+        engineVersion,
+        engineStatus: results?.engines?.[engineVersion]?.status || (engineVersion === "v2" ? "experimental" : "default"),
         seedLabel: seedResult?.label,
         winRates: winRates?.decks?.[benchmarkDeck],
         winRateGames: winRates?.gamesPerDeck,
@@ -132,6 +157,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     const [botOpponent, setBotOpponent] = useState(false);
     const [botDeckChoice, setBotDeckChoice] = useState(pretrainedBotDecks[0].url);
     const [botDeckId, setBotDeckId] = useState("");
+    const [botEngineVersion, setBotEngineVersion] = useState("v1");
     const [botSeed, setBotSeed] = useState("1");
     const [botOmniscient, setBotOmniscient] = useState(false);
 
@@ -186,6 +212,8 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
             bot: {
                 enabled: botOpponent,
                 deckId: botDeckChoice === customBotDeck ? botDeckId.trim() : botDeckChoice,
+                engineVersion: botEngineVersion,
+                v2Mode: botEngineVersion === "v2" ? "enabled" : undefined,
                 seed: botSeed.trim(),
                 omniscient: botOmniscient
             }
@@ -273,7 +301,8 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     const botDeckLink = botDeckChoice === customBotDeck ? botDeckId.trim() : selectedBotDeck?.url || "";
     const isBotDeckLink = /^https?:\/\//i.test(botDeckLink);
     const benchmark = selectedBotDeck
-        ? getBotBenchmark(benchmarkResults, botSeed, selectedBotDeck.benchmarkDeck)
+        ? getBotBenchmark(benchmarkResults, botEngineVersion, botSeed, selectedBotDeck.benchmarkDeck,
+            botOmniscient ? "omniscient" : "fair")
         : null;
 
     if(!socket) {
@@ -353,6 +382,20 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                         value={ botDeckId }
                                     />
                                 ) }
+                                <label htmlFor="botEngineVersion">Bot version</label>
+                                <select
+                                    id="botEngineVersion"
+                                    className="form-control"
+                                    onChange={ (event) => setBotEngineVersion(event.target.value) }
+                                    value={ botEngineVersion }
+                                >
+                                    { botEngineOptions.map((option) => (
+                                        <option key={ option.value } value={ option.value }>{ option.label }</option>
+                                    )) }
+                                </select>
+                                <small className="text-muted" aria-live="polite">
+                                    { (botEngineOptions.find((option) => option.value === botEngineVersion) || botEngineOptions[0]).desc }
+                                </small>
                                 <label htmlFor="botType">Bot type</label>
                                 <select
                                     id="botType"
@@ -381,25 +424,12 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                     <small className="text-muted">
                                         { !selectedBotDeck ? (
                                             "Standard benchmark unavailable for custom decks."
-                                        ) : benchmark.winRates || benchmark.roundRobin ||
-                                            (botOmniscient && benchmark.omniscient) ? (
+                                        ) : benchmark.winRates || benchmark.roundRobin || benchmark.omniscient ? (
                                             <>
-                                                { benchmark.seedLabel && (
-                                                    <>
-                                                        { `Standard self-play (${benchmark.seedLabel}).` }
-                                                        <br />
-                                                    </>
-                                                ) }
-                                                { benchmark.winRates
-                                                    ? `Vs Crane Baseline: ${percentage(benchmark.winRates.winRate)} (${benchmark.winRates.wins}-${benchmark.winRates.losses}, N=${benchmark.winRateGames}).`
-                                                    : "Vs Crane Baseline: not recorded." }
+                                                { `Standard self-play (${botEngineVersion === "v2" ? "Bot V2 experimental" : "Bot V1"}, ${benchmark.seedLabel || `seed ${botSeed}`}, ${botOmniscient ? "omniscient" : "fair"}).` }
                                                 <br />
-                                                { benchmark.roundRobin
-                                                    ? `Round robin: ${percentage(benchmark.roundRobin.averageOpponentWinRate)} average vs opponents, ${percentage(benchmark.roundRobin.overallWinRate)} overall (${benchmark.roundRobin.wins}-${benchmark.roundRobin.losses}, N=${benchmark.roundRobinGames}/matchup).`
-                                                    : "Round robin: not recorded." }
-                                                { botOmniscient && (
+                                                { botOmniscient ? (
                                                     <>
-                                                        <br />
                                                         { benchmark.omniscient
                                                             ? `Omniscient seed ${botSeed}: ${percentage(benchmark.omniscient.winRate)} vs default pool ` +
                                                                 `(${benchmark.omniscient.wins}-${benchmark.omniscient.losses}), ` +
@@ -411,10 +441,20 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                                                     : ""} (N=${benchmark.omniscientGames}/matchup).`
                                                             : "Omniscient comparison: not recorded for this seed." }
                                                     </>
+                                                ) : (
+                                                    <>
+                                                        { benchmark.winRates
+                                                            ? `Vs Crane Baseline: ${percentage(benchmark.winRates.winRate)} (${benchmark.winRates.wins}-${benchmark.winRates.losses}, N=${benchmark.winRateGames}).`
+                                                            : "Vs Crane Baseline: not recorded." }
+                                                        <br />
+                                                        { benchmark.roundRobin
+                                                            ? `Round robin: ${percentage(benchmark.roundRobin.averageOpponentWinRate)} average vs opponents, ${percentage(benchmark.roundRobin.overallWinRate)} overall (${benchmark.roundRobin.wins}-${benchmark.roundRobin.losses}, N=${benchmark.roundRobinGames}/matchup).`
+                                                            : "Round robin: not recorded." }
+                                                    </>
                                                 ) }
                                             </>
                                         ) : (
-                                            "No standardized benchmark recorded for this seed."
+                                            `No standardized ${botEngineVersion === "v2" ? "Bot V2" : "Bot V1"} benchmark recorded for seed ${botSeed} in ${botOmniscient ? "omniscient" : "fair"} mode.`
                                         ) }
                                     </small>
                                 </div>
