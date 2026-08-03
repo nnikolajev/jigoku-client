@@ -70,7 +70,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         });
     });
 
-    it("offers engine version, three strategy seeds, and omniscience as independent controls", () => {
+    it("pins the engine to Bot V1 and offers three strategy seeds and omniscience as independent controls", () => {
         const emit = vi.fn();
         render(
             <InnerNewGame
@@ -82,9 +82,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         );
 
         enableBotOpponent();
-        const botVersion = screen.getByLabelText("Bot version");
-        expect(within(botVersion).getByRole("option", { name: "Bot V1" })).toHaveValue("v1");
-        expect(within(botVersion).getByRole("option", { name: "Bot V2 (experimental)" })).toHaveValue("v2");
+        expect(screen.queryByLabelText("Bot version")).not.toBeInTheDocument();
         const botType = screen.getByLabelText("Bot type");
         expect(within(botType).getByRole("option", { name: "mixed" })).toHaveValue("1");
         expect(within(botType).getByRole("option", { name: "dynasty focused" })).toHaveValue("2");
@@ -93,16 +91,16 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         const omniscient = screen.getByRole("checkbox", { name: "Omniscient (sees hidden cards)" });
         expect(omniscient).not.toBeChecked();
         fireEvent.click(omniscient);
-        fireEvent.change(botVersion, { target: { value: "v2" } });
-        expect(screen.getByText(/deterministic Bot V1 fallback/)).toBeInTheDocument();
         expect(screen.getByText(/Balances dynasty development/)).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: "Submit" }));
 
         expect(emit).toHaveBeenCalledWith("newgame", expect.objectContaining({
             bot: expect.objectContaining({
-                enabled: true, engineVersion: "v2", v2Mode: "enabled", seed: "1", omniscient: true
+                enabled: true, engineVersion: "v1", seed: "1", omniscient: true
             })
         }));
+        const [, payload] = emit.mock.calls[emit.mock.calls.length - 1];
+        expect(payload.bot).not.toHaveProperty("v2Mode");
     });
 
     it("updates bot focus text and exposes the selected deck link", () => {
@@ -221,6 +219,10 @@ describe("the <InnerNewGame /> bot deck selector", () => {
                 v1: { status: "default", seeds: { "1": { label: "v1 seed", winRates: {
                     suiteId: standardBenchmarkSuite, engineVersion: "v1", strategySeed: 1,
                     informationMode: "fair", gamesPerDeck: 100, decks: { Crane: { wins: 60, losses: 40, winRate: 0.6 } }
+                }, omniscient: {
+                    suiteId: standardBenchmarkSuite, engineVersion: "v1", strategySeed: 1,
+                    informationMode: "omniscient", gamesPerMatchup: 40,
+                    decks: { Crane: { wins: 28, losses: 12, winRate: 0.7 } }
                 } } } },
                 v2: { status: "experimental", seeds: { "1": { label: "v2 seed", winRates: {
                     suiteId: standardBenchmarkSuite, engineVersion: "v2", strategySeed: 1,
@@ -243,11 +245,10 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         );
         enableBotOpponent();
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent("60.0% (60-40, N=100)");
-        fireEvent.change(screen.getByLabelText("Bot version"), { target: { value: "v2" } });
-        expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent("55.0% (11-9, N=20)");
-        expect(screen.getByLabelText("Standard bot benchmark")).not.toHaveTextContent("60.0% (60-40");
+        // The lobby is pinned to Bot V1, so recorded V2 sections must never surface.
+        expect(screen.getByLabelText("Standard bot benchmark")).not.toHaveTextContent("55.0% (11-9");
         fireEvent.click(screen.getByRole("checkbox", { name: "Omniscient (sees hidden cards)" }));
-        expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent("Omniscient seed 1: 60.0%");
+        expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent("Omniscient seed 1: 70.0%");
         expect(screen.getByLabelText("Standard bot benchmark")).not.toHaveTextContent("Vs Crane Baseline");
     });
 

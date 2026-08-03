@@ -73,10 +73,10 @@ export const pretrainedBotDecks = [
 ];
 const customBotDeck = "custom";
 
-const botEngineOptions = [
-    { value: "v1", label: "Bot V1", desc: "Stable deterministic policy and current default." },
-    { value: "v2", label: "Bot V2 (experimental)", desc: "Opt-in tactical planner with deterministic Bot V1 fallback. Expect higher latency while experimental." }
-];
+// Bot V1 is the only player-facing engine. V2 is measurement infrastructure
+// (see jigoku/docs/bot-v2.md) and is reachable from the self-play tools only,
+// so the lobby no longer offers an engine choice.
+const botEngineVersion = "v1";
 
 // Player-facing strategy seeds. Hidden information is a separate capability.
 const botSeedOptions = [
@@ -157,7 +157,6 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     const [botOpponent, setBotOpponent] = useState(false);
     const [botDeckChoice, setBotDeckChoice] = useState(pretrainedBotDecks[0].url);
     const [botDeckId, setBotDeckId] = useState("");
-    const [botEngineVersion, setBotEngineVersion] = useState("v1");
     const [botSeed, setBotSeed] = useState("1");
     const [botOmniscient, setBotOmniscient] = useState(false);
 
@@ -213,7 +212,6 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                 enabled: botOpponent,
                 deckId: botDeckChoice === customBotDeck ? botDeckId.trim() : botDeckChoice,
                 engineVersion: botEngineVersion,
-                v2Mode: botEngineVersion === "v2" ? "enabled" : undefined,
                 seed: botSeed.trim(),
                 omniscient: botOmniscient
             }
@@ -382,20 +380,6 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                         value={ botDeckId }
                                     />
                                 ) }
-                                <label htmlFor="botEngineVersion">Bot version</label>
-                                <select
-                                    id="botEngineVersion"
-                                    className="form-control"
-                                    onChange={ (event) => setBotEngineVersion(event.target.value) }
-                                    value={ botEngineVersion }
-                                >
-                                    { botEngineOptions.map((option) => (
-                                        <option key={ option.value } value={ option.value }>{ option.label }</option>
-                                    )) }
-                                </select>
-                                <small className="text-muted" aria-live="polite">
-                                    { (botEngineOptions.find((option) => option.value === botEngineVersion) || botEngineOptions[0]).desc }
-                                </small>
                                 <label htmlFor="botType">Bot type</label>
                                 <select
                                     id="botType"
@@ -426,7 +410,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                             "Standard benchmark unavailable for custom decks."
                                         ) : benchmark.winRates || benchmark.roundRobin || benchmark.omniscient ? (
                                             <>
-                                                { `Standard self-play (${botEngineVersion === "v2" ? "Bot V2 experimental" : "Bot V1"}, ${benchmark.seedLabel || `seed ${botSeed}`}, ${botOmniscient ? "omniscient" : "fair"}).` }
+                                                { `Standard self-play (Bot V1, ${benchmark.seedLabel || `seed ${botSeed}`}, ${botOmniscient ? "omniscient" : "fair"}).` }
                                                 <br />
                                                 { botOmniscient ? (
                                                     <>
@@ -454,7 +438,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                                 ) }
                                             </>
                                         ) : (
-                                            `No standardized ${botEngineVersion === "v2" ? "Bot V2" : "Bot V1"} benchmark recorded for seed ${botSeed} in ${botOmniscient ? "omniscient" : "fair"} mode.`
+                                            `No standardized Bot V1 benchmark recorded for seed ${botSeed} in ${botOmniscient ? "omniscient" : "fair"} mode.`
                                         ) }
                                     </small>
                                 </div>
