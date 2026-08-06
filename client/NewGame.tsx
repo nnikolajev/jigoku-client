@@ -7,7 +7,7 @@ import * as actions from "./actions";
 
 // Must match tools/selfplay/standardBenchmark.js. A new baseline deck makes
 // old standardized results incomparable, so unmatched sections stay hidden.
-export const standardBenchmarkSuite = "crane-baseline-4736f7c0";
+export const standardBenchmarkSuite = "crane-baseline-4736f7c0-unicorn-reveal-6057d28e";
 
 const defaultTime = {
     timer: "60",
@@ -41,6 +41,11 @@ export const pretrainedBotDecks = [
         benchmarkDeck: "Scorpion"
     },
     {
+        label: "Scorpion Bid War (Kyuden Bayushi honor dials)",
+        url: "https://www.emeralddb.org/decks/2bf73f61-6640-465c-8856-479eb611babc",
+        benchmarkDeck: "ScorpionBidWar"
+    },
+    {
         label: "[Precon15] Lion Bushi (swarm, Rich Frog)",
         url: "https://www.emeralddb.org/decks/27a913d1-6a68-4641-a953-80a6ca373005",
         benchmarkDeck: "Lion"
@@ -69,6 +74,21 @@ export const pretrainedBotDecks = [
         label: "Dragon Attachments",
         url: "https://www.emeralddb.org/decks/46aaa220-2cf9-463b-bdf3-3019572432ff",
         benchmarkDeck: "DragonAttachments"
+    },
+    {
+        label: "Phoenix Phoenix (Fushichō rebirth)",
+        url: "https://www.emeralddb.org/decks/7b7f54b8-2037-4f98-951f-a651a82f66a5",
+        benchmarkDeck: "PhoenixPhoenix"
+    },
+    {
+        label: "Unicorn Reveal",
+        url: "https://www.emeralddb.org/decks/6057d28e-e023-4c9f-b027-475f13eaf394",
+        benchmarkDeck: "UnicornReveal"
+    },
+    {
+        label: "Lion Duelist (Kyūden Ikoma, honor switch)",
+        url: "https://www.emeralddb.org/decks/a2058c37-5909-4119-bf16-bdddd3a80262",
+        benchmarkDeck: "LionDuelist"
     }
 ];
 const customBotDeck = "custom";

@@ -39,9 +39,9 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(within(botDeckSelect).getByRole("option", { name: "Dragon Attachments" })).toHaveValue(
             "https://www.emeralddb.org/decks/46aaa220-2cf9-463b-bdf3-3019572432ff"
         );
-        expect(pretrainedBotDecks).toHaveLength(10);
-        expect(new Set(pretrainedBotDecks.map((deck) => deck.benchmarkDeck)).size).toBe(10);
-        expect(new Set(pretrainedBotDecks.map((deck) => deck.url)).size).toBe(10);
+        expect(pretrainedBotDecks).toHaveLength(14);
+        expect(new Set(pretrainedBotDecks.map((deck) => deck.benchmarkDeck)).size).toBe(pretrainedBotDecks.length);
+        expect(new Set(pretrainedBotDecks.map((deck) => deck.url)).size).toBe(pretrainedBotDecks.length);
     });
 
     it("submits every pretrained bot deck, including the unchanged first option", () => {
@@ -129,7 +129,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
             seeds: {
                 "1": {
                     winRates: {
-                        suiteId: "crane-baseline-4736f7c0",
+                        suiteId: standardBenchmarkSuite,
                         gamesPerDeck: 100,
                         decks: {
                             Unicorn: { wins: 68, losses: 31, other: 1, winRate: 0.68 },
@@ -137,7 +137,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
                         }
                     },
                     roundRobin: {
-                        suiteId: "crane-baseline-4736f7c0",
+                        suiteId: standardBenchmarkSuite,
                         gamesPerMatchup: 40,
                         decks: {
                             Unicorn: {
@@ -157,7 +157,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
                         }
                     },
                     omniscient: {
-                        suiteId: "crane-baseline-4736f7c0",
+                        suiteId: standardBenchmarkSuite,
                         gamesPerMatchup: 20,
                         decks: {
                             Unicorn: {
