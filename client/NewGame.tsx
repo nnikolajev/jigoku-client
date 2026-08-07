@@ -36,6 +36,11 @@ export const pretrainedBotDecks = [
         benchmarkDeck: "Crab"
     },
     {
+        label: "Crab Berserker Sacrifice (Castle of the Forgotten rush)",
+        url: "https://www.emeralddb.org/decks/59c4d29f-6414-47d7-9009-a1feef5c7917",
+        benchmarkDeck: "CrabSacrifice"
+    },
+    {
         label: "Scorpion Poison Mill (dishonor)",
         url: "https://www.emeralddb.org/decks/914dc4d4-a63b-4a86-af15-e46ba55361fc",
         benchmarkDeck: "Scorpion"
