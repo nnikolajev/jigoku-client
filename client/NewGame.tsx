@@ -26,6 +26,11 @@ export const pretrainedBotDecks = [
         benchmarkDeck: "Crane"
     },
     {
+        label: "Crane Courtier Honor (Seven Fold Palace honor race)",
+        url: "https://www.emeralddb.org/decks/db118806-4e15-4d5c-ad6f-080eb90bdf81",
+        benchmarkDeck: "CraneHonor"
+    },
+    {
         label: "[Precon15] Unicorn Military Rush (Temple)",
         url: "https://www.emeralddb.org/decks/52b78858-fce5-431a-a3e5-be4f2a921ed9",
         benchmarkDeck: "Unicorn"
@@ -89,6 +94,11 @@ export const pretrainedBotDecks = [
         label: "Unicorn Reveal",
         url: "https://www.emeralddb.org/decks/6057d28e-e023-4c9f-b027-475f13eaf394",
         benchmarkDeck: "UnicornReveal"
+    },
+    {
+        label: "Lion Honor (Kyūden Ikoma, 25-honor race)",
+        url: "https://www.emeralddb.org/decks/65b10e6f-afd3-4938-933a-4350ae9ce405",
+        benchmarkDeck: "LionHonor"
     },
     {
         label: "Lion Duelist (Kyūden Ikoma, honor switch)",

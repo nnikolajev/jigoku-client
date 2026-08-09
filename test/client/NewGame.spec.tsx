@@ -39,7 +39,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(within(botDeckSelect).getByRole("option", { name: "Dragon Attachments" })).toHaveValue(
             "https://www.emeralddb.org/decks/46aaa220-2cf9-463b-bdf3-3019572432ff"
         );
-        expect(pretrainedBotDecks).toHaveLength(15);
+        expect(pretrainedBotDecks).toHaveLength(17);
         expect(new Set(pretrainedBotDecks.map((deck) => deck.benchmarkDeck)).size).toBe(pretrainedBotDecks.length);
         expect(new Set(pretrainedBotDecks.map((deck) => deck.url)).size).toBe(pretrainedBotDecks.length);
     });
