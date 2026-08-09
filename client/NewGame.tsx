@@ -7,7 +7,7 @@ import * as actions from "./actions";
 
 // Must match tools/selfplay/standardBenchmark.js. A new baseline deck makes
 // old standardized results incomparable, so unmatched sections stay hidden.
-export const standardBenchmarkSuite = "crane-baseline-4736f7c0-unicorn-reveal-6057d28e";
+export const standardBenchmarkSuite = "crane-baseline-4736f7c0-unicorn-reveal-6057d28e-lion-duelist-a2058c37";
 
 const defaultTime = {
     timer: "60",
@@ -132,7 +132,9 @@ const botSeedOptions = [
     }
 ];
 function matchingBenchmark(section, engineVersion, seed, informationMode) {
-    if(!section || section.suiteId !== standardBenchmarkSuite) return undefined;
+    if(!section || section.suiteId !== standardBenchmarkSuite) {
+        return undefined;
+    }
     const recordedEngine = section.engineVersion || "v1";
     const recordedSeed = section.strategySeed ?? section.botSeed ?? section.challengerSeed;
     const engineMatches = recordedEngine === engineVersion;
@@ -145,6 +147,37 @@ function matchingBenchmark(section, engineVersion, seed, informationMode) {
         : undefined;
 }
 
+export function getBotRoundRobin(results, engineVersion, seed) {
+    const versionedSeeds = results?.engines?.[engineVersion]?.seeds;
+    const seeds = versionedSeeds && Object.keys(versionedSeeds).length > 0
+        ? versionedSeeds
+        : engineVersion === "v1" ? results?.seeds : undefined;
+    return matchingBenchmark(seeds?.[String(seed)]?.roundRobin, engineVersion, seed, "fair");
+}
+
+export function getRoundRobinMatchup(roundRobin, botDeck, opponentDeck) {
+    if(!roundRobin || botDeck === opponentDeck) {
+        return undefined;
+    }
+    const matchup = roundRobin.matchups?.find((entry) =>
+        (entry.left === botDeck && entry.right === opponentDeck) ||
+        (entry.left === opponentDeck && entry.right === botDeck));
+    if(!matchup) {
+        return undefined;
+    }
+
+    const wins = matchup.left === botDeck ? matchup.leftWins : matchup.rightWins;
+    const losses = matchup.left === botDeck ? matchup.rightWins : matchup.leftWins;
+    const decided = wins + losses;
+    return {
+        wins,
+        losses,
+        other: matchup.other,
+        played: matchup.played,
+        winRate: decided > 0 ? wins / decided : null
+    };
+}
+
 export function getBotBenchmark(results, engineVersion, seed, benchmarkDeck, informationMode = "fair") {
     const versionedSeeds = results?.engines?.[engineVersion]?.seeds;
     const seeds = versionedSeeds && Object.keys(versionedSeeds).length > 0
@@ -154,9 +187,7 @@ export function getBotBenchmark(results, engineVersion, seed, benchmarkDeck, inf
     const winRates = informationMode === "fair"
         ? matchingBenchmark(seedResult?.winRates, engineVersion, seed, "fair")
         : undefined;
-    const roundRobin = informationMode === "fair"
-        ? matchingBenchmark(seedResult?.roundRobin, engineVersion, seed, "fair")
-        : undefined;
+    const roundRobin = informationMode === "fair" ? getBotRoundRobin(results, engineVersion, seed) : undefined;
     const omniscient = informationMode === "omniscient"
         ? matchingBenchmark(seedResult?.omniscient, engineVersion, seed, "omniscient")
         : undefined;
@@ -194,6 +225,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     const [botDeckId, setBotDeckId] = useState("");
     const [botSeed, setBotSeed] = useState("1");
     const [botOmniscient, setBotOmniscient] = useState(false);
+    const [showBotMatchups, setShowBotMatchups] = useState(false);
 
     const handleCancelClick = (event) => {
         event.preventDefault();
@@ -337,6 +369,10 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
         ? getBotBenchmark(benchmarkResults, botEngineVersion, botSeed, selectedBotDeck.benchmarkDeck,
             botOmniscient ? "omniscient" : "fair")
         : null;
+    const matchupRoundRobin = getBotRoundRobin(benchmarkResults, botEngineVersion, botSeed);
+    const matchupDecks = matchupRoundRobin
+        ? pretrainedBotDecks.filter((deck) => matchupRoundRobin.decks?.[deck.benchmarkDeck])
+        : [];
 
     if(!socket) {
         return (
@@ -480,6 +516,83 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                 { isBotDeckLink && (
                                     <div>
                                         <a href={ botDeckLink } target="_blank" rel="noreferrer">{ botDeckLink }</a>
+                                    </div>
+                                ) }
+                            </div>
+                            <div className="col-sm-12 bot-matchup-disclosure">
+                                <button
+                                    type="button"
+                                    className="btn btn-link bot-matchup-toggle"
+                                    aria-expanded={ showBotMatchups }
+                                    aria-controls="bot-matchup-matrix"
+                                    onClick={ () => setShowBotMatchups(!showBotMatchups) }
+                                >
+                                    { showBotMatchups ? "Hide" : "Show" } bot win-rate matrix
+                                </button>
+                                { showBotMatchups && (
+                                    <div id="bot-matchup-matrix">
+                                        <small className="text-muted bot-matchup-help">
+                                            Rows are bot opponents; columns are decks you might play. Higher percentages mean a stronger bot matchup.
+                                            { botOmniscient && " Matrix uses fair-information results; omniscient matchup matrices are not recorded." }
+                                        </small>
+                                        { matchupRoundRobin?.matchups?.length > 0 ? (
+                                            <div className="bot-matchup-matrix-scroll">
+                                                <table className="bot-matchup-matrix" aria-label="Bot win-rate matchup matrix">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Bot opponent</th>
+                                                            { matchupDecks.map((deck) => (
+                                                                <th key={ deck.benchmarkDeck } scope="col" title={ deck.label }>
+                                                                    { deck.benchmarkDeck }
+                                                                </th>
+                                                            )) }
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        { matchupDecks.map((botDeck) => (
+                                                            <tr
+                                                                key={ botDeck.benchmarkDeck }
+                                                                className={ selectedBotDeck?.benchmarkDeck === botDeck.benchmarkDeck
+                                                                    ? "bot-matchup-selected" : undefined }
+                                                            >
+                                                                <th scope="row">{ botDeck.label }</th>
+                                                                { matchupDecks.map((playerDeck) => {
+                                                                    const isMirror = botDeck.benchmarkDeck === playerDeck.benchmarkDeck;
+                                                                    const matchup = getRoundRobinMatchup(
+                                                                        matchupRoundRobin,
+                                                                        botDeck.benchmarkDeck,
+                                                                        playerDeck.benchmarkDeck
+                                                                    );
+                                                                    const strengthClass = matchup?.winRate !== null && matchup?.winRate >= 0.6
+                                                                        ? "bot-matchup-strong"
+                                                                        : matchup?.winRate !== null && matchup?.winRate <= 0.4
+                                                                            ? "bot-matchup-weak"
+                                                                            : undefined;
+                                                                    return (
+                                                                        <td
+                                                                            key={ playerDeck.benchmarkDeck }
+                                                                            className={ strengthClass }
+                                                                            aria-label={ `${botDeck.label} versus ${playerDeck.label}: ${matchup
+                                                                                ? percentage(matchup.winRate)
+                                                                                : isMirror ? "same deck" : "not recorded"}` }
+                                                                            title={ matchup
+                                                                                ? `${matchup.wins}-${matchup.losses}, ${matchup.other} undecided (${matchup.played} played)`
+                                                                                : isMirror ? "Same-deck matchup not included" : "Matchup not recorded" }
+                                                                        >
+                                                                            { matchup ? percentage(matchup.winRate) : "—" }
+                                                                        </td>
+                                                                    );
+                                                                }) }
+                                                            </tr>
+                                                        )) }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        ) : (
+                                            <small className="text-muted bot-matchup-help">
+                                                No complete round-robin matrix recorded for this bot type.
+                                            </small>
+                                        ) }
                                     </div>
                                 ) }
                             </div>

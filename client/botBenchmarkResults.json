@@ -1,14 +1,14 @@
 {
-  "version": 6,
+  "version": 8,
   "standard": {
-    "suiteId": "crane-baseline-4736f7c0",
+    "suiteId": "crane-baseline-4736f7c0-unicorn-reveal-6057d28e-lion-duelist-a2058c37",
     "gamesPerDeck": 100,
     "gamesPerMatchup": 40,
     "sameSeedOpponents": true,
     "seatsAlternate": true,
     "gamesPerOmniscientMatchup": 20
   },
-  "updatedAt": "2026-08-05T17:27:49.112Z",
+  "updatedAt": "2026-08-09T11:15:51.942Z",
   "engines": {
     "v1": {
       "engineVersion": "v1",
@@ -112,117 +112,1261 @@
             }
           },
           "roundRobin": {
-            "suiteId": "crane-baseline-4736f7c0",
+            "suiteId": "crane-baseline-4736f7c0-unicorn-reveal-6057d28e-lion-duelist-a2058c37",
             "engineVersion": "v1",
             "strategySeed": 1,
             "informationMode": "fair",
             "configurationHash": "32ec23c503969426",
-            "generatedAt": "2026-08-05T17:27:49.112Z",
+            "generatedAt": "2026-08-09T11:15:51.942Z",
             "gamesPerMatchup": 40,
             "botSeed": 1,
             "drawBidPolicy": "adaptive",
             "seatsAlternate": true,
             "decks": {
-              "Phoenix": {
-                "wins": 276,
-                "losses": 124,
+              "UnicornReveal": {
+                "wins": 418,
+                "losses": 222,
                 "other": 0,
-                "played": 400,
-                "overallWinRate": 0.69,
-                "averageOpponentWinRate": 0.6899999999999998,
-                "opponentsCompleted": 10
+                "played": 640,
+                "overallWinRate": 0.653125,
+                "averageOpponentWinRate": 0.6531250000000002,
+                "opponentsCompleted": 16
               },
-              "Scorpion": {
-                "wins": 271,
-                "losses": 129,
-                "other": 0,
-                "played": 400,
-                "overallWinRate": 0.6775,
-                "averageOpponentWinRate": 0.6775,
-                "opponentsCompleted": 10
-              },
-              "Dragon": {
-                "wins": 270,
-                "losses": 130,
-                "other": 0,
-                "played": 400,
-                "overallWinRate": 0.675,
-                "averageOpponentWinRate": 0.6749999999999999,
-                "opponentsCompleted": 10
-              },
-              "PhoenixShugenja": {
-                "wins": 229,
-                "losses": 171,
-                "other": 0,
-                "played": 400,
-                "overallWinRate": 0.5725,
-                "averageOpponentWinRate": 0.5725,
-                "opponentsCompleted": 10
-              },
-              "Lion": {
-                "wins": 208,
-                "losses": 192,
-                "other": 0,
-                "played": 400,
-                "overallWinRate": 0.52,
-                "averageOpponentWinRate": 0.52,
-                "opponentsCompleted": 10
-              },
-              "Crane": {
-                "wins": 192,
-                "losses": 208,
-                "other": 0,
-                "played": 400,
-                "overallWinRate": 0.48,
-                "averageOpponentWinRate": 0.48,
-                "opponentsCompleted": 10
-              },
-              "Unicorn": {
-                "wins": 171,
+              "CraneHonor": {
+                "wins": 411,
                 "losses": 229,
                 "other": 0,
-                "played": 400,
-                "overallWinRate": 0.4275,
-                "averageOpponentWinRate": 0.4275000000000001,
-                "opponentsCompleted": 10
+                "played": 640,
+                "overallWinRate": 0.6421875,
+                "averageOpponentWinRate": 0.6421875000000001,
+                "opponentsCompleted": 16
               },
-              "DragonAttachments": {
-                "wins": 166,
-                "losses": 233,
+              "Phoenix": {
+                "wins": 401,
+                "losses": 239,
+                "other": 0,
+                "played": 640,
+                "overallWinRate": 0.6265625,
+                "averageOpponentWinRate": 0.6265625,
+                "opponentsCompleted": 16
+              },
+              "PhoenixShugenja": {
+                "wins": 379,
+                "losses": 260,
                 "other": 1,
-                "played": 400,
-                "overallWinRate": 0.41604010025062654,
-                "averageOpponentWinRate": 0.41634615384615375,
-                "opponentsCompleted": 10
+                "played": 640,
+                "overallWinRate": 0.593114241001565,
+                "averageOpponentWinRate": 0.5930288461538462,
+                "opponentsCompleted": 16
+              },
+              "Lion": {
+                "wins": 371,
+                "losses": 268,
+                "other": 1,
+                "played": 640,
+                "overallWinRate": 0.5805946791862285,
+                "averageOpponentWinRate": 0.5807692307692307,
+                "opponentsCompleted": 16
+              },
+              "Scorpion": {
+                "wins": 371,
+                "losses": 269,
+                "other": 0,
+                "played": 640,
+                "overallWinRate": 0.5796875,
+                "averageOpponentWinRate": 0.5796875,
+                "opponentsCompleted": 16
+              },
+              "Dragon": {
+                "wins": 350,
+                "losses": 290,
+                "other": 0,
+                "played": 640,
+                "overallWinRate": 0.546875,
+                "averageOpponentWinRate": 0.5468749999999999,
+                "opponentsCompleted": 16
+              },
+              "LionHonor": {
+                "wins": 340,
+                "losses": 300,
+                "other": 0,
+                "played": 640,
+                "overallWinRate": 0.53125,
+                "averageOpponentWinRate": 0.53125,
+                "opponentsCompleted": 16
+              },
+              "ScorpionBidWar": {
+                "wins": 339,
+                "losses": 300,
+                "other": 1,
+                "played": 640,
+                "overallWinRate": 0.5305164319248826,
+                "averageOpponentWinRate": 0.5304086538461538,
+                "opponentsCompleted": 16
+              },
+              "Crane": {
+                "wins": 320,
+                "losses": 320,
+                "other": 0,
+                "played": 640,
+                "overallWinRate": 0.5,
+                "averageOpponentWinRate": 0.5000000000000001,
+                "opponentsCompleted": 16
               },
               "Crab": {
-                "wins": 163,
-                "losses": 237,
+                "wins": 298,
+                "losses": 342,
                 "other": 0,
-                "played": 400,
-                "overallWinRate": 0.4075,
-                "averageOpponentWinRate": 0.40750000000000003,
-                "opponentsCompleted": 10
+                "played": 640,
+                "overallWinRate": 0.465625,
+                "averageOpponentWinRate": 0.46562499999999996,
+                "opponentsCompleted": 16
+              },
+              "Unicorn": {
+                "wins": 273,
+                "losses": 366,
+                "other": 1,
+                "played": 640,
+                "overallWinRate": 0.4272300469483568,
+                "averageOpponentWinRate": 0.4270432692307692,
+                "opponentsCompleted": 16
               },
               "CraneDuels": {
-                "wins": 158,
-                "losses": 242,
+                "wins": 263,
+                "losses": 377,
                 "other": 0,
-                "played": 400,
-                "overallWinRate": 0.395,
-                "averageOpponentWinRate": 0.395,
-                "opponentsCompleted": 10
+                "played": 640,
+                "overallWinRate": 0.4109375,
+                "averageOpponentWinRate": 0.41093749999999996,
+                "opponentsCompleted": 16
+              },
+              "DragonAttachments": {
+                "wins": 244,
+                "losses": 396,
+                "other": 0,
+                "played": 640,
+                "overallWinRate": 0.38125,
+                "averageOpponentWinRate": 0.38125000000000003,
+                "opponentsCompleted": 16
+              },
+              "CrabSacrifice": {
+                "wins": 241,
+                "losses": 399,
+                "other": 0,
+                "played": 640,
+                "overallWinRate": 0.3765625,
+                "averageOpponentWinRate": 0.3765625,
+                "opponentsCompleted": 16
+              },
+              "LionDuelist": {
+                "wins": 218,
+                "losses": 422,
+                "other": 0,
+                "played": 640,
+                "overallWinRate": 0.340625,
+                "averageOpponentWinRate": 0.340625,
+                "opponentsCompleted": 16
               },
               "PhoenixPhoenix": {
-                "wins": 95,
-                "losses": 304,
-                "other": 1,
-                "played": 400,
-                "overallWinRate": 0.23809523809523808,
-                "averageOpponentWinRate": 0.2386538461538462,
-                "opponentsCompleted": 10
+                "wins": 201,
+                "losses": 439,
+                "other": 0,
+                "played": 640,
+                "overallWinRate": 0.3140625,
+                "averageOpponentWinRate": 0.31406249999999997,
+                "opponentsCompleted": 16
               }
-            }
+            },
+            "matchups": [
+              {
+                "left": "Crane",
+                "right": "CraneDuels",
+                "leftWins": 23,
+                "rightWins": 17,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "CraneHonor",
+                "leftWins": 23,
+                "rightWins": 17,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "Crab",
+                "leftWins": 23,
+                "rightWins": 17,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "CrabSacrifice",
+                "leftWins": 27,
+                "rightWins": 13,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "Dragon",
+                "leftWins": 19,
+                "rightWins": 21,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "DragonAttachments",
+                "leftWins": 18,
+                "rightWins": 22,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "Lion",
+                "leftWins": 20,
+                "rightWins": 20,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "LionDuelist",
+                "leftWins": 27,
+                "rightWins": 13,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "LionHonor",
+                "leftWins": 11,
+                "rightWins": 29,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "Phoenix",
+                "leftWins": 21,
+                "rightWins": 19,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "PhoenixPhoenix",
+                "leftWins": 16,
+                "rightWins": 24,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "PhoenixShugenja",
+                "leftWins": 11,
+                "rightWins": 29,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "Scorpion",
+                "leftWins": 18,
+                "rightWins": 22,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "ScorpionBidWar",
+                "leftWins": 24,
+                "rightWins": 16,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "Unicorn",
+                "leftWins": 26,
+                "rightWins": 14,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crane",
+                "right": "UnicornReveal",
+                "leftWins": 13,
+                "rightWins": 27,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "CraneHonor",
+                "leftWins": 19,
+                "rightWins": 21,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "Crab",
+                "leftWins": 21,
+                "rightWins": 19,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "CrabSacrifice",
+                "leftWins": 16,
+                "rightWins": 24,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "Dragon",
+                "leftWins": 8,
+                "rightWins": 32,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "DragonAttachments",
+                "leftWins": 17,
+                "rightWins": 23,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "Lion",
+                "leftWins": 14,
+                "rightWins": 26,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "LionDuelist",
+                "leftWins": 27,
+                "rightWins": 13,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "LionHonor",
+                "leftWins": 19,
+                "rightWins": 21,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "Phoenix",
+                "leftWins": 15,
+                "rightWins": 25,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "PhoenixPhoenix",
+                "leftWins": 19,
+                "rightWins": 21,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "PhoenixShugenja",
+                "leftWins": 10,
+                "rightWins": 30,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "Scorpion",
+                "leftWins": 10,
+                "rightWins": 30,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "ScorpionBidWar",
+                "leftWins": 16,
+                "rightWins": 24,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "Unicorn",
+                "leftWins": 22,
+                "rightWins": 18,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneDuels",
+                "right": "UnicornReveal",
+                "leftWins": 13,
+                "rightWins": 27,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "Crab",
+                "leftWins": 27,
+                "rightWins": 13,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "CrabSacrifice",
+                "leftWins": 33,
+                "rightWins": 7,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "Dragon",
+                "leftWins": 28,
+                "rightWins": 12,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "DragonAttachments",
+                "leftWins": 33,
+                "rightWins": 7,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "Lion",
+                "leftWins": 16,
+                "rightWins": 24,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "LionDuelist",
+                "leftWins": 33,
+                "rightWins": 7,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "LionHonor",
+                "leftWins": 30,
+                "rightWins": 10,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "Phoenix",
+                "leftWins": 23,
+                "rightWins": 17,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "PhoenixPhoenix",
+                "leftWins": 29,
+                "rightWins": 11,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "PhoenixShugenja",
+                "leftWins": 23,
+                "rightWins": 17,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "Scorpion",
+                "leftWins": 31,
+                "rightWins": 9,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "ScorpionBidWar",
+                "leftWins": 17,
+                "rightWins": 23,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "Unicorn",
+                "leftWins": 29,
+                "rightWins": 11,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CraneHonor",
+                "right": "UnicornReveal",
+                "leftWins": 21,
+                "rightWins": 19,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "CrabSacrifice",
+                "leftWins": 20,
+                "rightWins": 20,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "Dragon",
+                "leftWins": 18,
+                "rightWins": 22,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "DragonAttachments",
+                "leftWins": 22,
+                "rightWins": 18,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "Lion",
+                "leftWins": 22,
+                "rightWins": 18,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "LionDuelist",
+                "leftWins": 16,
+                "rightWins": 24,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "LionHonor",
+                "leftWins": 26,
+                "rightWins": 14,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "Phoenix",
+                "leftWins": 8,
+                "rightWins": 32,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "PhoenixPhoenix",
+                "leftWins": 32,
+                "rightWins": 8,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "PhoenixShugenja",
+                "leftWins": 13,
+                "rightWins": 27,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "Scorpion",
+                "leftWins": 20,
+                "rightWins": 20,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "ScorpionBidWar",
+                "leftWins": 22,
+                "rightWins": 18,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "Unicorn",
+                "leftWins": 22,
+                "rightWins": 18,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Crab",
+                "right": "UnicornReveal",
+                "leftWins": 8,
+                "rightWins": 32,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "Dragon",
+                "leftWins": 19,
+                "rightWins": 21,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "DragonAttachments",
+                "leftWins": 21,
+                "rightWins": 19,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "Lion",
+                "leftWins": 3,
+                "rightWins": 37,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "LionDuelist",
+                "leftWins": 19,
+                "rightWins": 21,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "LionHonor",
+                "leftWins": 16,
+                "rightWins": 24,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "Phoenix",
+                "leftWins": 10,
+                "rightWins": 30,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "PhoenixPhoenix",
+                "leftWins": 28,
+                "rightWins": 12,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "PhoenixShugenja",
+                "leftWins": 11,
+                "rightWins": 29,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "Scorpion",
+                "leftWins": 15,
+                "rightWins": 25,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "ScorpionBidWar",
+                "leftWins": 25,
+                "rightWins": 15,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "Unicorn",
+                "leftWins": 8,
+                "rightWins": 32,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "CrabSacrifice",
+                "right": "UnicornReveal",
+                "leftWins": 2,
+                "rightWins": 38,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "DragonAttachments",
+                "leftWins": 28,
+                "rightWins": 12,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "Lion",
+                "leftWins": 30,
+                "rightWins": 10,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "LionDuelist",
+                "leftWins": 31,
+                "rightWins": 9,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "LionHonor",
+                "leftWins": 9,
+                "rightWins": 31,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "Phoenix",
+                "leftWins": 29,
+                "rightWins": 11,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "PhoenixPhoenix",
+                "leftWins": 30,
+                "rightWins": 10,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "PhoenixShugenja",
+                "leftWins": 19,
+                "rightWins": 21,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "Scorpion",
+                "leftWins": 12,
+                "rightWins": 28,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "ScorpionBidWar",
+                "leftWins": 12,
+                "rightWins": 28,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "Unicorn",
+                "leftWins": 28,
+                "rightWins": 12,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Dragon",
+                "right": "UnicornReveal",
+                "leftWins": 14,
+                "rightWins": 26,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "DragonAttachments",
+                "right": "Lion",
+                "leftWins": 15,
+                "rightWins": 25,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "DragonAttachments",
+                "right": "LionDuelist",
+                "leftWins": 14,
+                "rightWins": 26,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "DragonAttachments",
+                "right": "LionHonor",
+                "leftWins": 15,
+                "rightWins": 25,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "DragonAttachments",
+                "right": "Phoenix",
+                "leftWins": 13,
+                "rightWins": 27,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "DragonAttachments",
+                "right": "PhoenixPhoenix",
+                "leftWins": 18,
+                "rightWins": 22,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "DragonAttachments",
+                "right": "PhoenixShugenja",
+                "leftWins": 7,
+                "rightWins": 33,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "DragonAttachments",
+                "right": "Scorpion",
+                "leftWins": 11,
+                "rightWins": 29,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "DragonAttachments",
+                "right": "ScorpionBidWar",
+                "leftWins": 18,
+                "rightWins": 22,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "DragonAttachments",
+                "right": "Unicorn",
+                "leftWins": 18,
+                "rightWins": 22,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "DragonAttachments",
+                "right": "UnicornReveal",
+                "leftWins": 14,
+                "rightWins": 26,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Lion",
+                "right": "LionDuelist",
+                "leftWins": 34,
+                "rightWins": 6,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Lion",
+                "right": "LionHonor",
+                "leftWins": 18,
+                "rightWins": 22,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Lion",
+                "right": "Phoenix",
+                "leftWins": 12,
+                "rightWins": 28,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Lion",
+                "right": "PhoenixPhoenix",
+                "leftWins": 29,
+                "rightWins": 11,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Lion",
+                "right": "PhoenixShugenja",
+                "leftWins": 23,
+                "rightWins": 17,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Lion",
+                "right": "Scorpion",
+                "leftWins": 28,
+                "rightWins": 12,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Lion",
+                "right": "ScorpionBidWar",
+                "leftWins": 23,
+                "rightWins": 17,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Lion",
+                "right": "Unicorn",
+                "leftWins": 27,
+                "rightWins": 12,
+                "other": 1,
+                "played": 40
+              },
+              {
+                "left": "Lion",
+                "right": "UnicornReveal",
+                "leftWins": 17,
+                "rightWins": 23,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionDuelist",
+                "right": "LionHonor",
+                "leftWins": 14,
+                "rightWins": 26,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionDuelist",
+                "right": "Phoenix",
+                "leftWins": 8,
+                "rightWins": 32,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionDuelist",
+                "right": "PhoenixPhoenix",
+                "leftWins": 19,
+                "rightWins": 21,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionDuelist",
+                "right": "PhoenixShugenja",
+                "leftWins": 7,
+                "rightWins": 33,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionDuelist",
+                "right": "Scorpion",
+                "leftWins": 25,
+                "rightWins": 15,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionDuelist",
+                "right": "ScorpionBidWar",
+                "leftWins": 6,
+                "rightWins": 34,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionDuelist",
+                "right": "Unicorn",
+                "leftWins": 11,
+                "rightWins": 29,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionDuelist",
+                "right": "UnicornReveal",
+                "leftWins": 9,
+                "rightWins": 31,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionHonor",
+                "right": "Phoenix",
+                "leftWins": 27,
+                "rightWins": 13,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionHonor",
+                "right": "PhoenixPhoenix",
+                "leftWins": 32,
+                "rightWins": 8,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionHonor",
+                "right": "PhoenixShugenja",
+                "leftWins": 21,
+                "rightWins": 19,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionHonor",
+                "right": "Scorpion",
+                "leftWins": 12,
+                "rightWins": 28,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionHonor",
+                "right": "ScorpionBidWar",
+                "leftWins": 10,
+                "rightWins": 30,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionHonor",
+                "right": "Unicorn",
+                "leftWins": 26,
+                "rightWins": 14,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "LionHonor",
+                "right": "UnicornReveal",
+                "leftWins": 10,
+                "rightWins": 30,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Phoenix",
+                "right": "PhoenixPhoenix",
+                "leftWins": 38,
+                "rightWins": 2,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Phoenix",
+                "right": "PhoenixShugenja",
+                "leftWins": 33,
+                "rightWins": 7,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Phoenix",
+                "right": "Scorpion",
+                "leftWins": 18,
+                "rightWins": 22,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Phoenix",
+                "right": "ScorpionBidWar",
+                "leftWins": 28,
+                "rightWins": 12,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Phoenix",
+                "right": "Unicorn",
+                "leftWins": 31,
+                "rightWins": 9,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Phoenix",
+                "right": "UnicornReveal",
+                "leftWins": 19,
+                "rightWins": 21,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "PhoenixPhoenix",
+                "right": "PhoenixShugenja",
+                "leftWins": 8,
+                "rightWins": 32,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "PhoenixPhoenix",
+                "right": "Scorpion",
+                "leftWins": 12,
+                "rightWins": 28,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "PhoenixPhoenix",
+                "right": "ScorpionBidWar",
+                "leftWins": 9,
+                "rightWins": 31,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "PhoenixPhoenix",
+                "right": "Unicorn",
+                "leftWins": 12,
+                "rightWins": 28,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "PhoenixPhoenix",
+                "right": "UnicornReveal",
+                "leftWins": 10,
+                "rightWins": 30,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "PhoenixShugenja",
+                "right": "Scorpion",
+                "leftWins": 8,
+                "rightWins": 32,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "PhoenixShugenja",
+                "right": "ScorpionBidWar",
+                "leftWins": 21,
+                "rightWins": 18,
+                "other": 1,
+                "played": 40
+              },
+              {
+                "left": "PhoenixShugenja",
+                "right": "Unicorn",
+                "leftWins": 31,
+                "rightWins": 9,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "PhoenixShugenja",
+                "right": "UnicornReveal",
+                "leftWins": 25,
+                "rightWins": 15,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Scorpion",
+                "right": "ScorpionBidWar",
+                "leftWins": 31,
+                "rightWins": 9,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Scorpion",
+                "right": "Unicorn",
+                "leftWins": 29,
+                "rightWins": 11,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Scorpion",
+                "right": "UnicornReveal",
+                "leftWins": 11,
+                "rightWins": 29,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "ScorpionBidWar",
+                "right": "Unicorn",
+                "leftWins": 29,
+                "rightWins": 11,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "ScorpionBidWar",
+                "right": "UnicornReveal",
+                "leftWins": 13,
+                "rightWins": 27,
+                "other": 0,
+                "played": 40
+              },
+              {
+                "left": "Unicorn",
+                "right": "UnicornReveal",
+                "leftWins": 23,
+                "rightWins": 17,
+                "other": 0,
+                "played": 40
+              }
+            ]
           },
           "omniscient": {
             "suiteId": "crane-baseline-4736f7c0",
@@ -1450,117 +2594,1261 @@
         }
       },
       "roundRobin": {
-        "suiteId": "crane-baseline-4736f7c0",
+        "suiteId": "crane-baseline-4736f7c0-unicorn-reveal-6057d28e-lion-duelist-a2058c37",
         "engineVersion": "v1",
         "strategySeed": 1,
         "informationMode": "fair",
         "configurationHash": "32ec23c503969426",
-        "generatedAt": "2026-08-05T17:27:49.112Z",
+        "generatedAt": "2026-08-09T11:15:51.942Z",
         "gamesPerMatchup": 40,
         "botSeed": 1,
         "drawBidPolicy": "adaptive",
         "seatsAlternate": true,
         "decks": {
-          "Phoenix": {
-            "wins": 276,
-            "losses": 124,
+          "UnicornReveal": {
+            "wins": 418,
+            "losses": 222,
             "other": 0,
-            "played": 400,
-            "overallWinRate": 0.69,
-            "averageOpponentWinRate": 0.6899999999999998,
-            "opponentsCompleted": 10
+            "played": 640,
+            "overallWinRate": 0.653125,
+            "averageOpponentWinRate": 0.6531250000000002,
+            "opponentsCompleted": 16
           },
-          "Scorpion": {
-            "wins": 271,
-            "losses": 129,
-            "other": 0,
-            "played": 400,
-            "overallWinRate": 0.6775,
-            "averageOpponentWinRate": 0.6775,
-            "opponentsCompleted": 10
-          },
-          "Dragon": {
-            "wins": 270,
-            "losses": 130,
-            "other": 0,
-            "played": 400,
-            "overallWinRate": 0.675,
-            "averageOpponentWinRate": 0.6749999999999999,
-            "opponentsCompleted": 10
-          },
-          "PhoenixShugenja": {
-            "wins": 229,
-            "losses": 171,
-            "other": 0,
-            "played": 400,
-            "overallWinRate": 0.5725,
-            "averageOpponentWinRate": 0.5725,
-            "opponentsCompleted": 10
-          },
-          "Lion": {
-            "wins": 208,
-            "losses": 192,
-            "other": 0,
-            "played": 400,
-            "overallWinRate": 0.52,
-            "averageOpponentWinRate": 0.52,
-            "opponentsCompleted": 10
-          },
-          "Crane": {
-            "wins": 192,
-            "losses": 208,
-            "other": 0,
-            "played": 400,
-            "overallWinRate": 0.48,
-            "averageOpponentWinRate": 0.48,
-            "opponentsCompleted": 10
-          },
-          "Unicorn": {
-            "wins": 171,
+          "CraneHonor": {
+            "wins": 411,
             "losses": 229,
             "other": 0,
-            "played": 400,
-            "overallWinRate": 0.4275,
-            "averageOpponentWinRate": 0.4275000000000001,
-            "opponentsCompleted": 10
+            "played": 640,
+            "overallWinRate": 0.6421875,
+            "averageOpponentWinRate": 0.6421875000000001,
+            "opponentsCompleted": 16
           },
-          "DragonAttachments": {
-            "wins": 166,
-            "losses": 233,
+          "Phoenix": {
+            "wins": 401,
+            "losses": 239,
+            "other": 0,
+            "played": 640,
+            "overallWinRate": 0.6265625,
+            "averageOpponentWinRate": 0.6265625,
+            "opponentsCompleted": 16
+          },
+          "PhoenixShugenja": {
+            "wins": 379,
+            "losses": 260,
             "other": 1,
-            "played": 400,
-            "overallWinRate": 0.41604010025062654,
-            "averageOpponentWinRate": 0.41634615384615375,
-            "opponentsCompleted": 10
+            "played": 640,
+            "overallWinRate": 0.593114241001565,
+            "averageOpponentWinRate": 0.5930288461538462,
+            "opponentsCompleted": 16
+          },
+          "Lion": {
+            "wins": 371,
+            "losses": 268,
+            "other": 1,
+            "played": 640,
+            "overallWinRate": 0.5805946791862285,
+            "averageOpponentWinRate": 0.5807692307692307,
+            "opponentsCompleted": 16
+          },
+          "Scorpion": {
+            "wins": 371,
+            "losses": 269,
+            "other": 0,
+            "played": 640,
+            "overallWinRate": 0.5796875,
+            "averageOpponentWinRate": 0.5796875,
+            "opponentsCompleted": 16
+          },
+          "Dragon": {
+            "wins": 350,
+            "losses": 290,
+            "other": 0,
+            "played": 640,
+            "overallWinRate": 0.546875,
+            "averageOpponentWinRate": 0.5468749999999999,
+            "opponentsCompleted": 16
+          },
+          "LionHonor": {
+            "wins": 340,
+            "losses": 300,
+            "other": 0,
+            "played": 640,
+            "overallWinRate": 0.53125,
+            "averageOpponentWinRate": 0.53125,
+            "opponentsCompleted": 16
+          },
+          "ScorpionBidWar": {
+            "wins": 339,
+            "losses": 300,
+            "other": 1,
+            "played": 640,
+            "overallWinRate": 0.5305164319248826,
+            "averageOpponentWinRate": 0.5304086538461538,
+            "opponentsCompleted": 16
+          },
+          "Crane": {
+            "wins": 320,
+            "losses": 320,
+            "other": 0,
+            "played": 640,
+            "overallWinRate": 0.5,
+            "averageOpponentWinRate": 0.5000000000000001,
+            "opponentsCompleted": 16
           },
           "Crab": {
-            "wins": 163,
-            "losses": 237,
+            "wins": 298,
+            "losses": 342,
             "other": 0,
-            "played": 400,
-            "overallWinRate": 0.4075,
-            "averageOpponentWinRate": 0.40750000000000003,
-            "opponentsCompleted": 10
+            "played": 640,
+            "overallWinRate": 0.465625,
+            "averageOpponentWinRate": 0.46562499999999996,
+            "opponentsCompleted": 16
+          },
+          "Unicorn": {
+            "wins": 273,
+            "losses": 366,
+            "other": 1,
+            "played": 640,
+            "overallWinRate": 0.4272300469483568,
+            "averageOpponentWinRate": 0.4270432692307692,
+            "opponentsCompleted": 16
           },
           "CraneDuels": {
-            "wins": 158,
-            "losses": 242,
+            "wins": 263,
+            "losses": 377,
             "other": 0,
-            "played": 400,
-            "overallWinRate": 0.395,
-            "averageOpponentWinRate": 0.395,
-            "opponentsCompleted": 10
+            "played": 640,
+            "overallWinRate": 0.4109375,
+            "averageOpponentWinRate": 0.41093749999999996,
+            "opponentsCompleted": 16
+          },
+          "DragonAttachments": {
+            "wins": 244,
+            "losses": 396,
+            "other": 0,
+            "played": 640,
+            "overallWinRate": 0.38125,
+            "averageOpponentWinRate": 0.38125000000000003,
+            "opponentsCompleted": 16
+          },
+          "CrabSacrifice": {
+            "wins": 241,
+            "losses": 399,
+            "other": 0,
+            "played": 640,
+            "overallWinRate": 0.3765625,
+            "averageOpponentWinRate": 0.3765625,
+            "opponentsCompleted": 16
+          },
+          "LionDuelist": {
+            "wins": 218,
+            "losses": 422,
+            "other": 0,
+            "played": 640,
+            "overallWinRate": 0.340625,
+            "averageOpponentWinRate": 0.340625,
+            "opponentsCompleted": 16
           },
           "PhoenixPhoenix": {
-            "wins": 95,
-            "losses": 304,
-            "other": 1,
-            "played": 400,
-            "overallWinRate": 0.23809523809523808,
-            "averageOpponentWinRate": 0.2386538461538462,
-            "opponentsCompleted": 10
+            "wins": 201,
+            "losses": 439,
+            "other": 0,
+            "played": 640,
+            "overallWinRate": 0.3140625,
+            "averageOpponentWinRate": 0.31406249999999997,
+            "opponentsCompleted": 16
           }
-        }
+        },
+        "matchups": [
+          {
+            "left": "Crane",
+            "right": "CraneDuels",
+            "leftWins": 23,
+            "rightWins": 17,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "CraneHonor",
+            "leftWins": 23,
+            "rightWins": 17,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "Crab",
+            "leftWins": 23,
+            "rightWins": 17,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "CrabSacrifice",
+            "leftWins": 27,
+            "rightWins": 13,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "Dragon",
+            "leftWins": 19,
+            "rightWins": 21,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "DragonAttachments",
+            "leftWins": 18,
+            "rightWins": 22,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "Lion",
+            "leftWins": 20,
+            "rightWins": 20,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "LionDuelist",
+            "leftWins": 27,
+            "rightWins": 13,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "LionHonor",
+            "leftWins": 11,
+            "rightWins": 29,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "Phoenix",
+            "leftWins": 21,
+            "rightWins": 19,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "PhoenixPhoenix",
+            "leftWins": 16,
+            "rightWins": 24,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "PhoenixShugenja",
+            "leftWins": 11,
+            "rightWins": 29,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "Scorpion",
+            "leftWins": 18,
+            "rightWins": 22,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "ScorpionBidWar",
+            "leftWins": 24,
+            "rightWins": 16,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "Unicorn",
+            "leftWins": 26,
+            "rightWins": 14,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crane",
+            "right": "UnicornReveal",
+            "leftWins": 13,
+            "rightWins": 27,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "CraneHonor",
+            "leftWins": 19,
+            "rightWins": 21,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "Crab",
+            "leftWins": 21,
+            "rightWins": 19,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "CrabSacrifice",
+            "leftWins": 16,
+            "rightWins": 24,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "Dragon",
+            "leftWins": 8,
+            "rightWins": 32,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "DragonAttachments",
+            "leftWins": 17,
+            "rightWins": 23,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "Lion",
+            "leftWins": 14,
+            "rightWins": 26,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "LionDuelist",
+            "leftWins": 27,
+            "rightWins": 13,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "LionHonor",
+            "leftWins": 19,
+            "rightWins": 21,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "Phoenix",
+            "leftWins": 15,
+            "rightWins": 25,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "PhoenixPhoenix",
+            "leftWins": 19,
+            "rightWins": 21,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "PhoenixShugenja",
+            "leftWins": 10,
+            "rightWins": 30,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "Scorpion",
+            "leftWins": 10,
+            "rightWins": 30,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "ScorpionBidWar",
+            "leftWins": 16,
+            "rightWins": 24,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "Unicorn",
+            "leftWins": 22,
+            "rightWins": 18,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneDuels",
+            "right": "UnicornReveal",
+            "leftWins": 13,
+            "rightWins": 27,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "Crab",
+            "leftWins": 27,
+            "rightWins": 13,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "CrabSacrifice",
+            "leftWins": 33,
+            "rightWins": 7,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "Dragon",
+            "leftWins": 28,
+            "rightWins": 12,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "DragonAttachments",
+            "leftWins": 33,
+            "rightWins": 7,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "Lion",
+            "leftWins": 16,
+            "rightWins": 24,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "LionDuelist",
+            "leftWins": 33,
+            "rightWins": 7,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "LionHonor",
+            "leftWins": 30,
+            "rightWins": 10,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "Phoenix",
+            "leftWins": 23,
+            "rightWins": 17,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "PhoenixPhoenix",
+            "leftWins": 29,
+            "rightWins": 11,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "PhoenixShugenja",
+            "leftWins": 23,
+            "rightWins": 17,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "Scorpion",
+            "leftWins": 31,
+            "rightWins": 9,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "ScorpionBidWar",
+            "leftWins": 17,
+            "rightWins": 23,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "Unicorn",
+            "leftWins": 29,
+            "rightWins": 11,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CraneHonor",
+            "right": "UnicornReveal",
+            "leftWins": 21,
+            "rightWins": 19,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "CrabSacrifice",
+            "leftWins": 20,
+            "rightWins": 20,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "Dragon",
+            "leftWins": 18,
+            "rightWins": 22,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "DragonAttachments",
+            "leftWins": 22,
+            "rightWins": 18,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "Lion",
+            "leftWins": 22,
+            "rightWins": 18,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "LionDuelist",
+            "leftWins": 16,
+            "rightWins": 24,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "LionHonor",
+            "leftWins": 26,
+            "rightWins": 14,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "Phoenix",
+            "leftWins": 8,
+            "rightWins": 32,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "PhoenixPhoenix",
+            "leftWins": 32,
+            "rightWins": 8,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "PhoenixShugenja",
+            "leftWins": 13,
+            "rightWins": 27,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "Scorpion",
+            "leftWins": 20,
+            "rightWins": 20,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "ScorpionBidWar",
+            "leftWins": 22,
+            "rightWins": 18,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "Unicorn",
+            "leftWins": 22,
+            "rightWins": 18,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Crab",
+            "right": "UnicornReveal",
+            "leftWins": 8,
+            "rightWins": 32,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "Dragon",
+            "leftWins": 19,
+            "rightWins": 21,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "DragonAttachments",
+            "leftWins": 21,
+            "rightWins": 19,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "Lion",
+            "leftWins": 3,
+            "rightWins": 37,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "LionDuelist",
+            "leftWins": 19,
+            "rightWins": 21,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "LionHonor",
+            "leftWins": 16,
+            "rightWins": 24,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "Phoenix",
+            "leftWins": 10,
+            "rightWins": 30,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "PhoenixPhoenix",
+            "leftWins": 28,
+            "rightWins": 12,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "PhoenixShugenja",
+            "leftWins": 11,
+            "rightWins": 29,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "Scorpion",
+            "leftWins": 15,
+            "rightWins": 25,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "ScorpionBidWar",
+            "leftWins": 25,
+            "rightWins": 15,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "Unicorn",
+            "leftWins": 8,
+            "rightWins": 32,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "CrabSacrifice",
+            "right": "UnicornReveal",
+            "leftWins": 2,
+            "rightWins": 38,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "DragonAttachments",
+            "leftWins": 28,
+            "rightWins": 12,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "Lion",
+            "leftWins": 30,
+            "rightWins": 10,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "LionDuelist",
+            "leftWins": 31,
+            "rightWins": 9,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "LionHonor",
+            "leftWins": 9,
+            "rightWins": 31,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "Phoenix",
+            "leftWins": 29,
+            "rightWins": 11,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "PhoenixPhoenix",
+            "leftWins": 30,
+            "rightWins": 10,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "PhoenixShugenja",
+            "leftWins": 19,
+            "rightWins": 21,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "Scorpion",
+            "leftWins": 12,
+            "rightWins": 28,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "ScorpionBidWar",
+            "leftWins": 12,
+            "rightWins": 28,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "Unicorn",
+            "leftWins": 28,
+            "rightWins": 12,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Dragon",
+            "right": "UnicornReveal",
+            "leftWins": 14,
+            "rightWins": 26,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "DragonAttachments",
+            "right": "Lion",
+            "leftWins": 15,
+            "rightWins": 25,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "DragonAttachments",
+            "right": "LionDuelist",
+            "leftWins": 14,
+            "rightWins": 26,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "DragonAttachments",
+            "right": "LionHonor",
+            "leftWins": 15,
+            "rightWins": 25,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "DragonAttachments",
+            "right": "Phoenix",
+            "leftWins": 13,
+            "rightWins": 27,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "DragonAttachments",
+            "right": "PhoenixPhoenix",
+            "leftWins": 18,
+            "rightWins": 22,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "DragonAttachments",
+            "right": "PhoenixShugenja",
+            "leftWins": 7,
+            "rightWins": 33,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "DragonAttachments",
+            "right": "Scorpion",
+            "leftWins": 11,
+            "rightWins": 29,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "DragonAttachments",
+            "right": "ScorpionBidWar",
+            "leftWins": 18,
+            "rightWins": 22,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "DragonAttachments",
+            "right": "Unicorn",
+            "leftWins": 18,
+            "rightWins": 22,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "DragonAttachments",
+            "right": "UnicornReveal",
+            "leftWins": 14,
+            "rightWins": 26,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Lion",
+            "right": "LionDuelist",
+            "leftWins": 34,
+            "rightWins": 6,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Lion",
+            "right": "LionHonor",
+            "leftWins": 18,
+            "rightWins": 22,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Lion",
+            "right": "Phoenix",
+            "leftWins": 12,
+            "rightWins": 28,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Lion",
+            "right": "PhoenixPhoenix",
+            "leftWins": 29,
+            "rightWins": 11,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Lion",
+            "right": "PhoenixShugenja",
+            "leftWins": 23,
+            "rightWins": 17,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Lion",
+            "right": "Scorpion",
+            "leftWins": 28,
+            "rightWins": 12,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Lion",
+            "right": "ScorpionBidWar",
+            "leftWins": 23,
+            "rightWins": 17,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Lion",
+            "right": "Unicorn",
+            "leftWins": 27,
+            "rightWins": 12,
+            "other": 1,
+            "played": 40
+          },
+          {
+            "left": "Lion",
+            "right": "UnicornReveal",
+            "leftWins": 17,
+            "rightWins": 23,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionDuelist",
+            "right": "LionHonor",
+            "leftWins": 14,
+            "rightWins": 26,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionDuelist",
+            "right": "Phoenix",
+            "leftWins": 8,
+            "rightWins": 32,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionDuelist",
+            "right": "PhoenixPhoenix",
+            "leftWins": 19,
+            "rightWins": 21,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionDuelist",
+            "right": "PhoenixShugenja",
+            "leftWins": 7,
+            "rightWins": 33,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionDuelist",
+            "right": "Scorpion",
+            "leftWins": 25,
+            "rightWins": 15,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionDuelist",
+            "right": "ScorpionBidWar",
+            "leftWins": 6,
+            "rightWins": 34,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionDuelist",
+            "right": "Unicorn",
+            "leftWins": 11,
+            "rightWins": 29,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionDuelist",
+            "right": "UnicornReveal",
+            "leftWins": 9,
+            "rightWins": 31,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionHonor",
+            "right": "Phoenix",
+            "leftWins": 27,
+            "rightWins": 13,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionHonor",
+            "right": "PhoenixPhoenix",
+            "leftWins": 32,
+            "rightWins": 8,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionHonor",
+            "right": "PhoenixShugenja",
+            "leftWins": 21,
+            "rightWins": 19,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionHonor",
+            "right": "Scorpion",
+            "leftWins": 12,
+            "rightWins": 28,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionHonor",
+            "right": "ScorpionBidWar",
+            "leftWins": 10,
+            "rightWins": 30,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionHonor",
+            "right": "Unicorn",
+            "leftWins": 26,
+            "rightWins": 14,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "LionHonor",
+            "right": "UnicornReveal",
+            "leftWins": 10,
+            "rightWins": 30,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Phoenix",
+            "right": "PhoenixPhoenix",
+            "leftWins": 38,
+            "rightWins": 2,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Phoenix",
+            "right": "PhoenixShugenja",
+            "leftWins": 33,
+            "rightWins": 7,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Phoenix",
+            "right": "Scorpion",
+            "leftWins": 18,
+            "rightWins": 22,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Phoenix",
+            "right": "ScorpionBidWar",
+            "leftWins": 28,
+            "rightWins": 12,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Phoenix",
+            "right": "Unicorn",
+            "leftWins": 31,
+            "rightWins": 9,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Phoenix",
+            "right": "UnicornReveal",
+            "leftWins": 19,
+            "rightWins": 21,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "PhoenixPhoenix",
+            "right": "PhoenixShugenja",
+            "leftWins": 8,
+            "rightWins": 32,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "PhoenixPhoenix",
+            "right": "Scorpion",
+            "leftWins": 12,
+            "rightWins": 28,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "PhoenixPhoenix",
+            "right": "ScorpionBidWar",
+            "leftWins": 9,
+            "rightWins": 31,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "PhoenixPhoenix",
+            "right": "Unicorn",
+            "leftWins": 12,
+            "rightWins": 28,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "PhoenixPhoenix",
+            "right": "UnicornReveal",
+            "leftWins": 10,
+            "rightWins": 30,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "PhoenixShugenja",
+            "right": "Scorpion",
+            "leftWins": 8,
+            "rightWins": 32,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "PhoenixShugenja",
+            "right": "ScorpionBidWar",
+            "leftWins": 21,
+            "rightWins": 18,
+            "other": 1,
+            "played": 40
+          },
+          {
+            "left": "PhoenixShugenja",
+            "right": "Unicorn",
+            "leftWins": 31,
+            "rightWins": 9,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "PhoenixShugenja",
+            "right": "UnicornReveal",
+            "leftWins": 25,
+            "rightWins": 15,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Scorpion",
+            "right": "ScorpionBidWar",
+            "leftWins": 31,
+            "rightWins": 9,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Scorpion",
+            "right": "Unicorn",
+            "leftWins": 29,
+            "rightWins": 11,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Scorpion",
+            "right": "UnicornReveal",
+            "leftWins": 11,
+            "rightWins": 29,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "ScorpionBidWar",
+            "right": "Unicorn",
+            "leftWins": 29,
+            "rightWins": 11,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "ScorpionBidWar",
+            "right": "UnicornReveal",
+            "leftWins": 13,
+            "rightWins": 27,
+            "other": 0,
+            "played": 40
+          },
+          {
+            "left": "Unicorn",
+            "right": "UnicornReveal",
+            "leftWins": 23,
+            "rightWins": 17,
+            "other": 0,
+            "played": 40
+          }
+        ]
       },
       "omniscient": {
         "suiteId": "crane-baseline-4736f7c0",

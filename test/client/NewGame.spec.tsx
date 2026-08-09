@@ -1,7 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import React from "react";
-import { getBotBenchmark, InnerNewGame, pretrainedBotDecks, standardBenchmarkSuite } from "../../client/NewGame";
+import {
+    getBotBenchmark,
+    getRoundRobinMatchup,
+    InnerNewGame,
+    pretrainedBotDecks,
+    standardBenchmarkSuite
+} from "../../client/NewGame";
 
 describe("the <InnerNewGame /> bot deck selector", () => {
     const enableBotOpponent = () => {
@@ -15,6 +21,22 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         }, "v1", 1, "Crane");
 
         expect(benchmark.winRates).toBeUndefined();
+    });
+
+    it("orients round-robin records as bot wins against the player's deck", () => {
+        const roundRobin = {
+            matchups: [{
+                left: "Crane", right: "Lion", leftWins: 12, rightWins: 28,
+                other: 0, played: 40
+            }]
+        };
+
+        expect(getRoundRobinMatchup(roundRobin, "Crane", "Lion")).toEqual({
+            wins: 12, losses: 28, other: 0, played: 40, winRate: 0.3
+        });
+        expect(getRoundRobinMatchup(roundRobin, "Lion", "Crane")).toEqual({
+            wins: 28, losses: 12, other: 0, played: 40, winRate: 0.7
+        });
     });
 
     it("lists every benchmarked bot deck with one option per deck", () => {
@@ -140,6 +162,13 @@ describe("the <InnerNewGame /> bot deck selector", () => {
                         suiteId: standardBenchmarkSuite,
                         gamesPerMatchup: 40,
                         decks: {
+                            Crane: {
+                                wins: 450,
+                                losses: 450,
+                                other: 0,
+                                averageOpponentWinRate: 0.5,
+                                overallWinRate: 0.5
+                            },
                             Unicorn: {
                                 wins: 480,
                                 losses: 419,
@@ -154,7 +183,17 @@ describe("the <InnerNewGame /> bot deck selector", () => {
                                 averageOpponentWinRate: 0.596,
                                 overallWinRate: 0.596
                             }
-                        }
+                        },
+                        matchups: [{
+                            left: "Crane", right: "Unicorn", leftWins: 12,
+                            rightWins: 28, other: 0, played: 40
+                        }, {
+                            left: "Crane", right: "PhoenixShugenja", leftWins: 24,
+                            rightWins: 16, other: 0, played: 40
+                        }, {
+                            left: "Unicorn", right: "PhoenixShugenja", leftWins: 10,
+                            rightWins: 30, other: 0, played: 40
+                        }]
                     },
                     omniscient: {
                         suiteId: standardBenchmarkSuite,
@@ -191,6 +230,21 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
             "Round robin: 53.4% average vs opponents, 53.4% overall (480-419, N=40/matchup)."
         );
+        const matchupToggle = screen.getByRole("button", { name: "Show bot win-rate matrix" });
+        expect(matchupToggle).toHaveAttribute("aria-expanded", "false");
+        expect(screen.queryByRole("table", { name: "Bot win-rate matchup matrix" })).not.toBeInTheDocument();
+        fireEvent.click(matchupToggle);
+        expect(matchupToggle).toHaveAttribute("aria-expanded", "true");
+        const matchupMatrix = screen.getByRole("table", { name: "Bot win-rate matchup matrix" });
+        expect(within(matchupMatrix).getByLabelText(
+            "[Precon15] Unicorn Military Rush (Temple) versus Crane Baseline: 70.0%"
+        )).toHaveTextContent("70.0%");
+        expect(within(matchupMatrix).getByLabelText(
+            "Crane Baseline versus [Precon15] Unicorn Military Rush (Temple): 30.0%"
+        )).toHaveTextContent("30.0%");
+        expect(within(matchupMatrix).getByLabelText(
+            "[Precon15] Unicorn Military Rush (Temple) versus [Precon15] Unicorn Military Rush (Temple): same deck"
+        )).toHaveTextContent("—");
         fireEvent.click(screen.getByRole("checkbox", { name: "Omniscient (sees hidden cards)" }));
         expect(screen.getByLabelText("Standard bot benchmark")).toHaveTextContent(
             "Omniscient seed 1: 61.5% vs default pool (123-77), 8.0% uplift over normal [Precon15] Unicorn Military Rush (Temple); same-deck mirror 60.0% (12-8) (N=20/matchup)."
