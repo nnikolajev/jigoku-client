@@ -12,6 +12,7 @@ const CardService = require("./services/CardService.js");
 const validateDeck = require("../client/deck-validator").default;
 const Settings = require("./settings.js");
 const GetShadowlandsSummonables = require("./shadowLandsHelper.js");
+const { buildGameNodeHandoff } = require("./gameNodeHandoff.js");
 
 // Public Crane Baseline used by standardized bot benchmarks and as the default
 // playable bot deck. The per-deck tactics live in Jigoku's bot profile layer.
@@ -561,7 +562,7 @@ class Lobby {
 
         var game = this.findGameForUser(socket.user.username);
         if(game && game.started) {
-            socket.send("handoff", { address: game.node.address, port: game.node.port, protocol: game.node.protocol, name: game.node.identity, gameId: game.id });
+            socket.send("handoff", buildGameNodeHandoff(game.node, this.config.gameNode?.proxyUrl, game.id));
         }
     }
 
@@ -684,7 +685,7 @@ class Lobby {
 
         this.broadcastGameList();
 
-        this.io.to(game.id).emit("handoff", { address: gameNode.address, port: gameNode.port, protocol: game.node.protocol, name: game.node.identity });
+        this.io.to(game.id).emit("handoff", buildGameNodeHandoff(gameNode, this.config.gameNode?.proxyUrl));
     }
 
     onWatchGame(socket, gameId, password) {
@@ -709,7 +710,7 @@ class Lobby {
 
             if(game.started) {
                 this.router.addSpectator(game, socket.user);
-                socket.send("handoff", { address: game.node.address, port: game.node.port, protocol: game.node.protocol, name: game.node.identity });
+                socket.send("handoff", buildGameNodeHandoff(game.node, this.config.gameNode?.proxyUrl));
             } else {
                 this.sendGameState(game);
             }

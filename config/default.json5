@@ -24,7 +24,8 @@
     gameNode: {
         name: 'test1',
         host: 'localhost',
-        socketioPort: 9500
+        socketioPort: 9500,
+        proxyUrl: null
 
         /*
          * Other game node configurations used, but not specified, include:

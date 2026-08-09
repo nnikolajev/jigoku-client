@@ -51,8 +51,9 @@ The lobby server is configured via `config/default.json5`. Create a `config/loca
 | `secret` | — | Session secret |
 | `lobby.port` | `4000` | HTTP port for the lobby server |
 | `cspConnectSources` | `[]` | Additional CSP connect-src hosts for game nodes |
+| `gameNode.proxyUrl` | unset | Internal game-node URL to proxy through the lobby for co-hosted deployments |
 
-Some settings can also be overridden via environment variables: `DB_PATH`, `LOBBY_WS_URL`, `NODE_ENV`, `LOG_LEVEL`, `HTTPS`, `ALLOWED_ORIGINS`.
+Some settings can also be overridden via environment variables: `DB_PATH`, `LOBBY_WS_URL`, `NODE_ENV`, `LOG_LEVEL`, `HTTPS`, `ALLOWED_ORIGINS`, `GAME_NODE_PROXY_URL`.
 
 For production:
 

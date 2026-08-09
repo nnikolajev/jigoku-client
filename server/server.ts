@@ -15,6 +15,7 @@ const http = require("http");
 const helmet = require("helmet");
 const { rateLimit } = require("express-rate-limit");
 const db = require("./db.js");
+const { attachGameNodeProxy } = require("./gameNodeProxy.js");
 
 const fs = require("fs");
 const UserService = require("./services/UserService.js");
@@ -79,6 +80,8 @@ class Server {
                 crossOriginEmbedderPolicy: false // Needed for Socket.io compatibility
             })
         );
+
+        attachGameNodeProxy(app, this.server, config, logger);
 
         app.set("trust proxy", 1);
         app.use(session({

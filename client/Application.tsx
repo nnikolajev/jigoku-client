@@ -29,6 +29,7 @@ import UserAdmin from "./UserAdmin.jsx";
 import BlockList from "./BlockList.jsx";
 import GameReplay from "./GameReplay.jsx";
 import { startRecording, recordState, setHiddenInfo, clearRecording } from "./gameStateRecorder.js";
+import { getGameNodeUrl } from "./gameNodeUrl.js";
 
 import { toast } from "sonner";
 
@@ -137,10 +138,7 @@ class App extends React.Component {
         });
 
         socket.on("handoff", server => {
-            let url = `${server.protocol || "https"}://${server.address}`;
-            if(server.port && server.port !== 80 && server.port !== 443) {
-                url += `:${server.port}`;
-            }
+            const url = getGameNodeUrl(server);
 
             this.props.onGameHandoffReceived(server);
 

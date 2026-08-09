@@ -13,6 +13,7 @@
     gameNode: {
         name: 'SERVER',
         host: 'HOST',
-        socketioPort: 'PORT'
+        socketioPort: 'PORT',
+        proxyUrl: 'GAME_NODE_PROXY_URL'
     }
 }

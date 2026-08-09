@@ -49,6 +49,7 @@
     "express-session": "1.19.0",
     "fflate": "0.8.2",
     "helmet": "8.1.0",
+    "http-proxy": "1.18.1",
     "jsonwebtoken": "9.0.3",
     "lucide-react": "0.577.0",
     "mongodb": "7.1.0",
