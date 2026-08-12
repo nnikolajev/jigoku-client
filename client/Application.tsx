@@ -194,7 +194,7 @@ class App extends React.Component {
             gameSocket.on("gamestate", game => {
                 const isPlayer = !!game.players?.[this.props.username];
                 if(isPlayer && game.started && !game.winner) {
-                    startRecording();
+                    startRecording(game.id);
                 }
                 if(isPlayer) {
                     recordState(game);

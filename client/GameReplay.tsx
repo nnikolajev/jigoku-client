@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Upload, SkipBack, ChevronLeft, Play, Pause, ChevronRight, SkipForward } from "lucide-react";
+import { Upload, SkipBack, ChevronLeft, ChevronsLeft, Play, Pause, ChevronRight, ChevronsRight, SkipForward } from "lucide-react";
 import { InnerGameBoard } from "./GameBoard.jsx";
 import { parseGameLog } from "./GameComponents/gameLogSerializer.js";
 
@@ -13,12 +13,15 @@ const speeds = [
 
 const noop = () => {};
 
-function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJumpToStart, onJumpToEnd, onStepBack, onStepForward, onTogglePlay, onSpeedChange, onReset }) {
+function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, currentRound, totalRounds, hasPrevRound, hasNextRound, onJumpToStart, onJumpToEnd, onStepBack, onStepForward, onPrevRound, onNextRound, onTogglePlay, onSpeedChange, onReset }) {
     return (
         <div className="replay-bar">
             <div className="replay-controls">
                 <button className="btn btn-transparent" onClick={ onJumpToStart } disabled={ currentIndex === 0 } title="Jump to start">
                     <SkipBack size={ 14 } />
+                </button>
+                <button className="btn btn-transparent" onClick={ onPrevRound } disabled={ !hasPrevRound } title="Previous round">
+                    <ChevronsLeft size={ 14 } />
                 </button>
                 <button className="btn btn-transparent" onClick={ onStepBack } disabled={ currentIndex === 0 } title="Step back">
                     <ChevronLeft size={ 14 } />
@@ -28,6 +31,9 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJu
                 </button>
                 <button className="btn btn-transparent" onClick={ onStepForward } disabled={ currentIndex >= totalStates - 1 } title="Step forward">
                     <ChevronRight size={ 14 } />
+                </button>
+                <button className="btn btn-transparent" onClick={ onNextRound } disabled={ !hasNextRound } title="Next round">
+                    <ChevronsRight size={ 14 } />
                 </button>
                 <button className="btn btn-transparent" onClick={ onJumpToEnd } disabled={ currentIndex >= totalStates - 1 } title="Jump to end">
                     <SkipForward size={ 14 } />
@@ -44,6 +50,9 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJu
                     )) }
                 </div>
                 <span className="replay-progress">
+                    { currentRound > 0 && (
+                        <span className="replay-round">Round { currentRound }{ totalRounds > 0 ? ` / ${totalRounds}` : "" } · </span>
+                    ) }
                     { currentIndex + 1 } / { totalStates }
                 </span>
             </div>
@@ -52,6 +61,52 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJu
             </div>
         </div>
     );
+}
+
+/**
+ * Index of the first snapshot of each round, so the controls can skip a round
+ * at a time.
+ *
+ * The replay state carries no round number — the only marker is the engine's
+ * phase alert, `--- Round N - dynasty phase ---`, whose message fragments are
+ * `["Round", " ", N, ...]`. Snapshots are keyed to accumulated messages, so a
+ * round starts at the first snapshot whose log contains its alert.
+ *
+ * Returns `{ starts, roundByIndex }` where `starts[r]` is the snapshot index
+ * that opens round `r + 1`.
+ */
+function findRoundStarts(replayData) {
+    const starts = [];
+    const roundByIndex = new Array(replayData.length).fill(0);
+    let seen = 0;
+
+    for(let i = 0; i < replayData.length; i++) {
+        const messages = replayData[i].accumulatedMessages || [];
+        let highest = seen;
+        for(let m = messages.length - 1; m >= 0; m--) {
+            const alert = messages[m]?.message?.alert;
+            if(!alert || alert.type !== "endofround") {
+                continue;
+            }
+            const fragments = Array.isArray(alert.message) ? alert.message : [alert.message];
+            if(fragments[0] !== "Round") {
+                continue;
+            }
+            const round = Number(fragments.find((fragment) => typeof fragment === "number"));
+            if(Number.isFinite(round) && round > highest) {
+                highest = round;
+            }
+            break;
+        }
+        // A new round opens here if this snapshot is the first to show it.
+        while(seen < highest) {
+            seen++;
+            starts[seen - 1] = i;
+        }
+        roundByIndex[i] = seen;
+    }
+
+    return { starts, roundByIndex };
 }
 
 /**
@@ -154,6 +209,14 @@ function GameReplay() {
 
     const totalStates = logData?.replayData?.length || 0;
 
+    const { starts: roundStarts, roundByIndex } = useMemo(
+        () => (logData?.replayData?.length
+            ? findRoundStarts(logData.replayData)
+            : { starts: [], roundByIndex: [] }),
+        [logData]
+    );
+    const currentRound = roundByIndex[currentIndex] || 0;
+
     useEffect(() => {
         if(logData) {
             const el = document.querySelector(".replay-mode .right-side .controls");
@@ -249,6 +312,27 @@ function GameReplay() {
         setIsPlaying(false);
     };
 
+    // Rewind to the start of the round being viewed; if already there, to the
+    // start of the one before it. Same behaviour as a track-skip button.
+    const handlePrevRound = () => {
+        const start = currentRound > 0 ? roundStarts[currentRound - 1] : 0;
+        const target = currentIndex > start
+            ? start
+            : (currentRound > 1 ? roundStarts[currentRound - 2] : 0);
+        setCurrentIndex(target ?? 0);
+        setIsPlaying(false);
+    };
+
+    // `roundStarts[currentRound]` is the first snapshot of the NEXT round,
+    // because the array is zero-indexed and rounds count from one.
+    const handleNextRound = () => {
+        const target = roundStarts[currentRound];
+        if(target !== undefined) {
+            setCurrentIndex(target);
+            setIsPlaying(false);
+        }
+    };
+
     if(!logData) {
         return (
             <div className="replay-container">
@@ -331,8 +415,14 @@ function GameReplay() {
                     totalStates={ totalStates }
                     isPlaying={ isPlaying }
                     speedIndex={ speedIndex }
+                    currentRound={ currentRound }
+                    totalRounds={ roundStarts.length }
+                    hasPrevRound={ currentIndex > 0 }
+                    hasNextRound={ roundStarts[currentRound] !== undefined }
                     onJumpToStart={ handleJumpToStart }
                     onJumpToEnd={ handleJumpToEnd }
+                    onPrevRound={ handlePrevRound }
+                    onNextRound={ handleNextRound }
                     onStepBack={ () => setCurrentIndex((i) => Math.max(0, i - 1)) }
                     onStepForward={ () => setCurrentIndex((i) => Math.min(totalStates - 1, i + 1)) }
                     onTogglePlay={ () => setIsPlaying(!isPlaying) }
