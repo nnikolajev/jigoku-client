@@ -159,6 +159,14 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
                             onChange={ (e) => handleOptionSettingToggle("showRingEffects", e) }
                             checked={ optionSettings.showRingEffects }
                         />
+                        <Checkbox
+                            name="optionSettings.autoTriggerRoleAbilities"
+                            noGroup
+                            label="Automatically trigger my Seeker/Keeper role's fate reaction"
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleOptionSettingToggle("autoTriggerRoleAbilities", e) }
+                            checked={ optionSettings.autoTriggerRoleAbilities !== false }
+                        />
                     </div>
                 </div>
             </form>

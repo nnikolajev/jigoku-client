@@ -15,7 +15,8 @@ const defaultOptionSettings = {
     disableCardStats: false,
     showStatusInSidebar: false,
     sortHandByName: false,
-    showRingEffects: false
+    showRingEffects: false,
+    autoTriggerRoleAbilities: true
 };
 
 const defaultSettings = {
