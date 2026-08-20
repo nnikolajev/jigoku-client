@@ -1,0 +1,163 @@
+{
+    "$comment": "Tolerated pre-existing anti-slop findings. Regenerate with `npm run anti-slop:baseline` only after reviewing the diff. Never add entries by hand to silence new code.",
+    "upstream": "dmmulroy/anti-slop@6d538555cb151d4121ed51a27db81890eacf8ae9",
+    "targets": [
+        "client",
+        "server",
+        "test",
+        "index.ts"
+    ],
+    "generatedAt": "2026-08-20",
+    "total": 109,
+    "totalsByRule": {
+        "no-runtime-typeof": 33,
+        "no-module-mocking": 32,
+        "require-safety-comment-for-type-assertion": 23,
+        "no-unsafe-dictionary-type": 17,
+        "no-conditional-empty-object-spread": 2,
+        "no-known-value-widening": 2
+    },
+    "files": {
+        "client/cardImageUrl.ts": {
+            "no-runtime-typeof": 1
+        },
+        "client/deck-validator.ts": {
+            "no-runtime-typeof": 2
+        },
+        "client/FormComponents/Select.tsx": {
+            "no-unsafe-dictionary-type": 1
+        },
+        "client/GameBoard.tsx": {
+            "no-runtime-typeof": 1
+        },
+        "client/GameComponents/ActivePlayerPrompt.tsx": {
+            "no-runtime-typeof": 2
+        },
+        "client/GameComponents/Card.tsx": {
+            "no-runtime-typeof": 1
+        },
+        "client/GameComponents/CardNameLookup.tsx": {
+            "no-unsafe-dictionary-type": 1
+        },
+        "client/GameComponents/Clock.tsx": {
+            "no-runtime-typeof": 1
+        },
+        "client/GameComponents/effects/ConflictSlamEffect.tsx": {
+            "no-known-value-widening": 1
+        },
+        "client/GameComponents/effects/gameEvents.ts": {
+            "no-runtime-typeof": 3,
+            "require-safety-comment-for-type-assertion": 2
+        },
+        "client/GameComponents/effects/gameSounds.ts": {
+            "no-runtime-typeof": 1,
+            "require-safety-comment-for-type-assertion": 1
+        },
+        "client/GameComponents/effects/StatDelta.tsx": {
+            "no-runtime-typeof": 1
+        },
+        "client/GameComponents/gameLogSerializer.ts": {
+            "no-runtime-typeof": 2
+        },
+        "client/GameComponents/GameMusic.tsx": {
+            "no-runtime-typeof": 1
+        },
+        "client/GameComponents/Messages.tsx": {
+            "no-runtime-typeof": 6
+        },
+        "client/GameComponents/PlayerHand.tsx": {
+            "require-safety-comment-for-type-assertion": 5
+        },
+        "client/GameReplay.tsx": {
+            "no-runtime-typeof": 1
+        },
+        "client/gameStateRecorder.ts": {
+            "require-safety-comment-for-type-assertion": 1
+        },
+        "client/index.tsx": {
+            "no-runtime-typeof": 1
+        },
+        "client/middleware/api-middleware.ts": {
+            "no-runtime-typeof": 2,
+            "no-unsafe-dictionary-type": 2
+        },
+        "client/reducers/admin.ts": {
+            "require-safety-comment-for-type-assertion": 1
+        },
+        "client/reducers/auth.ts": {
+            "require-safety-comment-for-type-assertion": 1
+        },
+        "client/reducers/cards.ts": {
+            "no-unsafe-dictionary-type": 3,
+            "require-safety-comment-for-type-assertion": 1
+        },
+        "client/reducers/games.ts": {
+            "require-safety-comment-for-type-assertion": 6
+        },
+        "client/reducers/news.ts": {
+            "require-safety-comment-for-type-assertion": 1
+        },
+        "client/reducers/socket.ts": {
+            "require-safety-comment-for-type-assertion": 1
+        },
+        "client/reducers/user.ts": {
+            "require-safety-comment-for-type-assertion": 1
+        },
+        "client/ReduxActions/news.ts": {
+            "no-unsafe-dictionary-type": 1
+        },
+        "client/SiteComponents/AlertPanel.tsx": {
+            "no-known-value-widening": 1,
+            "require-safety-comment-for-type-assertion": 1
+        },
+        "client/types/deck.ts": {
+            "no-unsafe-dictionary-type": 3
+        },
+        "client/types/game.ts": {
+            "no-unsafe-dictionary-type": 5
+        },
+        "client/types/user.ts": {
+            "no-unsafe-dictionary-type": 1
+        },
+        "client/util.ts": {
+            "no-runtime-typeof": 1
+        },
+        "server/db.ts": {
+            "no-runtime-typeof": 1
+        },
+        "server/game/gamechat.ts": {
+            "no-runtime-typeof": 1
+        },
+        "server/gameNodeHandoff.ts": {
+            "no-conditional-empty-object-spread": 1
+        },
+        "server/gameNodeProxy.ts": {
+            "no-runtime-typeof": 2
+        },
+        "server/lobby.ts": {
+            "no-runtime-typeof": 1,
+            "require-safety-comment-for-type-assertion": 1
+        },
+        "server/server.ts": {
+            "no-conditional-empty-object-spread": 1
+        },
+        "server/services/DeckStatsService.ts": {
+            "no-runtime-typeof": 1
+        },
+        "test/client/AddDeck.spec.tsx": {
+            "no-module-mocking": 3
+        },
+        "test/client/Card.spec.tsx": {
+            "no-module-mocking": 7
+        },
+        "test/client/DeckSummary.spec.tsx": {
+            "no-module-mocking": 1
+        },
+        "test/client/GameBoard.spec.tsx": {
+            "no-module-mocking": 19
+        },
+        "test/client/Register.spec.tsx": {
+            "no-module-mocking": 2
+        }
+    }
+}
