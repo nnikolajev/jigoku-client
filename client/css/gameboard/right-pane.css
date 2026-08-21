@@ -104,7 +104,8 @@
     }
 
     &:hover .music-volume-popover,
-    &:focus-within .music-volume-popover {
+    &:focus-within .music-volume-popover,
+    &.volume-open .music-volume-popover {
         opacity: 1;
         pointer-events: auto;
         transform: translateY(0);
@@ -114,7 +115,7 @@
 .music-volume-popover {
     position: absolute;
     right: 0;
-    bottom: calc(100% + 8px);
+    bottom: calc(100% + var(--music-popover-gap, 8px));
     display: flex;
     align-items: center;
     gap: 8px;
@@ -130,6 +131,17 @@
     transform: translateY(5px);
     transition: opacity 120ms ease, transform 120ms ease;
     z-index: var(--layer-popups);
+
+    /* Invisible bridge across the gap between the button and the popover. Without it
+       the pointer leaves both boxes on the way up and the popover closes mid-travel. */
+    &::before {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(-1 * var(--music-popover-gap, 8px));
+        height: var(--music-popover-gap, 8px);
+        content: "";
+    }
 
     &::after {
         position: absolute;

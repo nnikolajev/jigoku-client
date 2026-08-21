@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 
 export const GAME_MUSIC_TRACKS = [
@@ -10,6 +10,7 @@ export const GAME_MUSIC_TRACKS = [
 export const MUSIC_MUTED_STORAGE_KEY = "jigoku.gameMusicMuted";
 export const MUSIC_VOLUME_STORAGE_KEY = "jigoku.gameMusicVolume";
 export const MUSIC_START_END_BUFFER_SECONDS = 30 * 60;
+export const VOLUME_POPOVER_CLOSE_DELAY_MS = 220;
 
 const DEFAULT_MUSIC_VOLUME = 0.35;
 
@@ -76,10 +77,12 @@ function GameMusic({
     const initialSeekPendingRef = useRef(true);
     const failedTracksRef = useRef(0);
     const playStartedRef = useRef(false);
+    const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [trackIndex, setTrackIndex] = useState(() => chooseInitialMusicTrack(tracks.length, random));
     const [muted, setMuted] = useState(readMutedPreference);
     const [volume, setVolume] = useState(readVolumePreference);
     const [unavailable, setUnavailable] = useState(tracks.length === 0);
+    const [volumeOpen, setVolumeOpen] = useState(false);
 
     const attemptPlay = useCallback(() => {
         const audio = audioRef.current;
@@ -118,6 +121,21 @@ function GameMusic({
         }
     }, [active, attemptPlay, muted]);
 
+    // The unmount cleanup strips `src` off the element. React only writes the `src`
+    // attribute back when its value changes, so after a hot reload (or any effect
+    // replay) the element would keep an empty source and error out forever. Re-assert
+    // the wanted source whenever the element does not already carry it.
+    useEffect(() => {
+        const audio = audioRef.current;
+        const wantedSource = tracks[trackIndex];
+        if(!audio || !wantedSource || audio.getAttribute("src") === wantedSource) {
+            return;
+        }
+
+        audio.setAttribute("src", wantedSource);
+        audio.load();
+    }, [trackIndex, tracks]);
+
     useEffect(() => {
         const resumeMusic = () => {
             if(!playStartedRef.current) {
@@ -144,6 +162,31 @@ function GameMusic({
             audio.removeAttribute("src");
         };
     }, []);
+
+    const cancelVolumeClose = useCallback(() => {
+        if(closeTimerRef.current !== null) {
+            clearTimeout(closeTimerRef.current);
+            closeTimerRef.current = null;
+        }
+    }, []);
+
+    const openVolume = useCallback(() => {
+        cancelVolumeClose();
+        setVolumeOpen(true);
+    }, [cancelVolumeClose]);
+
+    // The popover floats above the button with a gap, so the pointer leaves the control
+    // on its way there. Close on a delay instead of instantly, or the slider is
+    // unreachable.
+    const scheduleVolumeClose = useCallback(() => {
+        cancelVolumeClose();
+        closeTimerRef.current = setTimeout(() => {
+            closeTimerRef.current = null;
+            setVolumeOpen(false);
+        }, VOLUME_POPOVER_CLOSE_DELAY_MS);
+    }, [cancelVolumeClose]);
+
+    useEffect(() => cancelVolumeClose, [cancelVolumeClose]);
 
     const handleLoadedMetadata = () => {
         const audio = audioRef.current;
@@ -175,6 +218,13 @@ function GameMusic({
             return;
         }
 
+        const audio = audioRef.current;
+        console.warn("Game music track failed to load", {
+            code: audio?.error?.code,
+            message: audio?.error?.message,
+            src: audio?.currentSrc || tracks[trackIndex]
+        });
+
         playStartedRef.current = false;
         failedTracksRef.current += 1;
         if(failedTracksRef.current >= tracks.length) {
@@ -185,8 +235,25 @@ function GameMusic({
         setTrackIndex((current) => (current + 1) % tracks.length);
     };
 
+    const retryPlayback = () => {
+        const audio = audioRef.current;
+        failedTracksRef.current = 0;
+        initialSeekPendingRef.current = true;
+        setUnavailable(false);
+        if(!audio) {
+            return;
+        }
+
+        const wantedSource = tracks[trackIndex];
+        if(wantedSource) {
+            audio.setAttribute("src", wantedSource);
+        }
+        audio.load();
+    };
+
     const toggleMuted = () => {
         if(unavailable) {
+            retryPlayback();
             return;
         }
 
@@ -195,27 +262,37 @@ function GameMusic({
         savePreference(MUSIC_MUTED_STORAGE_KEY, String(nextMuted));
     };
 
-    const changeVolume = (event) => {
+    const changeVolume = (event: ChangeEvent<HTMLInputElement>) => {
         const nextVolume = Number(event.target.value) / 100;
         setVolume(nextVolume);
         savePreference(MUSIC_VOLUME_STORAGE_KEY, String(nextVolume));
     };
 
-    const buttonLabel = unavailable ? "Game music unavailable" : muted ? "Resume game music" : "Pause game music";
+    const noTracks = tracks.length === 0;
+    const buttonLabel = unavailable
+        ? noTracks ? "Game music unavailable" : "Retry game music"
+        : muted ? "Resume game music" : "Pause game music";
+    const buttonText = unavailable && !noTracks ? "Music Retry" : `Music ${muted ? "Paused" : "On"}`;
 
     return (
-        <div className="music-control">
+        <div
+            className={ `music-control${volumeOpen ? " volume-open" : ""}` }
+            onPointerEnter={ openVolume }
+            onPointerLeave={ scheduleVolumeClose }
+            onFocus={ openVolume }
+            onBlur={ scheduleVolumeClose }
+        >
             <button
                 type="button"
                 className={ `btn btn-transparent ${muted ? "auto" : "manual"}` }
                 aria-label={ buttonLabel }
                 aria-pressed={ muted }
-                disabled={ unavailable }
+                disabled={ noTracks }
                 title={ buttonLabel }
                 onClick={ toggleMuted }
             >
                 { muted ? <VolumeX size={ 16 } /> : <Volume2 size={ 16 } /> }
-                { compact ? "" : ` Music ${muted ? "Paused" : "On"}` }
+                { compact ? "" : ` ${buttonText}` }
             </button>
             <div className="music-volume-popover" role="group" aria-label="Game music volume controls">
                 <Volume2 size={ 16 } aria-hidden="true" />
@@ -226,7 +303,6 @@ function GameMusic({
                     step="1"
                     value={ Math.round(volume * 100) }
                     aria-label="Game music volume"
-                    disabled={ unavailable }
                     onChange={ changeVolume }
                 />
                 <span>{ Math.round(volume * 100) }%</span>
@@ -235,7 +311,7 @@ function GameMusic({
                 <audio
                     ref={ audioRef }
                     src={ tracks[trackIndex] }
-                    preload="auto"
+                    preload="metadata"
                     aria-hidden="true"
                     onLoadedMetadata={ handleLoadedMetadata }
                     onEnded={ handleEnded }
