@@ -6,6 +6,7 @@ import {
     getRoundRobinMatchup,
     InnerNewGame,
     pretrainedBotDecks,
+    sortDecksByRoundRobinAverage,
     standardBenchmarkSuite
 } from "../../client/NewGame";
 
@@ -144,6 +145,59 @@ describe("the <InnerNewGame /> bot deck selector", () => {
 
         fireEvent.change(screen.getByLabelText("Bot type"), { target: { value: "3" } });
         expect(screen.getByText(/Adapts character purchases and fate investment to board power/)).toBeInTheDocument();
+    });
+
+    it("ranks the matchup matrix by average win rate, strongest bot first", () => {
+        const roundRobin = {
+            suiteId: standardBenchmarkSuite,
+            gamesPerMatchup: 40,
+            decks: {
+                Crane: { wins: 450, losses: 450, other: 0, averageOpponentWinRate: 0.5, overallWinRate: 0.5 },
+                Unicorn: { wins: 480, losses: 419, other: 1, averageOpponentWinRate: 0.534, overallWinRate: 0.534 },
+                PhoenixShugenja: {
+                    wins: 536, losses: 364, other: 0, averageOpponentWinRate: 0.596, overallWinRate: 0.596
+                }
+            },
+            matchups: [{
+                left: "Crane", right: "Unicorn", leftWins: 12, rightWins: 28, other: 0, played: 40
+            }, {
+                left: "Crane", right: "PhoenixShugenja", leftWins: 24, rightWins: 16, other: 0, played: 40
+            }, {
+                left: "Unicorn", right: "PhoenixShugenja", leftWins: 10, rightWins: 30, other: 0, played: 40
+            }]
+        };
+
+        expect(sortDecksByRoundRobinAverage(roundRobin, pretrainedBotDecks.filter(
+            (deck) => roundRobin.decks[deck.benchmarkDeck]
+        )).map((deck) => deck.benchmarkDeck)).toEqual(["PhoenixShugenja", "Unicorn", "Crane"]);
+
+        render(
+            <InnerNewGame
+                cancelNewGame={ vi.fn() }
+                defaultGameName="Bot test"
+                loadDecks={ vi.fn() }
+                socket={ { emit: vi.fn() } }
+                benchmarkResults={ { seeds: { "1": { roundRobin } } } }
+            />
+        );
+
+        enableBotOpponent();
+        fireEvent.click(screen.getByRole("button", { name: "Show bot win-rate matrix" }));
+
+        const matchupMatrix = screen.getByRole("table", { name: "Bot win-rate matchup matrix" });
+        const rows = within(matchupMatrix).getAllByRole("row").slice(1);
+        expect(rows.map((row) => within(row).getByRole("rowheader").textContent)).toEqual([
+            "Phoenix Shugenja",
+            "[Precon15] Unicorn Military Rush (Temple)",
+            "Crane Baseline"
+        ]);
+        expect(rows.map((row) => within(row).getAllByRole("cell")[0].textContent)).toEqual(["1", "2", "3"]);
+        expect(rows.map((row) => within(row).getAllByRole("cell")[1].textContent)).toEqual([
+            "59.6%", "53.4%", "50.0%"
+        ]);
+        expect(within(matchupMatrix).getAllByRole("columnheader").map((header) => header.textContent)).toEqual([
+            "#", "Bot opponent", "Avg", "PhoenixShugenja", "Unicorn", "Crane"
+        ]);
     });
 
     it("shows generated Crane and round-robin results for the selected deck and seed", () => {

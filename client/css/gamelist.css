@@ -250,9 +250,23 @@
         z-index: 2;
     }
 
+    & .bot-matchup-rank {
+        background: var(--color-background);
+        color: var(--color-foreground);
+        left: 0;
+        opacity: 0.65;
+        position: sticky;
+        width: 30px;
+        z-index: 1;
+    }
+
+    & .bot-matchup-average {
+        font-weight: 700;
+    }
+
     & tbody th {
         background: var(--color-background);
-        left: 0;
+        left: 30px;
         max-width: 280px;
         overflow: hidden;
         position: sticky;

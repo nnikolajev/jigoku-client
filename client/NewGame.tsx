@@ -178,6 +178,25 @@ export function getRoundRobinMatchup(roundRobin, botDeck, opponentDeck) {
     };
 }
 
+export function getRoundRobinAverage(roundRobin, benchmarkDeck) {
+    const record = roundRobin?.decks?.[benchmarkDeck];
+    if(!record) {
+        return null;
+    }
+    const average = record.averageOpponentWinRate ?? record.overallWinRate;
+    return average === undefined ? null : average;
+}
+
+// The matrix doubles as a power ranking, so rows and columns run strongest bot
+// first. Decks with no recorded round-robin row sort last.
+export function sortDecksByRoundRobinAverage(roundRobin, decks) {
+    return [...decks].sort((left, right) => {
+        const leftAverage = getRoundRobinAverage(roundRobin, left.benchmarkDeck) ?? -1;
+        const rightAverage = getRoundRobinAverage(roundRobin, right.benchmarkDeck) ?? -1;
+        return rightAverage - leftAverage || left.label.localeCompare(right.label);
+    });
+}
+
 export function getBotBenchmark(results, engineVersion, seed, benchmarkDeck, informationMode = "fair") {
     const versionedSeeds = results?.engines?.[engineVersion]?.seeds;
     const seeds = versionedSeeds && Object.keys(versionedSeeds).length > 0
@@ -371,7 +390,9 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
         : null;
     const matchupRoundRobin = getBotRoundRobin(benchmarkResults, botEngineVersion, botSeed);
     const matchupDecks = matchupRoundRobin
-        ? pretrainedBotDecks.filter((deck) => matchupRoundRobin.decks?.[deck.benchmarkDeck])
+        ? sortDecksByRoundRobinAverage(
+            matchupRoundRobin,
+            pretrainedBotDecks.filter((deck) => matchupRoundRobin.decks?.[deck.benchmarkDeck]))
         : [];
 
     if(!socket) {
@@ -532,7 +553,8 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                 { showBotMatchups && (
                                     <div id="bot-matchup-matrix">
                                         <small className="text-muted bot-matchup-help">
-                                            Rows are bot opponents; columns are decks you might play. Higher percentages mean a stronger bot matchup.
+                                            Rows are bot opponents, ranked by average win rate against every other bot deck (strongest first).
+                                            Columns are decks you might play, in the same order. Higher percentages mean a stronger bot matchup.
                                             { botOmniscient && " Matrix uses fair-information results; omniscient matchup matrices are not recorded." }
                                         </small>
                                         { matchupRoundRobin?.matchups?.length > 0 ? (
@@ -540,7 +562,9 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                                 <table className="bot-matchup-matrix" aria-label="Bot win-rate matchup matrix">
                                                     <thead>
                                                         <tr>
+                                                            <th scope="col">#</th>
                                                             <th scope="col">Bot opponent</th>
+                                                            <th scope="col" title="Average win rate across every recorded opponent">Avg</th>
                                                             { matchupDecks.map((deck) => (
                                                                 <th key={ deck.benchmarkDeck } scope="col" title={ deck.label }>
                                                                     { deck.benchmarkDeck }
@@ -549,13 +573,22 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        { matchupDecks.map((botDeck) => (
+                                                        { matchupDecks.map((botDeck, rank) => (
                                                             <tr
                                                                 key={ botDeck.benchmarkDeck }
                                                                 className={ selectedBotDeck?.benchmarkDeck === botDeck.benchmarkDeck
                                                                     ? "bot-matchup-selected" : undefined }
                                                             >
+                                                                <td className="bot-matchup-rank">{ rank + 1 }</td>
                                                                 <th scope="row">{ botDeck.label }</th>
+                                                                <td
+                                                                    className="bot-matchup-average"
+                                                                    title={ `${matchupRoundRobin.decks[botDeck.benchmarkDeck].wins}-` +
+                                                                        `${matchupRoundRobin.decks[botDeck.benchmarkDeck].losses} over ` +
+                                                                        `${matchupRoundRobin.decks[botDeck.benchmarkDeck].played} games` }
+                                                                >
+                                                                    { percentage(getRoundRobinAverage(matchupRoundRobin, botDeck.benchmarkDeck)) }
+                                                                </td>
                                                                 { matchupDecks.map((playerDeck) => {
                                                                     const isMirror = botDeck.benchmarkDeck === playerDeck.benchmarkDeck;
                                                                     const matchup = getRoundRobinMatchup(
