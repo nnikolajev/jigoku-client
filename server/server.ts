@@ -172,6 +172,23 @@ class Server {
             // No version file — no cache busting for images
         }
 
+        // Requests under the static asset roots have already had their chance at
+        // express.static above. Falling through to the SPA shell below answers a
+        // missing file with 200 + HTML, which reaches the browser as an opaque
+        // decode failure ("failed to load audio") instead of a 404. Answer 404 here
+        // so a missing asset is legible in the network tab and to onerror handlers.
+        const STATIC_ASSET_ROOTS = ["assets", "fonts", "img", "music", "sound"];
+
+        app.use((req, res, next) => {
+            const [, firstSegment] = req.path.split("/");
+            if(!STATIC_ASSET_ROOTS.includes(firstSegment)) {
+                return next();
+            }
+
+            logger.warn(`Missing static asset: ${req.method} ${req.path}`);
+            return res.status(404).send({ success: false, message: "Not found" });
+        });
+
         app.get("/{*splat}", (req, res) => {
             let token = undefined;
             /** @type {any} */

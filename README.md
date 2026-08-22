@@ -40,6 +40,27 @@ node .
 
 `node .` starts the lobby server. The lobby will be available at http://127.0.0.1:4000/.
 
+#### Game Music
+
+The in-game background tracks are served from `public/music/track-1.mp3` through
+`track-3.mp3` (see `GAME_MUSIC_TRACKS` in `client/GameComponents/GameMusic.tsx`).
+They are **not tracked in git** — `.gitignore` excludes `public/*` — so a fresh
+clone, a Docker build, or any deployment that syncs only tracked files will not
+have them, and the music control reports the tracks as unavailable.
+
+Supply them per deployment. For a Docker deployment, keep them outside the build
+context and mount them in rather than baking ~680 MB into the image:
+
+```yaml
+    volumes:
+      - ./music:/app/public/music:ro
+```
+
+A request for a missing file under `assets/`, `fonts/`, `img/`, `music/` or
+`sound/` answers `404`. It deliberately does not fall through to the SPA shell,
+which would return `200` and HTML and reach the browser as an opaque decode
+failure instead of a missing file.
+
 #### Configuration
 
 The lobby server is configured via `config/default.json5`. Create a `config/local.json5` to override settings for your environment. Key settings:
