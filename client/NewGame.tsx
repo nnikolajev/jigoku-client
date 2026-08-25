@@ -82,7 +82,7 @@ export const pretrainedBotDecks = [
     },
     {
         label: "Dragon Attachments",
-        url: "https://www.emeralddb.org/decks/46aaa220-2cf9-463b-bdf3-3019572432ff",
+        url: "https://www.emeralddb.org/decks/ce8df8ae-ee05-4ab7-bc13-087a8fc092cb/",
         benchmarkDeck: "DragonAttachments"
     },
     {
