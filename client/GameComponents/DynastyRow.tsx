@@ -38,7 +38,8 @@ function DynastyRow({
     removedFromGame,
     showConflictDeck,
     showDynastyDeck,
-    spectating
+    spectating,
+    visualSuggestions = true
 }) {
     const [showConflictMenu, setShowConflictMenu] = useState(false);
     const [showDynastyMenu, setShowDynastyMenu] = useState(false);
@@ -225,6 +226,7 @@ function DynastyRow({
                             topCard={ dynastyDeckTopCard }
                             hiddenTopCard={ !dynastyDeckTopCard }
                             cardCount={ numDynastyCards }
+                            lowCardCountWarningEnabled={ visualSuggestions }
                             popupMenu={ dynastyDeckPopupMenu }
                             size={ cardSize }
                         />
@@ -251,6 +253,7 @@ function DynastyRow({
                             topCard={ conflictDeckTopCard }
                             hiddenTopCard={ !conflictDeckTopCard }
                             cardCount={ numConflictCards }
+                            lowCardCountWarningEnabled={ visualSuggestions }
                             popupMenu={ conflictDeckPopupMenu }
                             size={ cardSize }
                         />
@@ -327,6 +330,7 @@ function DynastyRow({
                         menu={ conflictDeckMenu }
                         topCard={ conflictDeckTopCard }
                         cardCount={ numConflictCards }
+                        lowCardCountWarningEnabled={ visualSuggestions }
                         popupMenu={ conflictDeckPopupMenu }
                         size={ cardSize }
                     />
@@ -353,6 +357,7 @@ function DynastyRow({
                         topCard={ dynastyDeckTopCard }
                         hiddenTopCard={ !dynastyDeckTopCard }
                         cardCount={ numDynastyCards }
+                        lowCardCountWarningEnabled={ visualSuggestions }
                         popupMenu={ dynastyDeckPopupMenu }
                         size={ cardSize }
                     />

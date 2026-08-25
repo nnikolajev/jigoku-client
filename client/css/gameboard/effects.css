@@ -1,5 +1,41 @@
 /* Animations and effect overlays for the game board. */
 
+/* --- Visual suggestions --- */
+.visual-suggestion {
+    color: var(--visual-suggestion-color);
+    font-weight: 700;
+    animation: visual-suggestion-pulse 1.4s ease-in-out infinite;
+}
+
+.visual-suggestion--positive {
+    --visual-suggestion-color: #7ee787;
+    --visual-suggestion-glow: rgba(46, 204, 113, 0.95);
+}
+
+.visual-suggestion--negative {
+    --visual-suggestion-color: #ff6b6b;
+    --visual-suggestion-glow: rgba(255, 59, 48, 0.95);
+}
+
+@keyframes visual-suggestion-pulse {
+    0%, 100% {
+        filter: brightness(1);
+        text-shadow: 0 0 3px var(--visual-suggestion-glow);
+    }
+
+    50% {
+        filter: brightness(1.35);
+        text-shadow: 0 0 4px #fff, 0 0 10px var(--visual-suggestion-glow), 0 0 16px var(--visual-suggestion-glow);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .visual-suggestion {
+        animation: none;
+        text-shadow: 0 0 6px var(--visual-suggestion-glow);
+    }
+}
+
 /* --- Card flip (facedown -> faceup) --- */
 .card-image.card-flip-out {
     animation: card-flip-out 0.16s ease-in both;

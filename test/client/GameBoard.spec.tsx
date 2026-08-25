@@ -37,7 +37,9 @@ vi.mock("react-draggable", () => ({
 
 // Mock all the child components
 vi.mock("../../client/GameComponents/PlayerStatsBox.jsx", () => ({
-    default: () => <div data-testid="player-stats-box">PlayerStatsBox</div>
+    default: ({ visualSuggestions }) => (
+        <div data-testid="player-stats-box" data-visual-suggestions={ visualSuggestions }>PlayerStatsBox</div>
+    )
 }));
 
 vi.mock("../../client/GameComponents/PlayerStatsRow.jsx", () => ({
@@ -49,7 +51,9 @@ vi.mock("../../client/GameComponents/PlayerHand.jsx", () => ({
 }));
 
 vi.mock("../../client/GameComponents/DynastyRow.jsx", () => ({
-    default: () => <div data-testid="dynasty-row">DynastyRow</div>
+    default: ({ visualSuggestions }) => (
+        <div data-testid="dynasty-row" data-visual-suggestions={ visualSuggestions }>DynastyRow</div>
+    )
 }));
 
 vi.mock("../../client/GameComponents/StrongholdRow.jsx", () => ({
@@ -232,6 +236,18 @@ describe("the <GameBoard /> component", () => {
             expect(screen.getByTestId("controls")).toBeInTheDocument();
         });
 
+        it("should enable visual suggestions for both players and both deck rows by default", () => {
+            const suggestionHosts = [
+                ...screen.getAllByTestId("player-stats-box"),
+                ...screen.getAllByTestId("dynasty-row")
+            ];
+
+            expect(suggestionHosts).toHaveLength(4);
+            for(const host of suggestionHosts) {
+                expect(host).toHaveAttribute("data-visual-suggestions", "true");
+            }
+        });
+
         it("should render the card zoom component", () => {
             expect(screen.getByTestId("card-zoom")).toBeInTheDocument();
         });
@@ -369,6 +385,31 @@ describe("the <GameBoard /> component", () => {
 
         it("should display skill values", () => {
             expect(screen.getByText("5")).toBeInTheDocument();
+        });
+    });
+
+    describe("when visual suggestions are disabled", () => {
+        it("should disable them for both players and both deck rows", () => {
+            const user = {
+                ...defaultProps.user,
+                settings: {
+                    ...defaultProps.user.settings,
+                    optionSettings: {
+                        ...defaultProps.user.settings.optionSettings,
+                        visualSuggestions: false
+                    }
+                }
+            };
+
+            render(<InnerGameBoard { ...defaultProps } user={ user } />);
+
+            const suggestionHosts = [
+                ...screen.getAllByTestId("player-stats-box"),
+                ...screen.getAllByTestId("dynasty-row")
+            ];
+            for(const host of suggestionHosts) {
+                expect(host).toHaveAttribute("data-visual-suggestions", "false");
+            }
         });
     });
 

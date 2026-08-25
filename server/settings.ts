@@ -16,6 +16,7 @@ const defaultOptionSettings = {
     showStatusInSidebar: false,
     sortHandByName: false,
     showRingEffects: false,
+    visualSuggestions: true,
     autoTriggerRoleAbilities: true
 };
 

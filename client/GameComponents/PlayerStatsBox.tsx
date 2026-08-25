@@ -1,6 +1,7 @@
 import Clock from "./Clock";
 import ClockPopup from "./ClockPopup";
 import StatDelta from "./effects/StatDelta";
+import { getHonorSuggestionClass } from "./visualSuggestions.js";
 
 interface PlayerStatsBoxProps {
     clockState?: any;
@@ -11,6 +12,7 @@ interface PlayerStatsBoxProps {
     showControls?: boolean;
     size?: string;
     stats?: Record<string, number>;
+    visualSuggestions?: boolean;
 }
 
 export function PlayerStatsBox({
@@ -21,7 +23,8 @@ export function PlayerStatsBox({
     sendGameMessage,
     showControls,
     size,
-    stats
+    stats,
+    visualSuggestions = true
 }: PlayerStatsBoxProps) {
     const sendUpdate = (type: string, direction: string) => {
         sendGameMessage("changeStat", type, direction === "up" ? 1 : -1);
@@ -36,6 +39,10 @@ export function PlayerStatsBox({
 
     const getButton = (stat: string, name: string, statToSet = stat) => {
         const imageStyle = { backgroundImage: `url(/img/${name}.png)` };
+        const statValue = getStatValueOrDefault(stat);
+        const suggestionClass = stat === "honor"
+            ? getHonorSuggestionClass(statValue, visualSuggestions)
+            : "";
 
         return (
             <div className="state stat-delta-host">
@@ -49,8 +56,10 @@ export function PlayerStatsBox({
                 ) }
                 <div className={ `stat-image ${size}` } style={ imageStyle } />
                 <div>:</div>
-                <div className="stat-value">{ getStatValueOrDefault(stat) }</div>
-                <StatDelta value={ getStatValueOrDefault(stat) } />
+                <div className={ `stat-value${suggestionClass ? ` ${suggestionClass}` : ""}` }>
+                    { statValue }
+                </div>
+                <StatDelta value={ statValue } />
                 { showControls && (
                     <button
                         className={ `btn btn-stat ${size}` }

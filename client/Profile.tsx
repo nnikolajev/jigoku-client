@@ -327,6 +327,14 @@ export function InnerProfile({ refreshUser, socket, user }) {
                                     checked={ optionSettings.showRingEffects }
                                 />
                                 <Checkbox
+                                    name="optionSettings.visualSuggestions"
+                                    noGroup
+                                    label="Visual suggestions"
+                                    fieldClass="col-sm-6"
+                                    onChange={ (e) => handleOptionSettingToggle("visualSuggestions", e) }
+                                    checked={ optionSettings.visualSuggestions !== false }
+                                />
+                                <Checkbox
                                     name="optionSettings.autoTriggerRoleAbilities"
                                     noGroup
                                     label="Automatically trigger my Seeker/Keeper role's fate reaction"

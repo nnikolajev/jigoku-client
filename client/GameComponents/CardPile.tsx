@@ -14,6 +14,7 @@ function CardPile({
     disableMouseOver,
     hiddenTopCard,
     isMe = true,
+    lowCardCountWarningEnabled = false,
     menu,
     onCardClick,
     onCloseClick,
@@ -239,11 +240,18 @@ function CardPile({
         className += ` ${size}`;
     }
 
-    const displayCardCount = cardCount || (cards ? cards.length : 0);
+    const displayCardCount = cardCount ?? (cards ? cards.length : 0);
     if(displayCardCount === 0) {
         className += " panel";
     }
-    const headerText = title ? `${title} (${displayCardCount})` : "";
+    const lowCardCountClass = lowCardCountWarningEnabled && displayCardCount <= 5
+        ? "visual-suggestion visual-suggestion--negative"
+        : "";
+    const headerContent = title ? (
+        <>
+            { title } (<span className={ lowCardCountClass }>{ displayCardCount }</span>)
+        </>
+    ) : null;
     const topCard = propsTopCard || (cards && cards[0]);
     const cardOrientation =
         orientation === "horizontal" && topCard && topCard.facedown
@@ -266,7 +274,7 @@ function CardPile({
             onDrop={ (event) => handleDragDrop(event, source) }
             onClick={ onCollectionClick }
         >
-            <div className="panel-header">{ headerText }</div>
+            <div className="panel-header">{ headerContent }</div>
             { displayTopCard ? (
                 <Card
                     card={ displayTopCard }

@@ -172,4 +172,40 @@ describe("the <PlayerStatsBox /> component", () => {
             expect(militaryIcons.length).toBe(2);
         });
     });
+
+    describe("visual suggestions", () => {
+        it("should glow green at 23 honor", () => {
+            render(<PlayerStatsBox { ...defaultProps } stats={ { ...defaultProps.stats, honor: 23 } } />);
+
+            expect(screen.getByText("23")).toHaveClass("visual-suggestion--positive");
+        });
+
+        it("should glow red when the opponent reaches 2 honor", () => {
+            render(<PlayerStatsBox { ...defaultProps } otherPlayer stats={ { ...defaultProps.stats, honor: 2 } } />);
+
+            expect(screen.getByText("2")).toHaveClass("visual-suggestion--negative");
+        });
+
+        it("should remove the glow outside the honor limits", () => {
+            const { rerender } = render(
+                <PlayerStatsBox { ...defaultProps } stats={ { ...defaultProps.stats, honor: 2 } } />
+            );
+
+            rerender(<PlayerStatsBox { ...defaultProps } stats={ { ...defaultProps.stats, honor: 3 } } />);
+
+            expect(screen.getByText("3")).not.toHaveClass("visual-suggestion");
+        });
+
+        it("should not glow when visual suggestions are disabled", () => {
+            render(
+                <PlayerStatsBox
+                    { ...defaultProps }
+                    stats={ { ...defaultProps.stats, honor: 2 } }
+                    visualSuggestions={ false }
+                />
+            );
+
+            expect(screen.getByText("2")).not.toHaveClass("visual-suggestion");
+        });
+    });
 });

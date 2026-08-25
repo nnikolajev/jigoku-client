@@ -681,7 +681,7 @@ export class InnerGameBoard extends React.Component {
     isControlledByPlayer(card, player) {
         return card.controller.name === player.name;
     }
-    renderSidebar(thisPlayer, otherPlayer) {
+    renderSidebar(thisPlayer, otherPlayer, visualSuggestions) {
         let size = this.props.user.settings.cardSize;
         return (
             <div className={ `province-pane ${size}` }>
@@ -703,6 +703,7 @@ export class InnerGameBoard extends React.Component {
                             handSize={ otherPlayer && otherPlayer.cardPiles.hand ? otherPlayer.cardPiles.hand.length : 0 }
                             otherPlayer
                             size={ size }
+                            visualSuggestions={ visualSuggestions }
                         />
                     </div>
                 </div>
@@ -717,6 +718,7 @@ export class InnerGameBoard extends React.Component {
                         otherPlayer={ false }
                         spectating={ this.state.spectating }
                         size={ size }
+                        visualSuggestions={ visualSuggestions }
                         handSize={ thisPlayer.cardPiles.hand ? thisPlayer.cardPiles.hand.length : 0 } />
                     { this.getRings(thisPlayer ? thisPlayer.name : "\0", `claimed-pool my-pool ${size || ""}`) }
                     { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ `${thisPlayer.showBid}` } /> }
@@ -825,6 +827,7 @@ export class InnerGameBoard extends React.Component {
         }
 
         let manualMode = this.props.currentGame.manualMode;
+        const visualSuggestions = this.props.user.settings.optionSettings?.visualSuggestions !== false;
 
         let thisPlayer = this.props.currentGame.players[this.props.username];
         if(!thisPlayer) {
@@ -908,7 +911,7 @@ export class InnerGameBoard extends React.Component {
                     </div>
                 */ }
                 <div className={ `main-window ${this.props.user.settings.cardSize}` }>
-                    { this.renderSidebar(thisPlayer, otherPlayer) }
+                    { this.renderSidebar(thisPlayer, otherPlayer, visualSuggestions) }
                     <div className={ `play-area${this.props.user.settings.cardSize ? ` ${this.props.user.settings.cardSize}` : ""}` }>
                         <div className={ `player-board their-side${this.props.user.settings.cardSize ? ` ${this.props.user.settings.cardSize}` : ""}` }>
                             <div className="player-deck-row">
@@ -931,6 +934,7 @@ export class InnerGameBoard extends React.Component {
                                     onMouseOut={ this.onMouseOut }
                                     otherPlayer= { otherPlayer }
                                     isSkirmish = { this.props.currentGame.skirmishMode || this.props.currentGame.gameMode === GameModes.Skirmish }
+                                    visualSuggestions={ visualSuggestions }
                                     cardSize={ this.props.user.settings.cardSize } />
                             </div>
                             { otherPlayerCards }
@@ -1007,6 +1011,7 @@ export class InnerGameBoard extends React.Component {
                                     spectating={ this.state.spectating }
                                     onMenuItemClick={ this.onMenuItemClick }
                                     isSkirmish = { this.props.currentGame.skirmishMode || this.props.currentGame.gameMode === GameModes.Skirmish }
+                                    visualSuggestions={ visualSuggestions }
                                     cardSize={ this.props.user.settings.cardSize } />
                             </div>
                         </div>
