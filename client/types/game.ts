@@ -28,7 +28,13 @@ export interface Card {
     selectable?: boolean;
     inConflict?: boolean;
     bowed?: boolean;
+    /** This card has BEEN chosen by an opposing covert character. */
     covert?: boolean;
+    /**
+     * This character currently HAS the covert keyword — printed, or granted by
+     * another card. The opposite reading of `covert` above.
+     */
+    hasCovert?: boolean;
     new?: boolean;
     fate?: number;
     location?: string;

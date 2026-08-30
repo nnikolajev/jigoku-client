@@ -5,6 +5,7 @@ import CardMenu from "./CardMenu.jsx";
 import CardStats from "./CardStats.jsx";
 import CardCounters from "./CardCounters.jsx";
 import CardUsedBadge from "./CardUsedBadge.jsx";
+import CovertBadge from "./CovertBadge.jsx";
 import CardPile from "./CardPile.jsx";
 import FireEffect from "./effects/FireEffect.jsx";
 import { playCardFlip, playProvinceBreak } from "./effects/gameSounds.js";
@@ -664,6 +665,8 @@ function Card(props) {
                     <CardCounters counters={ getCountersForCard(card) } />
                     { card.abilitiesExhausted && !isFacedown() ?
                         <CardUsedBadge name={ card.name } /> : null }
+                    { card.hasCovert && !isFacedown() ?
+                        <CovertBadge name={ card.name } /> : null }
                 </div>
                 { breaking ? <FireEffect /> : null }
                 { shouldShowMenu() ? <CardMenu menu={ card.menu } onMenuItemClick={ handleMenuItemClick } /> : null }

@@ -729,3 +729,54 @@
 .card.xxl .card-used-badge {
     --card-used-size: 52px;
 }
+
+/*
+ * Covert badge. Sits on the left edge just under the printed military and
+ * political scrolls, at roughly their width — about half the "card used"
+ * badge.
+ *
+ * Like that badge it is a SIBLING of the card image, so it never inherits the
+ * 90 degree rotation a bowed card applies to its image. A bowed card keeps the
+ * same outer box but the printed scrolls are no longer on the left edge, so the
+ * badge moves to the top-left corner there, clear of the bottom-left "card
+ * used" badge.
+ */
+.covert-badge {
+    position: absolute;
+    top: var(--covert-badge-top, 52%);
+    left: 2px;
+    width: var(--covert-size, 13px);
+    height: var(--covert-size, 13px);
+    /* Above the card image and the counters, below menus and popups. */
+    z-index: calc(var(--layer-cards) + 2);
+    pointer-events: none;
+    line-height: 0;
+}
+
+.covert-badge > img {
+    width: 100%;
+    height: 100%;
+    /* The art is a black silhouette; a pale halo lifts it off dark card art. */
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.95))
+        drop-shadow(0 0 2px rgba(255, 255, 255, 0.7));
+}
+
+.card.horizontal .covert-badge {
+    --covert-badge-top: 2px;
+}
+
+.card.small .covert-badge {
+    --covert-size: 10px;
+}
+
+.card.large .covert-badge {
+    --covert-size: 17px;
+}
+
+.card.x-large .covert-badge {
+    --covert-size: 22px;
+}
+
+.card.xxl .covert-badge {
+    --covert-size: 26px;
+}

@@ -355,4 +355,72 @@ describe("the <Card /> component", () => {
             expect(badge().className).toContain("ignore-mouse-events");
         });
     });
+
+    // The covert badge. The server publishes `hasCovert` off the engine's own
+    // keyword resolution, so a GRANTED covert reaches the client the same way a
+    // printed one does and nothing here knows any card text.
+    describe("the covert badge", () => {
+        const badge = () => document.querySelector(".covert-badge");
+
+        it("is absent on a character without the keyword", () => {
+            render(<Card card={ card } source="play area" />);
+            expect(badge()).toBeNull();
+        });
+
+        it("is absent when the card explicitly reports no covert", () => {
+            render(<Card card={ { ...card, hasCovert: false } } source="play area" />);
+            expect(badge()).toBeNull();
+        });
+
+        it("is shown when the character has covert", () => {
+            render(<Card card={ { ...card, hasCovert: true } } source="play area" />);
+            expect(badge()).not.toBeNull();
+            expect(badge().querySelector("img").getAttribute("src")).toBe("/img/covert.png");
+        });
+
+        it("names the card in its tooltip", () => {
+            render(<Card card={ { ...card, hasCovert: true } } source="play area" />);
+            expect(badge().querySelector("img").getAttribute("title")).toBe("Test Card: covert");
+        });
+
+        it("is shown on a BOWED card too, and stays outside the rotated image", () => {
+            render(<Card card={ { ...card, hasCovert: true, bowed: true } } source="play area" />);
+            expect(document.querySelector(".card").className).toContain("horizontal");
+            expect(document.querySelector(".card-image").className).toContain("bowed");
+            // Sibling of the image, so it never inherits `rotate(90deg)`.
+            expect(badge()).not.toBeNull();
+            expect(badge().closest(".card-image")).toBeNull();
+            expect(badge().closest(".card")).not.toBeNull();
+        });
+
+        it("is never shown on a facedown card", () => {
+            render(<Card card={ { ...card, hasCovert: true, facedown: true } } source="play area" />);
+            expect(badge()).toBeNull();
+        });
+
+        it("does not swallow clicks aimed at the card", () => {
+            render(<Card card={ { ...card, hasCovert: true } } source="play area" />);
+            expect(badge().className).toContain("ignore-mouse-events");
+        });
+
+        // `covert` and `hasCovert` are opposite readings of the same keyword:
+        // `covert` means this card has BEEN covert-ed by an opposing character,
+        // which greys it out via a class and must not raise the badge.
+        it("is not raised by the `covert` field, which means the opposite", () => {
+            render(<Card card={ { ...card, covert: true } } source="play area" />);
+            expect(document.querySelector(".card").className).toContain("covert");
+            expect(badge()).toBeNull();
+        });
+
+        it("can be shown alongside the ability-used badge", () => {
+            render(
+                <Card
+                    card={ { ...card, hasCovert: true, abilitiesExhausted: true } }
+                    source="play area"
+                />
+            );
+            expect(document.querySelector(".covert-badge")).not.toBeNull();
+            expect(document.querySelector(".card-used-badge")).not.toBeNull();
+        });
+    });
 });
