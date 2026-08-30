@@ -37,6 +37,12 @@ export interface Card {
     isDishonored?: boolean;
     isHonored?: boolean;
     isTainted?: boolean;
+    /**
+     * Every limited ability on this card is spent for its current period, so
+     * clicking it does nothing until that period resets. Published by the
+     * server off the engine's own `AbilityLimit.isAtMax`.
+     */
+    abilitiesExhausted?: boolean;
     controller?: string;
     popupCards?: Card[];
     group?: string;

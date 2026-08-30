@@ -303,4 +303,56 @@ describe("the <Card /> component", () => {
             expect(cardImage.src).toContain("/img/cards/test-card-1-core.jpg");
         });
     });
+
+    // The "ability already used" badge. The server publishes
+    // `abilitiesExhausted` off the engine's own `AbilityLimit.isAtMax`, so this
+    // is purely about rendering it in the right place and only when asked.
+    describe("the ability-used badge", () => {
+        const badge = () => document.querySelector(".card-used-badge");
+
+        it("is absent on a card with abilities still available", () => {
+            render(<Card card={ card } source="play area" />);
+            expect(badge()).toBeNull();
+        });
+
+        it("is absent when the card explicitly reports abilities remaining", () => {
+            render(<Card card={ { ...card, abilitiesExhausted: false } } source="play area" />);
+            expect(badge()).toBeNull();
+        });
+
+        it("is shown when every ability is spent", () => {
+            render(<Card card={ { ...card, abilitiesExhausted: true } } source="play area" />);
+            expect(badge()).not.toBeNull();
+            expect(badge().querySelector("img").getAttribute("src")).toBe("/img/card-used.png");
+        });
+
+        it("names the card in its tooltip", () => {
+            render(<Card card={ { ...card, abilitiesExhausted: true } } source="play area" />);
+            expect(badge().querySelector("img").getAttribute("title"))
+                .toBe("Test Card: ability already used");
+        });
+
+        it("is shown on a BOWED card too, and stays outside the rotated image", () => {
+            render(<Card card={ { ...card, abilitiesExhausted: true, bowed: true } } source="play area" />);
+            // The card box is horizontal and the IMAGE carries the rotation...
+            expect(document.querySelector(".card").className).toContain("horizontal");
+            expect(document.querySelector(".card-image").className).toContain("bowed");
+            // ...while the badge is a sibling of the image, so it never inherits
+            // `rotate(90deg)` and stays in the same on-screen corner.
+            expect(badge()).not.toBeNull();
+            expect(badge().closest(".card-image")).toBeNull();
+            expect(badge().closest(".card")).not.toBeNull();
+        });
+
+        it("is never shown on a facedown card", () => {
+            render(<Card card={ { ...card, abilitiesExhausted: true, facedown: true } } source="play area" />);
+            expect(badge()).toBeNull();
+        });
+
+        it("does not swallow clicks aimed at the card", () => {
+            expect(badge()).toBeNull();
+            render(<Card card={ { ...card, abilitiesExhausted: true } } source="play area" />);
+            expect(badge().className).toContain("ignore-mouse-events");
+        });
+    });
 });

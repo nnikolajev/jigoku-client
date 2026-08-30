@@ -678,3 +678,54 @@
         margin-top: calc(-1 * (var(--card-xxl-height) + var(--card-xxl-height) / 2));
     }
 }
+
+/*
+ * "Ability already used" badge.
+ *
+ * Shown on a card in play whose every limited ability is spent for its current
+ * period (server: `abilitiesExhausted`, read off the engine's own
+ * `AbilityLimit.isAtMax`). Clicking such a card does nothing, so this is the
+ * only cue the player gets.
+ *
+ * Anchored to the bottom-left of the card's on-screen FOOTPRINT. A bowed card
+ * keeps the same outer box and rotates only its image, so the badge stays in
+ * the same corner and the same way up on bowed and unbowed cards alike — it
+ * must never inherit the image's `rotate(90deg)`.
+ *
+ * `--card-used-size` is set per card size below rather than as a percentage, so
+ * the badge stays legible on a small card and does not swallow a large one.
+ */
+.card-used-badge {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    width: var(--card-used-size, 26px);
+    height: var(--card-used-size, 26px);
+    /* Above the card image and the counters, below menus and popups. */
+    z-index: calc(var(--layer-cards) + 2);
+    pointer-events: none;
+    line-height: 0;
+}
+
+.card-used-badge > img {
+    width: 100%;
+    height: 100%;
+    /* The art is a dark seal; lift it off dark card art without a hard border. */
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.85));
+}
+
+.card.small .card-used-badge {
+    --card-used-size: 20px;
+}
+
+.card.large .card-used-badge {
+    --card-used-size: 34px;
+}
+
+.card.x-large .card-used-badge {
+    --card-used-size: 44px;
+}
+
+.card.xxl .card-used-badge {
+    --card-used-size: 52px;
+}
