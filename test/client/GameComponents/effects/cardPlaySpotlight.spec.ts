@@ -247,6 +247,27 @@ describe("server-recorded events", () => {
         expect(event.targets.map(card => card.name)).toEqual(["Doji Whisperer"]);
     });
 
+    // Acclaimed Geisha House aims at a ring and DISHONORS a character to pay for it.
+    // The character is a cost, not a target, so without this the only thing the arrow
+    // could point at was the ring.
+    it("points at cards spent as a cost as well as at targets", () => {
+        const ring = { id: "fire", uuid: "u-ring", name: "Fire Ring", type: "ring", element: "fire" };
+        const recorded = {
+            message: [{ name: "kingitus" }, " ", "uses", " ", "Acclaimed Geisha House"],
+            record: { kind: "play", player: "kingitus", verb: "uses", source, targets: [ring], costs: [target] }
+        };
+        const event = parseSpotlightEvent(recorded, "k");
+        expect(event.targets.map(card => card.name)).toEqual(["Fire Ring", "Doji Whisperer"]);
+    });
+
+    it("is unchanged by a record from a server that sends no costs", () => {
+        const recorded = {
+            message: [{ name: "kingitus" }, " ", "uses", " ", "Kudaka"],
+            record: { kind: "play", player: "kingitus", verb: "uses", source, targets: [target] }
+        };
+        expect(parseSpotlightEvent(recorded, "k").targets.map(card => card.name)).toEqual(["Doji Whisperer"]);
+    });
+
     // The whole point: an entry with no play verb at all still produces an overlay.
     it("fires on a custom message the verb heuristic cannot read", () => {
         const custom = {

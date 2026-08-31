@@ -252,6 +252,18 @@ folding; `SpotlightRail`, `ConflictArrows` and `GameHistory` render the componen
 DOM-anchored overlays need `getBoundingClientRect` stubbed — jsdom reports every element
 as zero-sized, which `anchorFor` correctly reads as "not on screen".
 
+## Costs are drawn too
+
+An ability's `MessageRecord` carries a `costs` array alongside `targets`: the cards
+SPENT on it rather than aimed at it. A select cost stores the player's pick under the
+game action's own name (`MetaActionCost`), never in `context.target`, so Acclaimed
+Geisha House — "dishonor a participating character you control: switch the contested
+ring" — recorded the ring and nothing else, and the arrow had only the ring to point at.
+
+`eventFromRecord` concatenates the two, because for the overlay the question is which
+cards the ability touched, not why. They stay separate in the record so the History view
+can distinguish them later.
+
 ## Known gaps
 
 **Only against an older server.** Everything below is a limitation of the prose

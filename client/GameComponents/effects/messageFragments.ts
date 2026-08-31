@@ -45,6 +45,8 @@ export interface MessageRecord {
     verb?: string;
     source?: RecordedCard;
     targets?: RecordedCard[];
+    /** Cards SPENT on the ability rather than aimed at it -- a dishonor cost, say. */
+    costs?: RecordedCard[];
     conflictId?: number;
     conflictType?: string;
     ring?: RecordedCard;

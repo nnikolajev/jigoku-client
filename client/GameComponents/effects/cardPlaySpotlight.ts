@@ -96,7 +96,11 @@ function eventFromRecord(message: any, key: string): SpotlightEvent | null {
         verb: record.verb ?? "plays",
         playerName: record.player ?? "",
         source: toSpotlightCard(record.source),
-        targets: (record.targets ?? []).map(toSpotlightCard),
+        // A cost is not a target, but it is still a card the ability reached out and
+        // touched, and the arrow is the only thing that says WHICH. Acclaimed Geisha
+        // House aims at a ring and dishonors a character to pay for it -- without this
+        // the character it dishonored is named nowhere on the board.
+        targets: [...(record.targets ?? []), ...(record.costs ?? [])].map(toSpotlightCard),
         cancels: /\bcancel/i.test(text),
         text
     };
