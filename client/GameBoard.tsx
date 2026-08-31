@@ -22,6 +22,12 @@ import GameConfiguration from "./GameComponents/GameConfiguration.jsx";
 import StatDelta from "./GameComponents/effects/StatDelta.jsx";
 import ConflictSlamEffect from "./GameComponents/effects/ConflictSlamEffect.jsx";
 import { countCardPlayMessages, detectConflictProvinceBreak } from "./GameComponents/effects/gameEvents.js";
+import CardPlaySpotlight, { SPOTLIGHT_DURATION_MS, SPOTLIGHT_MAX_VISIBLE, loadSpotlightEnabled, saveSpotlightEnabled } from "./GameComponents/effects/CardPlaySpotlight.jsx";
+import { detectNewSpotlightEvents, detectNewTargetContinuations, mergeTargets } from "./GameComponents/effects/cardPlaySpotlight.js";
+import ConflictArrows from "./GameComponents/effects/ConflictArrows.jsx";
+import GameHistory from "./GameComponents/effects/GameHistory.jsx";
+import { recordConflictState } from "./GameComponents/effects/conflictLedger.js";
+import { advanceDeclarationTally } from "./GameComponents/effects/messageFragments.js";
 import { playCardPlay, playMilitaryWin, playPoliticalWin } from "./GameComponents/effects/gameSounds.js";
 import { tryParseJSON } from "./util.js";
 import { downloadGameLog } from "./GameComponents/gameLogSerializer.js";
@@ -82,11 +88,18 @@ export class InnerGameBoard extends React.Component {
         this.clearSlamEffect = this.clearSlamEffect.bind(this);
         this.onTestAnimationClick = this.onTestAnimationClick.bind(this);
         this.onToggleWinEffectsClick = this.onToggleWinEffectsClick.bind(this);
+        this.onSpotlightToggle = this.onSpotlightToggle.bind(this);
+        this.onHistoryClick = this.onHistoryClick.bind(this);
+        this.onHistoryClose = this.onHistoryClose.bind(this);
 
         this.boundActions = bindActionCreators(actions, props.dispatch);
 
         this._cardsInPlayCache = {};
         this._slamEffectSequence = 0;
+        this._spotlightSequence = 0;
+        this._spotlightTimers = [];
+        this._lastSpotlightEvent = null;
+        this._declarationTally = { count: 0, scanned: 0 };
 
         this.state = {
             cardToZoom: undefined,
@@ -100,7 +113,11 @@ export class InnerGameBoard extends React.Component {
             showSettingsModal: false,
             slamEffect: null,
             animationTestVariant: "military",
-            winEffectsEnabled: loadWinEffectsPreference()
+            winEffectsEnabled: loadWinEffectsPreference(),
+            spotlightEnabled: loadSpotlightEnabled(),
+            spotlightEvents: [],
+            showHistory: false,
+            conflictLedger: []
         };
     }
 
@@ -116,6 +133,11 @@ export class InnerGameBoard extends React.Component {
         this.playGameEffects(prevProps);
     }
 
+    componentWillUnmount() {
+        this._spotlightTimers.forEach(timer => clearTimeout(timer));
+        this._spotlightTimers = [];
+    }
+
     playGameEffects(prevProps) {
         const prevGame = prevProps.currentGame;
         const currentGame = this.props.currentGame;
@@ -129,6 +151,17 @@ export class InnerGameBoard extends React.Component {
             playCardPlay();
         }
 
+        // The tally advances by reading only the messages that arrived, and recounts
+        // from scratch when the log shrank -- which is a replay seeking backwards.
+        this._declarationTally = advanceDeclarationTally(this._declarationTally, currentGame.messages);
+        const declarationCount = this._declarationTally.count;
+        this.setState(state => {
+            const conflictLedger = recordConflictState(state.conflictLedger, currentGame, declarationCount);
+            return conflictLedger === state.conflictLedger ? null : { conflictLedger };
+        });
+
+        this.collectSpotlightEvents(prevGame, currentGame);
+
         if(!this.state.winEffectsEnabled) {
             return;
         }
@@ -137,6 +170,76 @@ export class InnerGameBoard extends React.Component {
         if(provinceBreak && provinceBreak.skillDifference >= 5) {
             this.playSlamEffect(provinceBreak.type === "political" ? "political" : "military");
         }
+    }
+
+    // EXPERIMENTAL card-play spotlight. "off" short-circuits before any parsing, so the
+    // feature costs nothing while disabled.
+    collectSpotlightEvents(prevGame, currentGame) {
+        if(!this.state.spotlightEnabled) {
+            return;
+        }
+
+        this._spotlightSequence += 1;
+        const events = detectNewSpotlightEvents(prevGame.messages || [], currentGame.messages || [], this._spotlightSequence);
+        // A card whose target is chosen in a follow-up prompt records that target in a
+        // separate log entry ("{0} chooses to honor {1}", 76 cards), so the play entry
+        // alone has no target to point at -- Court Games showed with no arrow.
+        const continuations = detectNewTargetContinuations(prevGame.messages || [], currentGame.messages || []);
+        if(events.length === 0 && continuations.length === 0) {
+            return;
+        }
+
+        for(const event of events) {
+            this._lastSpotlightEvent = event;
+        }
+
+        // The prompt that picks the target can outlive the overlay -- a human takes as
+        // long as they like -- so a follow-up whose play has already faded brings it
+        // back rather than being dropped.
+        let revived = null;
+        if(continuations.length > 0 && this._lastSpotlightEvent) {
+            this._spotlightSequence += 1;
+            const merged = {
+                ...this._lastSpotlightEvent,
+                targets: mergeTargets(this._lastSpotlightEvent.targets, continuations)
+            };
+            this._lastSpotlightEvent = merged;
+            revived = { ...merged, key: `${merged.key}-t${this._spotlightSequence}` };
+        }
+
+        const arriving = revived ? [...events, revived] : events;
+        const supersededKeys = revived ? new Set([this._lastSpotlightEvent.key, ...events.map(event => event.key)]) : null;
+
+        this.setState(state => {
+            const kept = supersededKeys
+                ? state.spotlightEvents.filter(event => !supersededKeys.has(event.key) && !event.key.startsWith(`${this._lastSpotlightEvent.key}-t`))
+                : state.spotlightEvents;
+            return { spotlightEvents: [...kept, ...arriving].slice(-SPOTLIGHT_MAX_VISIBLE) };
+        });
+
+        const keys = new Set(arriving.map(event => event.key));
+        const timer = setTimeout(() => {
+            this._spotlightTimers = this._spotlightTimers.filter(entry => entry !== timer);
+            this.setState(state => ({
+                spotlightEvents: state.spotlightEvents.filter(event => !keys.has(event.key))
+            }));
+        }, SPOTLIGHT_DURATION_MS);
+        this._spotlightTimers.push(timer);
+    }
+
+    onHistoryClick(event) {
+        event.preventDefault();
+        this.setState({ showHistory: true });
+    }
+
+    onHistoryClose() {
+        this.setState({ showHistory: false });
+    }
+
+    onSpotlightToggle(enabled) {
+        saveSpotlightEnabled(enabled);
+        this._lastSpotlightEvent = null;
+        this.setState({ spotlightEnabled: enabled, spotlightEvents: [] });
     }
 
     playSlamEffect(variant, additionalState = {}) {
@@ -876,6 +979,7 @@ export class InnerGameBoard extends React.Component {
                             <GameConfiguration actionWindows={ thisPlayer.promptedActionWindows } timerSettings={ thisPlayer.timerSettings }
                                 optionSettings={ thisPlayer.optionSettings } onOptionSettingToggle={ this.onOptionSettingToggle.bind(this) }
                                 onToggle={ this.onPromptedActionWindowToggle.bind(this) } onTimerSettingToggle={ this.onTimerSettingToggle.bind(this) }
+                                spotlightEnabled={ this.state.spotlightEnabled } onSpotlightToggle={ this.onSpotlightToggle }
                             />
                         </div>
                     </div>
@@ -885,9 +989,24 @@ export class InnerGameBoard extends React.Component {
         let backdrop = this.state.showSettingsModal ? <div className="modal-backdrop fade in" onClick={ () => this.setState({ showSettingsModal: false }) } /> : null;
 
         return (
-            <div className={ `game-board${this.state.slamEffect?.variant === "military" ? " screen-shake" : ""}` }>
+            <div className={ `game-board${this.state.slamEffect?.variant === "military" ? " screen-shake" : ""}${this.state.spotlightEnabled ? " spotlight-active" : ""}` }>
                 { popup }
                 { backdrop }
+                <CardPlaySpotlight events={ this.state.spotlightEvents } enabled={ this.state.spotlightEnabled } />
+                { this.state.spotlightEnabled ? (
+                    <ConflictArrows
+                        conflict={ this.props.currentGame.conflict }
+                        players={ [thisPlayer, otherPlayer] }
+                        viewerPlayerName={ thisPlayer.name } />
+                ) : null }
+                { this.state.showHistory ? (
+                    <GameHistory
+                        messages={ this.props.currentGame.messages }
+                        conflictLedger={ this.state.conflictLedger }
+                        onCardMouseOver={ this.onMouseOver }
+                        onCardMouseOut={ this.onMouseOut }
+                        onClose={ this.onHistoryClose } />
+                ) : null }
                 { this.state.slamEffect ? (
                     <ConflictSlamEffect
                         key={ this.state.slamEffect.key }
@@ -1016,7 +1135,7 @@ export class InnerGameBoard extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className="right-side">
+                    <div className={ `right-side${this.state.showHistory ? " right-side--above-modal" : ""}` }>
                         <CardZoom imageUrl={ this.props.cardToZoom ? this.getCardImageUrl(this.props.cardToZoom) : "" }
                             orientation={ this.props.cardToZoom ? this.props.cardToZoom.type === "plot" ? "horizontal" : "vertical" : "vertical" }
                             show={ !!this.props.cardToZoom } cardName={ this.props.cardToZoom ? this.props.cardToZoom.name : null } />
@@ -1029,6 +1148,7 @@ export class InnerGameBoard extends React.Component {
                         />
                         <Controls
                             onSettingsClick={ this.onSettingsClick }
+                            onHistoryClick={ this.onHistoryClick }
                             onManualModeClick={ this.onManualModeClick }
                             onDownloadLogClick={ this.onDownloadLogClick }
                             onToggleChatClick={ this.onToggleChatClick }

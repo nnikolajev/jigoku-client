@@ -108,7 +108,10 @@ export function PlayerStatsRow({
             ) }
             { (otherPlayer || spectating) && (
                 <div className="state">
-                    <div className="hand-size">Hand Size: { handSize }</div>
+                    <div className="hand-size stat-delta-host">
+                        Hand Size: { handSize }
+                        <StatDelta value={ handSize } />
+                    </div>
                 </div>
             ) }
             <div className="state">

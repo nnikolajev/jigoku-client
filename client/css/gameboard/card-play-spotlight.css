@@ -1,0 +1,645 @@
+/* EXPERIMENTAL: card-play spotlight overlays. Three variants share the fixed,
+   click-through overlay layer; each styles its own presentation. */
+
+.spotlight-rail,
+.spotlight-beam,
+.spotlight-ribbon {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    pointer-events: none;
+}
+
+.spotlight-overlay-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.spotlight-arrow-head {
+    fill: #ffd76a;
+}
+
+/* --- Variant A: rail --- */
+
+.spotlight-arrow {
+    fill: none;
+    stroke: #ffd76a;
+    stroke-width: 3;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px rgba(255, 215, 106, 0.85));
+    animation: spotlight-draw 0.35s ease-out both, spotlight-fade-out 0.4s ease-in 2.6s both;
+}
+
+.spotlight-arrow--cancel {
+    stroke: #ff6b6b;
+    filter: drop-shadow(0 0 4px rgba(255, 107, 107, 0.85));
+}
+
+.spotlight-rail__card {
+    position: absolute;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 0 2px #ffd76a, 0 8px 24px rgba(0, 0, 0, 0.75);
+    animation: spotlight-rail-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2) both,
+               spotlight-fade-out 0.4s ease-in 2.6s both;
+}
+
+.spotlight-rail__card--cancel {
+    box-shadow: 0 0 0 2px #ff6b6b, 0 8px 24px rgba(0, 0, 0, 0.75);
+}
+
+.spotlight-rail__card img {
+    display: block;
+    width: 100%;
+}
+
+.spotlight-rail__caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 2px 5px;
+    font-size: 10px;
+    line-height: 1.3;
+    color: #f4e9d0;
+    background: rgba(0, 0, 0, 0.82);
+}
+
+.spotlight-rail__verb {
+    color: #ffd76a;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* --- Variant B: beam --- */
+
+.spotlight-beam__line {
+    stroke: #ffd76a;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 3px rgba(255, 215, 106, 0.9));
+    animation: spotlight-fade-in 0.18s ease-out both, spotlight-fade-out 0.4s ease-in 2.6s both;
+}
+
+.spotlight-beam__line--cancel {
+    stroke: #ff6b6b;
+    stroke-dasharray: 6 4;
+}
+
+.spotlight-beam__spark {
+    fill: #fff6d8;
+    filter: drop-shadow(0 0 6px #ffd76a);
+}
+
+.spotlight-beam__halo {
+    fill: none;
+    stroke: #ffd76a;
+    stroke-width: 3;
+    filter: drop-shadow(0 0 6px rgba(255, 215, 106, 0.9));
+    animation: spotlight-halo-pulse 0.8s ease-in-out 2, spotlight-fade-out 0.4s ease-in 2.6s both;
+}
+
+.spotlight-beam__halo--cancel {
+    stroke: #ff6b6b;
+}
+
+.spotlight-beam__thumb {
+    position: absolute;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 0 0 2px #ffd76a, 0 6px 18px rgba(0, 0, 0, 0.8);
+    animation: spotlight-pop-in 0.24s cubic-bezier(0.2, 0.9, 0.3, 1.3) both,
+               spotlight-fade-out 0.4s ease-in 2.6s both;
+}
+
+.spotlight-beam__thumb--cancel {
+    box-shadow: 0 0 0 2px #ff6b6b, 0 6px 18px rgba(0, 0, 0, 0.8);
+}
+
+.spotlight-beam__thumb img {
+    display: block;
+    width: 100%;
+}
+
+/* --- Variant C: ribbon --- */
+
+.spotlight-ribbon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding-top: 54px;
+}
+
+.spotlight-ribbon__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 640px;
+    padding: 5px 12px 5px 6px;
+    border-radius: 7px;
+    border-left: 3px solid #ffd76a;
+    background: rgba(12, 10, 8, 0.9);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+    color: #f4e9d0;
+    animation: spotlight-ribbon-in 0.24s ease-out both, spotlight-fade-out 0.4s ease-in 2.6s both;
+}
+
+.spotlight-ribbon__row--cancel {
+    border-left-color: #ff6b6b;
+}
+
+.spotlight-ribbon__chain {
+    color: #ff6b6b;
+    display: flex;
+    align-items: center;
+}
+
+.spotlight-ribbon__art {
+    width: 34px;
+    height: 47px;
+    object-fit: cover;
+    object-position: center 22%;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(255, 215, 106, 0.6);
+}
+
+.spotlight-ribbon__art--source {
+    width: 44px;
+    height: 61px;
+}
+
+.spotlight-ribbon__art.ring {
+    background-size: contain;
+}
+
+.spotlight-ribbon__body {
+    min-width: 0;
+}
+
+.spotlight-ribbon__title {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.spotlight-ribbon__text {
+    font-size: 11px;
+    opacity: 0.72;
+    max-width: 340px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.spotlight-ribbon__arrow {
+    color: #ffd76a;
+    display: flex;
+    align-items: center;
+}
+
+.spotlight-ribbon__targets {
+    display: flex;
+    gap: 3px;
+}
+
+/* --- Shared animation --- */
+
+@keyframes spotlight-rail-in {
+    from {
+        opacity: 0;
+        transform: translateX(48px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes spotlight-ribbon-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes spotlight-pop-in {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes spotlight-draw {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes spotlight-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes spotlight-fade-out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes spotlight-halo-pulse {
+    0%, 100% {
+        opacity: 0.55;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spotlight-rail__card,
+    .spotlight-beam__thumb,
+    .spotlight-beam__halo,
+    .spotlight-ribbon__row,
+    .spotlight-arrow,
+    .spotlight-beam__line {
+        animation: spotlight-fade-in 0.1s ease-out both;
+    }
+
+    .spotlight-beam__spark {
+        display: none;
+    }
+}
+
+/* --- Conflict emphasis (rail mode) --- */
+
+/* Scoped to .spotlight-active, which GameBoard only sets while a spotlight mode is
+   selected, so turning the feature off in settings removes these too. */
+.spotlight-active svg.ring-svg.contested {
+    animation: conflict-ring-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes conflict-ring-pulse {
+    0%, 100% {
+        opacity: 0.75;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.11);
+    }
+}
+
+.conflict-arrows {
+    position: fixed;
+    inset: 0;
+    z-index: 1150;
+    pointer-events: none;
+}
+
+/* One swept arrow per participating character, sitting on the card edge that faces
+   the enemy. .conflict-mark--down flips it for the board half at the top of the
+   screen. The entry animation runs ONCE -- React must keep a stable key for these, or
+   the remount replays it and it reads as a pulse. */
+.conflict-mark {
+    position: fixed;
+    overflow: visible;
+    animation: conflict-mark-in 0.25s ease-out both;
+}
+
+.conflict-mark--down {
+    transform: rotate(180deg);
+}
+
+.conflict-mark__arc,
+.conflict-mark__head {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.conflict-mark__arc {
+    stroke-width: 3;
+}
+
+.conflict-mark__head {
+    stroke-width: 4;
+}
+
+.conflict-mark--attack .conflict-mark__arc,
+.conflict-mark--attack .conflict-mark__head {
+    stroke: #ff4d4d;
+    filter: drop-shadow(0 0 4px rgba(255, 77, 77, 0.95));
+}
+
+.conflict-mark--defend .conflict-mark__arc,
+.conflict-mark--defend .conflict-mark__head {
+    stroke: #4da3ff;
+    filter: drop-shadow(0 0 4px rgba(77, 163, 255, 0.95));
+}
+
+@keyframes conflict-mark-in {
+    from {
+        opacity: 0;
+        scale: 0.6;
+    }
+
+    to {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+/* Crossed swords over the province under attack; a skull once the conflict is
+   winning by enough to break it (conflict.breaking). The dark disc behind the glyph
+   is what makes it readable over busy card art. */
+.conflict-province-mark {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.62) 55%, rgba(0, 0, 0, 0) 72%);
+    font-size: 58px;
+    line-height: 1;
+    color: #ffd76a;
+    text-shadow: 0 2px 4px #000, 0 0 18px rgba(255, 215, 106, 0.9);
+    animation: conflict-mark-in 0.25s ease-out both;
+}
+
+.conflict-province-mark--breaking {
+    color: #ff5252;
+    background: radial-gradient(circle, rgba(30, 0, 0, 0.86) 0%, rgba(20, 0, 0, 0.66) 55%, rgba(0, 0, 0, 0) 72%);
+    text-shadow: 0 2px 4px #000, 0 0 22px rgba(255, 82, 82, 0.95);
+}
+
+/* --- History popup --- */
+
+/* The board's own card zoom pane keeps the right 338px, so the popup is centred in
+   what is left of the viewport rather than in the viewport itself. */
+.game-history {
+    --game-history-zoom-gutter: 350px;
+
+    position: fixed;
+    top: 6vh;
+    left: max(12px, calc((100vw - var(--game-history-zoom-gutter)) / 2 - min(720px, 70vw) / 2));
+    display: flex;
+    flex-direction: column;
+    width: min(720px, 70vw);
+    max-height: 88vh;
+    border: 1px solid var(--color-primary);
+    border-radius: 8px;
+    background: rgba(12, 10, 8, 0.97);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    color: #f4e9d0;
+    z-index: 1300;
+}
+
+.game-history__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255, 215, 106, 0.35);
+
+    & h4 {
+        margin: 0;
+        margin-right: auto;
+        font-size: 15px;
+    }
+
+    & svg {
+        color: var(--color-primary);
+    }
+}
+
+.game-history__hint {
+    font-size: 11px;
+    opacity: 0.55;
+}
+
+.game-history__body {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px 12px 14px;
+    overflow-y: auto;
+
+    /* The rows are the ribbon rows, but here they are a static list: no entry
+       animation and no auto-fade. */
+    & .spotlight-ribbon__row {
+        max-width: none;
+        animation: none;
+    }
+
+    & .spotlight-ribbon__text {
+        max-width: none;
+        white-space: normal;
+    }
+
+    & .spotlight-ribbon__title {
+        white-space: normal;
+    }
+}
+
+.game-history__empty {
+    padding: 24px 0;
+    text-align: center;
+    opacity: 0.6;
+}
+
+.game-history__phase {
+    margin: 10px 0 2px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid rgba(255, 215, 106, 0.4);
+    color: #ffd76a;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    &:first-child {
+        margin-top: 0;
+    }
+}
+
+.spotlight-ribbon__row--conflict {
+    border-left-color: #ff4d4d;
+
+    & .spotlight-ribbon__chain {
+        color: #ff4d4d;
+    }
+}
+
+.spotlight-ribbon__row--political {
+    border-left-color: #4da3ff;
+
+    & .spotlight-ribbon__chain {
+        color: #4da3ff;
+    }
+}
+
+/* --- History: participants, notes, zoom --- */
+
+/* The popup's backdrop must not cover the board's card zoom pane, which is what the
+   hover-to-enlarge in the popup drives. .right-side sets its own z-index and therefore
+   its own stacking context, so the pane cannot be raised without raising its siblings
+   -- the chat and the controls come with it, and those must not stay clickable behind
+   a modal. Raise above the backdrop only, and switch the siblings off. */
+.right-side--above-modal {
+    z-index: 1295;
+}
+
+.right-side--above-modal .chat,
+.right-side--above-modal .controls {
+    pointer-events: none;
+}
+
+.game-history__backdrop {
+    z-index: 1290;
+}
+
+.game-history__body .spotlight-ribbon__row--conflict {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+}
+
+.game-history__conflict-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.game-history__group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 22px;
+}
+
+.game-history__group-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 82px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.game-history__group-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+}
+
+.game-history__group--attack .game-history__group-label {
+    color: #ff8080;
+}
+
+.game-history__group--defend .game-history__group-label {
+    color: #7fbfff;
+}
+
+.game-history__group--covert .game-history__group-label {
+    color: #c9a6ff;
+}
+
+.game-history__group--covert .spotlight-ribbon__art {
+    filter: grayscale(0.6);
+    box-shadow: 0 0 0 1px rgba(201, 166, 255, 0.8);
+}
+
+/* Everything the log records that is not a play or a declaration: keyword payoffs
+   (Courtesy, Sincerity), ring effects, skill announcements, honor bids. */
+.game-history__body .spotlight-ribbon__row--note {
+    padding: 3px 10px 3px 6px;
+    border-left-color: rgba(255, 215, 106, 0.4);
+    background: rgba(12, 10, 8, 0.6);
+}
+
+.spotlight-ribbon__text--note {
+    opacity: 0.9;
+    font-size: 12px;
+}
+
+.game-history__line {
+    padding: 2px 10px 2px 12px;
+    border-left: 3px solid rgba(255, 215, 106, 0.18);
+    font-size: 12px;
+    opacity: 0.72;
+}
+
+.game-history__line--success {
+    border-left-color: #7ee787;
+    opacity: 0.95;
+}
+
+.game-history__line--danger {
+    border-left-color: #ff6b6b;
+    opacity: 0.95;
+}
+
+.game-history__line--warning {
+    border-left-color: #ffd76a;
+    opacity: 0.95;
+}
+
+.game-history__body .spotlight-ribbon__art {
+    cursor: zoom-in;
+}
+
+.game-history__covert-pairs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.game-history__covert-pair {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    & svg {
+        color: #c9a6ff;
+    }
+}
+
+.game-history__covert-verb {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #c9a6ff;
+}

@@ -27,6 +27,7 @@
 @import "./css/gameboard/conflict.css";
 @import "./css/gameboard/clock-popup.css";
 @import "./css/gameboard/effects.css";
+@import "./css/gameboard/card-play-spotlight.css";
 /* end gameboard */
 @import "./css/cards.css";
 @import "./css/cardStats.css";

@@ -131,10 +131,11 @@ export function PlayerStatsBox({
             </div>
             <div className="player-stats__resources">
                 <div className="stats-row">
-                    <div className="state">
+                    <div className="state stat-delta-host">
                         <div className={ `stat-image ${size}` } style={ handImageStyle } />
                         <div>:</div>
                         <div className="stat-value">{ handSize }</div>
+                        <StatDelta value={ handSize } />
                     </div>
                 </div>
                 <div className="stats-row">{ getButton("fate", "Fate") }</div>

@@ -55,6 +55,7 @@
 
 .controls {
     pointer-events: auto;
+    max-width: 100%;
     z-index: var(--layer-popups);
     display: flex;
     justify-content: end;
@@ -167,4 +168,40 @@
         text-align: right;
         font-size: 12px;
     }
+}
+
+/* The controls bar sits over the play area, so it collapses to a single handle at the
+   right edge. The chat below it is a separate control and is not affected. */
+.controls__handle {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    padding: 0 8px;
+    line-height: 1;
+}
+
+.controls__items {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    max-width: 80vw;
+    opacity: 1;
+    transition: max-width 220ms ease, opacity 160ms ease;
+}
+
+/* Height as well as width: clipping only the width leaves the buttons laid out inside,
+   so the collapsed bar stayed as tall as a full row of them. */
+.controls--collapsed .controls__items {
+    max-width: 0;
+    height: 0;
+    opacity: 0;
+}
+
+/* Sit flush against the chat panel above rather than floating below it. */
+.controls--collapsed {
+    padding: 0;
+    margin-top: 0;
+    top: -5px;
 }

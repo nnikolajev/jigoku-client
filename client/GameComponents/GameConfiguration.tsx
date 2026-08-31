@@ -10,7 +10,7 @@ const windows = [
     { name: "fate", label: "Fate phase", style: "col-sm-4" }
 ];
 
-function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettingToggle, onToggle, optionSettings, timerSettings }) {
+function GameConfiguration({ actionWindows, onOptionSettingToggle, onSpotlightToggle, onTimerSettingToggle, onToggle, optionSettings, spotlightEnabled, timerSettings }) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [windowTimer, setWindowTimer] = useState(timerSettings.windowTimer);
 
@@ -166,6 +166,21 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
                             fieldClass="col-sm-6"
                             onChange={ (e) => handleOptionSettingToggle("autoTriggerRoleAbilities", e) }
                             checked={ optionSettings.autoTriggerRoleAbilities !== false }
+                        />
+                    </div>
+                </div>
+                <div className="panel-title text-center">
+                    Card play spotlight
+                </div>
+                <div className="panel">
+                    <div className="form-group">
+                        <Checkbox
+                            name="cardPlaySpotlight"
+                            noGroup
+                            label="Show the played card and its targets on the board"
+                            fieldClass="col-sm-12"
+                            onChange={ (e) => onSpotlightToggle && onSpotlightToggle(e.target.checked) }
+                            checked={ spotlightEnabled !== false }
                         />
                     </div>
                 </div>
