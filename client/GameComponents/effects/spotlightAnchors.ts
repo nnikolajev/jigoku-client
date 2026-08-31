@@ -28,8 +28,7 @@ function elementFor(card: SpotlightCard): Element | null {
     return null;
 }
 
-export function anchorFor(card: SpotlightCard): AnchorRect | null {
-    const element = elementFor(card);
+function rectOf(element: Element | null, uuid: string): AnchorRect | null {
     if(!element) {
         return null;
     }
@@ -37,7 +36,16 @@ export function anchorFor(card: SpotlightCard): AnchorRect | null {
     if(rect.width === 0 && rect.height === 0) {
         return null;
     }
-    return { uuid: card.uuid, left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+    return { uuid, left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+}
+
+export function anchorFor(card: SpotlightCard): AnchorRect | null {
+    return rectOf(elementFor(card), card.uuid);
+}
+
+/** Same lookup for a bare uuid, where there is no card summary to pass. */
+export function anchorForUuid(uuid: string): AnchorRect | null {
+    return rectOf(document.getElementById(uuid), uuid);
 }
 
 export interface AnchorPoint {

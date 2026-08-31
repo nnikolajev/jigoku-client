@@ -647,3 +647,100 @@
     text-transform: uppercase;
     color: #c9a6ff;
 }
+
+/* --- Named cards ---------------------------------------------------------
+
+   Naming a card names a string, so the named card has nowhere of its own on the
+   board. Two presentations, one for each direction the naming runs:
+
+   .named-card-marker  -- what a card of MINE named (Shiro Kitsuki), pinned beside
+                          the naming card itself.
+   .blocked-card       -- what I may not play copies of (Gossip), parked in my own
+                          sidebar strip beside my nameplate.
+*/
+
+.named-card-markers {
+    position: fixed;
+    inset: 0;
+    /* Same layer as the conflict arrows: over the board cards, under the hand,
+       the prompt, the card menus and the chat. */
+    z-index: 60;
+    pointer-events: none;
+}
+
+.named-card-marker {
+    position: absolute;
+    border-radius: 4px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.85);
+    box-shadow: 0 0 0 2px #ffd76a, 0 4px 14px rgba(0, 0, 0, 0.8);
+    animation: named-card-marker-in 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.named-card-marker img {
+    display: block;
+    width: 100%;
+}
+
+.named-card-marker__name {
+    display: block;
+    padding: 1px 3px;
+    font-size: 9px;
+    line-height: 1.2;
+    text-align: center;
+    color: #ffd76a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@keyframes named-card-marker-in {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.blocked-cards {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3px;
+    padding: 2px 0;
+}
+
+.blocked-card {
+    position: relative;
+    width: 46px;
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.9), 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.blocked-card img {
+    display: block;
+    width: 100%;
+    /* Drained, so the ban reads before the art does. */
+    filter: grayscale(0.7) brightness(0.6);
+}
+
+.blocked-card__fallback {
+    display: block;
+    padding: 4px 2px;
+    font-size: 9px;
+    line-height: 1.2;
+    text-align: center;
+    color: #ff6b6b;
+}
+
+.blocked-card__cancel {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 70%;
+    height: 70%;
+    fill: none;
+    stroke: #ff4d4d;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.9));
+}

@@ -25,6 +25,9 @@ import { countCardPlayMessages, detectConflictProvinceBreak } from "./GameCompon
 import CardPlaySpotlight, { SPOTLIGHT_DURATION_MS, SPOTLIGHT_MAX_VISIBLE, loadSpotlightEnabled, saveSpotlightEnabled } from "./GameComponents/effects/CardPlaySpotlight.jsx";
 import { detectNewSpotlightEvents, detectNewTargetContinuations, mergeTargets } from "./GameComponents/effects/cardPlaySpotlight.js";
 import ConflictArrows from "./GameComponents/effects/ConflictArrows.jsx";
+import BlockedCards from "./GameComponents/effects/BlockedCards.jsx";
+import NamedCardMarkers from "./GameComponents/effects/NamedCardMarkers.jsx";
+import { resolveNamedCards } from "./GameComponents/effects/namedCards.js";
 import GameHistory from "./GameComponents/effects/GameHistory.jsx";
 import { recordConflictState } from "./GameComponents/effects/conflictLedger.js";
 import { advanceDeclarationTally } from "./GameComponents/effects/messageFragments.js";
@@ -804,6 +807,9 @@ export class InnerGameBoard extends React.Component {
                     </div>
                 </div>
                 <div className={ `sidebar-pane their-side ${size}` }>
+                    { /* Cards this player cannot play copies of, parked against their
+                         nameplate so the ban reads on the side it binds. */ }
+                    <BlockedCards cards={ resolveNamedCards(otherPlayer?.cannotPlayNamed, this.props.cards) } />
                     { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ otherPlayer ? `${otherPlayer.showBid}` : "0" } /> }
                     { this.getRings(otherPlayer ? otherPlayer.name : "\0", `claimed-pool their-pool ${size || ""}`) }
                     <div className="sidebar-pane their-side">
@@ -834,6 +840,7 @@ export class InnerGameBoard extends React.Component {
                         handSize={ thisPlayer.cardPiles.hand ? thisPlayer.cardPiles.hand.length : 0 } />
                     { this.getRings(thisPlayer ? thisPlayer.name : "\0", `claimed-pool my-pool ${size || ""}`) }
                     { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ `${thisPlayer.showBid}` } /> }
+                    <BlockedCards cards={ resolveNamedCards(thisPlayer.cannotPlayNamed, this.props.cards) } />
                 </div>
                 <div className="player-nameplate our-side">
                     <Avatar emailHash={ thisPlayer.user ? thisPlayer.user.emailHash : "unknown" } />
@@ -1008,6 +1015,11 @@ export class InnerGameBoard extends React.Component {
                         players={ [thisPlayer, otherPlayer] }
                         viewerPlayerName={ thisPlayer.name } />
                 ) : null }
+                <NamedCardMarkers
+                    namedCards={ resolveNamedCards(
+                        [...(thisPlayer.namedCards || []), ...(otherPlayer?.namedCards || [])],
+                        this.props.cards
+                    ) } />
                 { this.state.showHistory ? (
                     <GameHistory
                         messages={ this.props.currentGame.messages }
