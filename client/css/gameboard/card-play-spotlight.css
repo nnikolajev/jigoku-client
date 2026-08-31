@@ -703,15 +703,28 @@
     to { opacity: 1; transform: scale(1); }
 }
 
+/* The strip hangs off the bottom of the honor dial, on both sides -- the dial is the
+   last thing before the nameplate on our side and the first thing after it on theirs,
+   so "under the dial" is the free space either way. It is absolutely positioned because
+   the sidebar pane is a fixed grid row: a card in the flow pushed the stats, rings and
+   dial down and overflowed the strip. Measuring from the dial's own box means no offset
+   has to be guessed, and a game with no dial collapses the slot to nothing. */
+.sidebar-named-slot {
+    position: relative;
+    flex: 0 0 auto;
+    align-self: stretch;
+    /* A flex column, not a block: the honor dial centres itself with align-self, which
+       a block parent would ignore and left-align it instead. */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .blocked-cards {
-    /* Taken out of the sidebar's flow: the pane is a fixed grid row, so a card in
-       the flow pushed the stats, rings and honor fan down and overflowed the strip.
-       It sits in the free space at the nameplate end instead -- top of the pane for
-       the opponent, bottom for us, since the two nameplates are at opposite ends of
-       the sidebar grid. */
     position: absolute;
     left: 0;
     right: 0;
+    top: 100%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -719,15 +732,6 @@
     gap: 3px;
     padding: 2px 0;
     z-index: 1;
-}
-
-.sidebar-pane > .blocked-cards {
-    top: 0;
-}
-
-.sidebar-pane.our-side > .blocked-cards {
-    top: auto;
-    bottom: 0;
 }
 
 .blocked-card {

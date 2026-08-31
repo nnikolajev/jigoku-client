@@ -807,13 +807,15 @@ export class InnerGameBoard extends React.Component {
                     </div>
                 </div>
                 <div className={ `sidebar-pane their-side ${size}` }>
-                    { /* Cards this player cannot play copies of, parked against their
-                         nameplate so the ban reads on the side it binds. */ }
-                    <BlockedCards
-                        cards={ resolveNamedCards(otherPlayer?.cannotPlayNamed, this.props.cards) }
-                        onCardMouseOver={ this.onMouseOver }
-                        onCardMouseOut={ this.onMouseOut } />
-                    { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ otherPlayer ? `${otherPlayer.showBid}` : "0" } /> }
+                    { /* Cards this player cannot play copies of, hung under their honor
+                         dial so the ban reads on the side it binds. */ }
+                    <div className="sidebar-named-slot">
+                        { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ otherPlayer ? `${otherPlayer.showBid}` : "0" } /> }
+                        <BlockedCards
+                            cards={ resolveNamedCards(otherPlayer?.cannotPlayNamed, this.props.cards) }
+                            onCardMouseOver={ this.onMouseOver }
+                            onCardMouseOut={ this.onMouseOut } />
+                    </div>
                     { this.getRings(otherPlayer ? otherPlayer.name : "\0", `claimed-pool their-pool ${size || ""}`) }
                     <div className="sidebar-pane their-side">
                         <PlayerStatsBox
@@ -842,11 +844,13 @@ export class InnerGameBoard extends React.Component {
                         visualSuggestions={ visualSuggestions }
                         handSize={ thisPlayer.cardPiles.hand ? thisPlayer.cardPiles.hand.length : 0 } />
                     { this.getRings(thisPlayer ? thisPlayer.name : "\0", `claimed-pool my-pool ${size || ""}`) }
-                    { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ `${thisPlayer.showBid}` } /> }
-                    <BlockedCards
-                        cards={ resolveNamedCards(thisPlayer.cannotPlayNamed, this.props.cards) }
-                        onCardMouseOver={ this.onMouseOver }
-                        onCardMouseOut={ this.onMouseOut } />
+                    <div className="sidebar-named-slot">
+                        { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ `${thisPlayer.showBid}` } /> }
+                        <BlockedCards
+                            cards={ resolveNamedCards(thisPlayer.cannotPlayNamed, this.props.cards) }
+                            onCardMouseOver={ this.onMouseOver }
+                            onCardMouseOut={ this.onMouseOut } />
+                    </div>
                 </div>
                 <div className="player-nameplate our-side">
                     <Avatar emailHash={ thisPlayer.user ? thisPlayer.user.emailHash : "unknown" } />

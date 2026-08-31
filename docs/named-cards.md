@@ -53,19 +53,27 @@ identity of the database object. No format is plumbed into the game board and th
 project targets Imperial, so the fallback takes `preferredPackId(card, "stronghold")` —
 the first printing.
 
-- `NamedCardMarkers.tsx` pins the named card beside the card that named it, anchored to
-  that card's own `id={card.uuid}` DOM node — the same handle the spotlight arrows use,
-  so it follows the stronghold wherever the layout puts it. It sits at `z-index: 60`,
-  the conflict-arrow layer: over the board cards, under the hand, prompt, menus and
-  chat. An unanchorable or unresolvable entry draws nothing rather than floating over
-  the board.
+- `NamedCardMarkers.tsx` anchors the named card to the naming card's own
+  `id={card.uuid}` DOM node — the same handle the spotlight arrows use, so it follows
+  the stronghold wherever the layout puts it. **The stronghold row is
+  `role | stronghold | favor`, mirrored on the opponent's side**, so both horizontal
+  neighbours of a stronghold are occupied and "beside it" covered the imperial favor on
+  one side and the role card on the other. A naming card inside `.player-stronghold-row`
+  therefore drops the marker **under the role card**, measured off that slot's own
+  `.rolecard` box so no offset is guessed; anything naming from outside that row has no
+  such neighbours and keeps the simple beside-it placement, flipped away from the
+  viewport edge. It sits at `z-index: 60`, the conflict-arrow layer: over the board
+  cards, under the hand, prompt, menus and chat. An unanchorable or unresolvable entry
+  draws nothing rather than floating over the board.
 - `BlockedCards.tsx` renders in the sidebar strip of the player who **cannot play** the
-  card, against their nameplate — top of the pane for the opponent, bottom for you,
-  since the two nameplates sit at opposite ends of the sidebar grid. The art is drained
-  and a cancel mark drawn over it. The strip is **absolutely positioned**: the sidebar
-  pane is a fixed grid row, so a card in the flow pushed the stats, rings and honor fan
-  down and overflowed the strip. It sits in the free space the pane's `justify-content`
-  leaves at the nameplate end instead.
+  card, hung off the bottom of that player's **honor dial** — the dial is the last thing
+  before the nameplate on your side and the first thing after it on theirs, so "under
+  the dial" is the free space either way. The art is drained and a cancel mark drawn
+  over it. The strip is **absolutely positioned** inside a `.sidebar-named-slot` wrapper
+  around the dial: the sidebar pane is a fixed grid row, so a card in the flow pushed
+  the stats, rings and dial down and overflowed the strip, while measuring from the
+  dial's own box means no offset has to be guessed and a game with no dial collapses the
+  slot to nothing.
 
 Both are **hoverable into the board's own zoom pane** — they are drawn small, so the
 board's `onMouseOver`/`onMouseOut` (`zoomCard`/`clearZoom`) is the only way to read

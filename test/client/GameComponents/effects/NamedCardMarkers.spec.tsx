@@ -8,13 +8,37 @@ import NamedCardMarkers from "../../../../client/GameComponents/effects/NamedCar
 // everything, which the anchor treats as "not on screen", so it has to be stubbed.
 const planted: HTMLElement[] = [];
 
+function rect(left: number, top: number, width: number, height: number) {
+    return () => ({
+        left, top, width, height,
+        right: left + width, bottom: top + height,
+        x: left, y: top, toJSON: () => ({})
+    });
+}
+
 function plant(uuid: string) {
     const element = document.createElement("div");
     element.id = uuid;
-    element.getBoundingClientRect = () =>
-        ({ left: 100, top: 200, width: 80, height: 110, right: 180, bottom: 310, x: 100, y: 200, toJSON: () => ({}) });
+    element.getBoundingClientRect = rect(100, 200, 80, 110);
     document.body.appendChild(element);
     planted.push(element);
+    return element;
+}
+
+// The real board puts the naming stronghold in a row with the role card and the
+// imperial favor on either side of it.
+function plantStrongholdRow(uuid: string) {
+    const row = document.createElement("div");
+    row.className = "player-stronghold-row our-side";
+    const role = document.createElement("div");
+    role.className = "rolecard";
+    role.getBoundingClientRect = rect(10, 200, 80, 110);
+    const stronghold = document.createElement("div");
+    stronghold.id = uuid;
+    stronghold.getBoundingClientRect = rect(100, 200, 80, 110);
+    row.append(role, stronghold);
+    document.body.appendChild(row);
+    planted.push(row);
 }
 
 afterEach(() => {
@@ -36,6 +60,17 @@ describe("the <NamedCardMarkers /> overlay", () => {
         const marker = container.querySelector<HTMLElement>(".named-card-marker");
         // Anchor is left 100 wide 80, so the marker sits just to its right.
         expect(parseInt(marker.style.left, 10)).toBeGreaterThanOrEqual(180);
+    });
+
+    // Both horizontal neighbours of a stronghold are taken -- role card one side,
+    // imperial favor the other -- so the marker drops under the role card instead.
+    it("drops under the role card when the naming card is in the stronghold row", () => {
+        plantStrongholdRow("u-sk");
+        const { container } = render(<NamedCardMarkers namedCards={ [named] } />);
+        const marker = container.querySelector<HTMLElement>(".named-card-marker");
+        // Role card is left 10 wide 80, bottom 310.
+        expect(parseInt(marker.style.left, 10)).toBe(18);
+        expect(parseInt(marker.style.top, 10)).toBeGreaterThanOrEqual(310);
     });
 
     it("says which card did the naming", () => {

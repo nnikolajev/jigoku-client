@@ -185,18 +185,31 @@
 .controls__items {
     display: flex;
     align-items: center;
-    overflow: hidden;
     max-width: 80vw;
     opacity: 1;
-    transition: max-width 220ms ease, opacity 160ms ease;
+    /* Visible while open. The music volume popover is absolutely positioned ABOVE the
+       bar, so a permanent clip here hid it entirely -- the button kept its hover state
+       and the popover was drawn outside the box and cut off.
+
+       The clip is still wanted while the bar slides shut, so it is only released once
+       the slide back open has finished: `overflow 0s 220ms` plus allow-discrete, since
+       overflow is a discrete property. A browser without allow-discrete flips it
+       immediately, which costs the slide-in and keeps the popover working. Collapsing
+       re-clips at once -- the shorthand in the collapsed rule resets
+       transition-behavior, so that direction is never delayed. */
+    overflow: visible;
+    transition: max-width 220ms ease, opacity 160ms ease, overflow 0s 220ms;
+    transition-behavior: allow-discrete;
 }
 
 /* Height as well as width: clipping only the width leaves the buttons laid out inside,
    so the collapsed bar stayed as tall as a full row of them. */
 .controls--collapsed .controls__items {
+    overflow: hidden;
     max-width: 0;
     height: 0;
     opacity: 0;
+    transition: max-width 220ms ease, opacity 160ms ease;
 }
 
 /* Sit flush against the chat panel above rather than floating below it. */
