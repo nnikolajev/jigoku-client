@@ -12,6 +12,8 @@ import { anchorForUuid, useAnchorTick } from "./spotlightAnchors";
 
 interface NamedCardMarkersProps {
     namedCards: ResolvedNamedCard[];
+    onCardMouseOut?: () => void;
+    onCardMouseOver?: (card: ResolvedNamedCard) => void;
 }
 
 // Wide enough to read the art and the name, narrow enough not to cover the card it
@@ -20,7 +22,7 @@ const MARKER_WIDTH = 64;
 const MARKER_HEIGHT = Math.round(MARKER_WIDTH * (215 / 154));
 const GAP = 6;
 
-function NamedCardMarkers({ namedCards }: NamedCardMarkersProps) {
+function NamedCardMarkers({ namedCards, onCardMouseOut, onCardMouseOver }: NamedCardMarkersProps) {
     const tick = useAnchorTick(namedCards.length > 0);
 
     if(namedCards.length === 0) {
@@ -65,6 +67,8 @@ function NamedCardMarkers({ namedCards }: NamedCardMarkersProps) {
                         width: `${MARKER_WIDTH}px`
                     } }
                     title={ `${marker.named.sourceName || "Named"}: ${marker.named.name}` }
+                    onMouseOver={ () => onCardMouseOver && onCardMouseOver(marker.named) }
+                    onMouseOut={ () => onCardMouseOut && onCardMouseOut() }
                 >
                     <img
                         src={ getCardImageUrl(marker.named.id, marker.named.packId) }

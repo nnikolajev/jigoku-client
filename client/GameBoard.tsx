@@ -809,7 +809,10 @@ export class InnerGameBoard extends React.Component {
                 <div className={ `sidebar-pane their-side ${size}` }>
                     { /* Cards this player cannot play copies of, parked against their
                          nameplate so the ban reads on the side it binds. */ }
-                    <BlockedCards cards={ resolveNamedCards(otherPlayer?.cannotPlayNamed, this.props.cards) } />
+                    <BlockedCards
+                        cards={ resolveNamedCards(otherPlayer?.cannotPlayNamed, this.props.cards) }
+                        onCardMouseOver={ this.onMouseOver }
+                        onCardMouseOut={ this.onMouseOut } />
                     { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ otherPlayer ? `${otherPlayer.showBid}` : "0" } /> }
                     { this.getRings(otherPlayer ? otherPlayer.name : "\0", `claimed-pool their-pool ${size || ""}`) }
                     <div className="sidebar-pane their-side">
@@ -840,7 +843,10 @@ export class InnerGameBoard extends React.Component {
                         handSize={ thisPlayer.cardPiles.hand ? thisPlayer.cardPiles.hand.length : 0 } />
                     { this.getRings(thisPlayer ? thisPlayer.name : "\0", `claimed-pool my-pool ${size || ""}`) }
                     { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ `${thisPlayer.showBid}` } /> }
-                    <BlockedCards cards={ resolveNamedCards(thisPlayer.cannotPlayNamed, this.props.cards) } />
+                    <BlockedCards
+                        cards={ resolveNamedCards(thisPlayer.cannotPlayNamed, this.props.cards) }
+                        onCardMouseOver={ this.onMouseOver }
+                        onCardMouseOut={ this.onMouseOut } />
                 </div>
                 <div className="player-nameplate our-side">
                     <Avatar emailHash={ thisPlayer.user ? thisPlayer.user.emailHash : "unknown" } />
@@ -1019,7 +1025,9 @@ export class InnerGameBoard extends React.Component {
                     namedCards={ resolveNamedCards(
                         [...(thisPlayer.namedCards || []), ...(otherPlayer?.namedCards || [])],
                         this.props.cards
-                    ) } />
+                    ) }
+                    onCardMouseOver={ this.onMouseOver }
+                    onCardMouseOut={ this.onMouseOut } />
                 { this.state.showHistory ? (
                     <GameHistory
                         messages={ this.props.currentGame.messages }

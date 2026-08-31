@@ -1,5 +1,5 @@
-import { describe, expect, it, afterEach } from "vitest";
-import { render } from "@testing-library/react";
+import { describe, expect, it, afterEach, vi } from "vitest";
+import { fireEvent, render } from "@testing-library/react";
 import React from "react";
 
 import NamedCardMarkers from "../../../../client/GameComponents/effects/NamedCardMarkers.jsx";
@@ -43,6 +43,20 @@ describe("the <NamedCardMarkers /> overlay", () => {
         const { container } = render(<NamedCardMarkers namedCards={ [named] } />);
         expect(container.querySelector(".named-card-marker")?.getAttribute("title"))
             .toBe("Shiro Kitsuki: Fine Katana");
+    });
+
+    it("zooms the named card on hover", () => {
+        plant("u-sk");
+        const onCardMouseOver = vi.fn();
+        const onCardMouseOut = vi.fn();
+        const { container } = render(
+            <NamedCardMarkers namedCards={ [named] } onCardMouseOver={ onCardMouseOver } onCardMouseOut={ onCardMouseOut } />
+        );
+        const marker = container.querySelector(".named-card-marker");
+        fireEvent.mouseOver(marker);
+        expect(onCardMouseOver).toHaveBeenCalledWith(named);
+        fireEvent.mouseOut(marker);
+        expect(onCardMouseOut).toHaveBeenCalled();
     });
 
     // The naming card can be off screen -- a stronghold scrolled out of the play area,

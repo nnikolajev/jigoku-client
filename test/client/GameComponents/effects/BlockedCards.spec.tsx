@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { render } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render } from "@testing-library/react";
 import React from "react";
 
 import BlockedCards from "../../../../client/GameComponents/effects/BlockedCards.jsx";
@@ -30,6 +30,32 @@ describe("the <BlockedCards /> sidebar strip", () => {
     it("falls back to the name when there is no picture", () => {
         const { getByText } = render(<BlockedCards cards={ [{ name: "Ancestral Daisho" }] } />);
         expect(getByText("Ancestral Daisho")).toBeInTheDocument();
+    });
+
+    // The ban is drawn tiny, so the only way to read the card is the board's own zoom
+    // pane -- the same one every other card on the board hovers into.
+    it("zooms the banned card on hover", () => {
+        const onCardMouseOver = vi.fn();
+        const onCardMouseOut = vi.fn();
+        const card = { name: "Fine Katana", id: "fine-katana", packId: "core", sourceName: "Gossip" };
+        const { container } = render(
+            <BlockedCards cards={ [card] } onCardMouseOver={ onCardMouseOver } onCardMouseOut={ onCardMouseOut } />
+        );
+        const blocked = container.querySelector(".blocked-card");
+        fireEvent.mouseOver(blocked);
+        expect(onCardMouseOver).toHaveBeenCalledWith(card);
+        fireEvent.mouseOut(blocked);
+        expect(onCardMouseOut).toHaveBeenCalled();
+    });
+
+    // Nothing to zoom to when the name resolved to no printing.
+    it("does not zoom a ban it has no picture for", () => {
+        const onCardMouseOver = vi.fn();
+        const { container } = render(
+            <BlockedCards cards={ [{ name: "Ancestral Daisho" }] } onCardMouseOver={ onCardMouseOver } />
+        );
+        fireEvent.mouseOver(container.querySelector(".blocked-card"));
+        expect(onCardMouseOver).not.toHaveBeenCalled();
     });
 
     it("shows one entry per ban", () => {

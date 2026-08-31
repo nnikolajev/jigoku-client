@@ -10,9 +10,11 @@ import type { ResolvedNamedCard } from "./namedCards";
 
 interface BlockedCardsProps {
     cards: ResolvedNamedCard[];
+    onCardMouseOut?: () => void;
+    onCardMouseOver?: (card: ResolvedNamedCard) => void;
 }
 
-function BlockedCards({ cards }: BlockedCardsProps) {
+function BlockedCards({ cards, onCardMouseOut, onCardMouseOver }: BlockedCardsProps) {
     if(cards.length === 0) {
         return null;
     }
@@ -24,6 +26,8 @@ function BlockedCards({ cards }: BlockedCardsProps) {
                     className="blocked-card"
                     key={ `${card.sourceName || ""}-${card.name}` }
                     title={ `Cannot play ${card.name}${card.sourceName ? ` (${card.sourceName})` : ""}` }
+                    onMouseOver={ () => onCardMouseOver && card.id && onCardMouseOver(card) }
+                    onMouseOut={ () => onCardMouseOut && onCardMouseOut() }
                 >
                     { card.id ? (
                         <img src={ getCardImageUrl(card.id, card.packId) } alt={ card.name } />

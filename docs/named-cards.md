@@ -62,7 +62,16 @@ the first printing.
 - `BlockedCards.tsx` renders in the sidebar strip of the player who **cannot play** the
   card, against their nameplate — top of the pane for the opponent, bottom for you,
   since the two nameplates sit at opposite ends of the sidebar grid. The art is drained
-  and a cancel mark drawn over it.
+  and a cancel mark drawn over it. The strip is **absolutely positioned**: the sidebar
+  pane is a fixed grid row, so a card in the flow pushed the stats, rings and honor fan
+  down and overflowed the strip. It sits in the free space the pane's `justify-content`
+  leaves at the nameplate end instead.
+
+Both are **hoverable into the board's own zoom pane** — they are drawn small, so the
+board's `onMouseOver`/`onMouseOut` (`zoomCard`/`clearZoom`) is the only way to read
+them. The marker overlay is click-through as a whole, so the marker itself takes the
+pointer back with `pointer-events: auto`. A ban with no printing resolved has nothing
+to zoom to and does not fire.
 
 ## Tests
 

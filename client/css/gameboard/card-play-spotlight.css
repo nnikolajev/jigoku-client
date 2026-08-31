@@ -675,6 +675,10 @@
     background: rgba(0, 0, 0, 0.85);
     box-shadow: 0 0 0 2px #ffd76a, 0 4px 14px rgba(0, 0, 0, 0.8);
     animation: named-card-marker-in 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+    /* The overlay itself is click-through; the marker takes the pointer back so it
+       can be hovered into the board's zoom pane. */
+    pointer-events: auto;
+    cursor: pointer;
 }
 
 .named-card-marker img {
@@ -700,17 +704,36 @@
 }
 
 .blocked-cards {
+    /* Taken out of the sidebar's flow: the pane is a fixed grid row, so a card in
+       the flow pushed the stats, rings and honor fan down and overflowed the strip.
+       It sits in the free space at the nameplate end instead -- top of the pane for
+       the opponent, bottom for us, since the two nameplates are at opposite ends of
+       the sidebar grid. */
+    position: absolute;
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     gap: 3px;
     padding: 2px 0;
+    z-index: 1;
+}
+
+.sidebar-pane > .blocked-cards {
+    top: 0;
+}
+
+.sidebar-pane.our-side > .blocked-cards {
+    top: auto;
+    bottom: 0;
 }
 
 .blocked-card {
     position: relative;
     width: 46px;
+    cursor: pointer;
     border-radius: 3px;
     overflow: hidden;
     box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.9), 0 2px 8px rgba(0, 0, 0, 0.7);

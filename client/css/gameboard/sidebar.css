@@ -14,6 +14,9 @@
 }
 
 .sidebar-pane {
+    /* Containing block for the blocked-card strip, which is absolutely positioned so
+       it never pushes the stats, rings or honor fan out of the pane. */
+    position: relative;
     display: flex;
     flex-direction: column;
     grid-row-start: 2;
