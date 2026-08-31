@@ -22,6 +22,43 @@ export interface MessageFragment {
     uuid?: string;
 }
 
+// The structured companion the server now attaches to the entries the client needs to
+// read precisely (GameChat.MessageRecord). Present only on games played against a
+// server new enough to emit it, so every reader keeps its prose fallback.
+export interface RecordedCard {
+    id: string;
+    name: string;
+    uuid: string;
+    type: string;
+    packId?: string;
+    element?: string;
+}
+
+export interface CovertBypass {
+    source: RecordedCard;
+    target: RecordedCard;
+}
+
+export interface MessageRecord {
+    kind: "play" | "target" | "conflict-declared" | "conflict-covert" | "conflict-defenders";
+    player?: string;
+    verb?: string;
+    source?: RecordedCard;
+    targets?: RecordedCard[];
+    conflictId?: number;
+    conflictType?: string;
+    ring?: RecordedCard;
+    province?: RecordedCard;
+    attackers?: RecordedCard[];
+    defenders?: RecordedCard[];
+    covert?: CovertBypass[];
+}
+
+export function recordOf(message: any): MessageRecord | null {
+    const record = message?.record;
+    return record && record.kind ? record : null;
+}
+
 export function isStringFragment(fragment: any): fragment is string {
     return typeof fragment === "string";
 }

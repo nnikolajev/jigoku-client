@@ -227,3 +227,64 @@ describe("mergeTargets", () => {
         expect(mergeTargets(existing, [])).toBe(existing);
     });
 });
+
+// The server attaches a structured record to the entries the client needs to read
+// precisely. It names the source and targets outright, so it covers abilities whose
+// message follows no fixed shape -- the verb heuristic can never read those.
+describe("server-recorded events", () => {
+    const source = { id: "kudaka", uuid: "u-src", name: "Kudaka", type: "character", packId: "core" };
+    const target = { id: "doji-whisperer", uuid: "u-tgt", name: "Doji Whisperer", type: "character" };
+
+    it("reads a play record instead of parsing the prose", () => {
+        const recorded = {
+            message: [{ name: "kingitus" }, " ", "resolves", " ", "the", " ", "air", " ", "ring"],
+            record: { kind: "play", player: "kingitus", verb: "uses", source, targets: [target] }
+        };
+        const event = parseSpotlightEvent(recorded, "k");
+        expect(event.source.name).toBe("Kudaka");
+        expect(event.verb).toBe("uses");
+        expect(event.playerName).toBe("kingitus");
+        expect(event.targets.map(card => card.name)).toEqual(["Doji Whisperer"]);
+    });
+
+    // The whole point: an entry with no play verb at all still produces an overlay.
+    it("fires on a custom message the verb heuristic cannot read", () => {
+        const custom = {
+            message: [{ name: "kingitus" }, " ", "gains", " ", "1", " ", "fate"],
+            record: { kind: "play", player: "kingitus", verb: "uses", source, targets: [] }
+        };
+        expect(parseSpotlightEvent(custom, "k")).not.toBeNull();
+        // Without the record the same entry is silent.
+        expect(parseSpotlightEvent({ message: custom.message }, "k")).toBeNull();
+    });
+
+    it("still flags a cancel from the recorded entry's text", () => {
+        const recorded = {
+            message: [{ name: "kingitus" }, " ", "cancels", " ", "the", " ", "effects"],
+            record: { kind: "play", player: "kingitus", verb: "plays", source, targets: [] }
+        };
+        expect(parseSpotlightEvent(recorded, "k").cancels).toBe(true);
+    });
+
+    it("takes the follow-up targets from a target record", () => {
+        const recorded = {
+            message: [{ name: "kingitus" }, " ", "chooses"],
+            record: { kind: "target", player: "kingitus", source, targets: [target] }
+        };
+        expect(parseTargetContinuation(recorded).map(card => card.name)).toEqual(["Doji Whisperer"]);
+    });
+
+    // A recorded entry that is not a follow-up must not have its cards harvested as one.
+    it("ignores a non-target record when looking for follow-ups", () => {
+        const recorded = {
+            message: [{ name: "kingitus" }, " ", "chooses"],
+            record: { kind: "play", player: "kingitus", source, targets: [target] }
+        };
+        expect(parseTargetContinuation(recorded)).toEqual([]);
+    });
+
+    it("falls back to the prose when there is no record", () => {
+        const event = parseSpotlightEvent(playsMessage, "k");
+        expect(event.source.name).toBe("Assassination");
+    });
+});

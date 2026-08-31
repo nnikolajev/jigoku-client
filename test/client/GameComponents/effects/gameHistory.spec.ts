@@ -222,3 +222,76 @@ describe("target continuations in the history", () => {
         expect(rows[0].cards.map(card => card.name)).toEqual(["Doji Whisperer"]);
     });
 });
+
+// With server records the history needs no ledger and no declaration-count keying: the
+// declaration, the covert pairings and the defenders all carry the same conflictId.
+describe("server-recorded conflicts", () => {
+    const ring = { id: "air-ring", uuid: "u-ring", name: "Air Ring", type: "ring", element: "air" };
+    const provinceCard = { id: "shameful-display", uuid: "u-prov", name: "Shameful Display", type: "province" };
+    const berserker = { id: "matsu-berserker", uuid: "a1", name: "Matsu Berserker", type: "character" };
+    const shinobi = { id: "shosuro-shinobi", uuid: "a2", name: "Shosuro Shinobi", type: "character" };
+    const whisperer = { id: "doji-whisperer", uuid: "d1", name: "Doji Whisperer", type: "character" };
+    const yoshi = { id: "kakita-yoshi", uuid: "c1", name: "Kakita Yoshi", type: "character" };
+
+    const declaredMessage = {
+        message: [{ name: "kingitus" }, " ", "is", " ", "initiating", " ", "a", " ", "military", " ", "conflict"],
+        record: {
+            kind: "conflict-declared",
+            conflictId: 1,
+            player: "kingitus",
+            conflictType: "military",
+            ring,
+            province: provinceCard,
+            attackers: [berserker, shinobi]
+        }
+    };
+    const covertMessage = {
+        message: [{ name: "kingitus" }, " ", "uses", " ", "covert"],
+        record: { kind: "conflict-covert", conflictId: 1, covert: [{ source: shinobi, target: yoshi }] }
+    };
+    const defendersMessage = {
+        message: [{ name: "Jigoku Bot" }, " ", "has", " ", "defended"],
+        record: { kind: "conflict-defenders", conflictId: 1, player: "Jigoku Bot", defenders: [whisperer] }
+    };
+
+    it("folds the declaration, covert and defenders into one row", () => {
+        const rows = buildGameHistory([declaredMessage, covertMessage, defendersMessage]);
+        expect(rows).toHaveLength(1);
+        expect(rows[0].kind).toBe("conflict");
+        expect(rows[0].attackers.map(card => card.name)).toEqual(["Matsu Berserker", "Shosuro Shinobi"]);
+        expect(rows[0].defenders.map(card => card.name)).toEqual(["Doji Whisperer"]);
+        expect(rows[0].ring.element).toBe("air");
+        expect(rows[0].province.name).toBe("Shameful Display");
+    });
+
+    // The exact pairing, not a count match: the server knows which attacker spent covert.
+    it("takes the real covert pairing from the record", () => {
+        const rows = buildGameHistory([declaredMessage, covertMessage, defendersMessage]);
+        expect(rows[0].covert).toHaveLength(1);
+        expect(rows[0].covert[0].source.name).toBe("Shosuro Shinobi");
+        expect(rows[0].covert[0].target.name).toBe("Kakita Yoshi");
+    });
+
+    it("keeps two recorded conflicts apart by conflictId", () => {
+        const second = {
+            message: [{ name: "kingitus" }, " ", "is", " ", "initiating", " ", "a", " ", "political", " ", "conflict"],
+            record: { kind: "conflict-declared", conflictId: 2, player: "kingitus", conflictType: "political", attackers: [whisperer] }
+        };
+        const secondDefenders = {
+            message: [{ name: "Jigoku Bot" }, " ", "has", " ", "defended"],
+            record: { kind: "conflict-defenders", conflictId: 2, player: "Jigoku Bot", defenders: [berserker] }
+        };
+        const rows = buildGameHistory([declaredMessage, defendersMessage, second, secondDefenders]);
+        const conflicts = rows.filter(row => row.kind === "conflict");
+        expect(conflicts).toHaveLength(2);
+        expect(conflicts[0].defenders.map(card => card.name)).toEqual(["Doji Whisperer"]);
+        expect(conflicts[1].defenders.map(card => card.name)).toEqual(["Matsu Berserker"]);
+    });
+
+    // Recorded conflicts must not also consume ledger entries meant for older games.
+    it("ignores the ledger when records are present", () => {
+        const ledger = [{ attackers: [yoshi], defenders: [], covert: [], covertSources: [] }];
+        const rows = buildGameHistory([declaredMessage], ledger);
+        expect(rows[0].attackers.map(card => card.name)).toEqual(["Matsu Berserker", "Shosuro Shinobi"]);
+    });
+});

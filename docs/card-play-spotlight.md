@@ -18,7 +18,38 @@ disables it.
 
 ## Where the data comes from
 
-No server change was needed. `CardAbility.displayMessage` (jigoku
+The server attaches a **structured record** to the handful of log entries the client
+needs to read precisely (`GameChat.MessageRecord`, shipped alongside `message` on the
+same entry). Everything below about parsing the prose is the **fallback** for games
+played against a server too old to emit one — the readers try the record first.
+
+| Record | Emitted by | Carries |
+| --- | --- | --- |
+| `play` | `CardAbility.displayMessage` | player, verb, source, targets |
+| `target` | `SelectCardAction`'s `onSelect` | the ability's source plus the cards chosen |
+| `conflict-declared` | `conflictflow.initiateConflict` | conflictId, player, type, ring, province, attackers |
+| `conflict-covert` | `conflictflow.resolveCovert` | conflictId, exact source → target pairs |
+| `conflict-defenders` | `conflictflow.announceDefenderSkill` | conflictId, defenders |
+
+`Game.addRecordedMessage(record, message, …args)` adds the message through
+`Game.addMessage` and then `GameChat.attachRecord`s the record to it, so the hundreds of
+existing `addMessage` call sites are untouched and anything spying on `addMessage` still
+sees the same call. A card is recorded as its `getShortSummary()` — the same shape the
+client already renders from — and anything without one (a facedown province passed as
+its slot name) records as absent rather than as a broken half-card.
+
+Two things only the server could know are now logged rather than guessed:
+
+- **`conflictId`** (`Game.conflictSequence`, assigned at declaration) ties a conflict's
+  three records together, so the History popup needs neither conflict-boundary detection
+  nor declaration counting.
+- **The covert pairing.** Which attacker bypassed which defender previously existed only
+  in a prompt title and was never written to the log at all. `resolveCovert` now emits
+  "X uses covert on Y" *and* the exact pairs.
+
+### The prose fallback
+
+`CardAbility.displayMessage` (jigoku
 `server/game/CardAbility.ts`) already emits every play and every triggered ability as
 one log entry built from `'{0}{1}{2}{3}{4}{5}{6}{7}{8}'` with the args
 
@@ -207,31 +238,18 @@ as zero-sized, which `anchorFor` correctly reads as "not on screen".
 
 ## Known gaps
 
-**The ledger does not survive a reload.** It is built by watching live state, so
-conflicts that happened before a refresh come back with no attacker/defender/covert rows.
-The rest of the history is rebuilt from the log and is unaffected. Accepted for now; the
-fix is the structured server event below.
+**Only against an older server.** Everything below is a limitation of the prose
+fallback; with records present none of it applies.
 
-**Verb coverage in the RAIL.** Only `plays` / `uses` / `triggers` / `initiates` /
-`resolves` open an overlay (`chooses` attaches targets to one, it does not open one).
-Ring effects, province reveals and duel resolution use a custom `properties.message` with
-no verb at all, so they are silent on the board — they do appear in the History popup, as
-`note` rows.
+- The **ledger does not survive a reload** — it is built by watching live state, so
+  conflicts from before a refresh come back with no attacker/defender/covert rows. The
+  rest of the history is rebuilt from the log and is unaffected.
+- **Verb coverage in the rail**: only `plays` / `uses` / `triggers` / `initiates` /
+  `resolves` open an overlay (`chooses` attaches targets to one, it does not open one).
+  Ring effects, province reveals and duel resolution use a custom `properties.message`
+  with no verb at all, so they are silent on the board — they do appear in the History
+  popup, as `note` rows.
+- The **covert pairing** is a count match rather than the real one.
 
-### Next chunk of work: a structured server event
-
-Both gaps above have the same fix, and it is the only part of this feature that belongs
-in `jigoku` rather than the client: emit a structured record alongside the log line —
-source uuid, target uuids, and the conflict participants — rather than making the client
-re-derive all of it from formatted prose.
-
-That would:
-
-- give the rail every ability, not only the ones whose message happens to carry a play
-  verb, and remove the `chooses` follow-up heuristic entirely;
-- make the covert pairing exact instead of a count-matching guess;
-- let the conflict participants be rebuilt from the log, so they survive a reload and a
-  replay seek rather than depending on a live-state watcher;
-- delete `conflictLedger.ts` and the declaration-count keying along with it.
-
-The client-side reader would stay as the fallback for games recorded before the change.
+`conflictLedger.ts` and the declaration-count keying exist only to serve that fallback.
+They can be deleted once no game old enough to need them is worth reading.

@@ -16,8 +16,10 @@ import {
     isChatMessage,
     isRecordFragment,
     isStringFragment,
-    isTargetContinuation
+    isTargetContinuation,
+    recordOf
 } from "./messageFragments";
+import type { RecordedCard } from "./messageFragments";
 
 export interface SpotlightCard {
     uuid: string;
@@ -63,7 +65,44 @@ function playerNameOf(fragments: any[]): string {
     return named ? (named.name ?? "") : "";
 }
 
+function toSpotlightCard(card: RecordedCard): SpotlightCard {
+    return {
+        uuid: card.uuid,
+        id: card.id,
+        name: card.name,
+        packId: card.packId,
+        type: card.type,
+        element: card.element
+    };
+}
+
+// The server-side record, when the server is new enough to send one. It names the source
+// and the targets outright, so it covers abilities whose message follows no fixed shape
+// -- ring effects, province reveals, duels, anything with a custom properties.message --
+// which the verb heuristic below can never read.
+function eventFromRecord(message: any, key: string): SpotlightEvent | null {
+    const record = recordOf(message);
+    if(!record || record.kind !== "play" || !record.source) {
+        return null;
+    }
+    const text = fragmentsText(flattenMessage(message));
+    return {
+        key,
+        verb: record.verb ?? "plays",
+        playerName: record.player ?? "",
+        source: toSpotlightCard(record.source),
+        targets: (record.targets ?? []).map(toSpotlightCard),
+        cancels: /\bcancel/i.test(text),
+        text
+    };
+}
+
 export function parseSpotlightEvent(message: any, key: string): SpotlightEvent | null {
+    const recorded = eventFromRecord(message, key);
+    if(recorded) {
+        return recorded;
+    }
+
     const fragments = flattenMessage(message);
     if(fragments.length === 0 || isChatMessage(fragments)) {
         return null;
@@ -119,7 +158,15 @@ export function mergeTargets(existing: SpotlightCard[], incoming: SpotlightCard[
 // The cards named by a "{0} chooses to honor {1}" follow-up, which is where 76 cards
 // record the target that their own play entry does not name. Returns [] for anything
 // that is a play in its own right, so a play entry is never also read as a follow-up.
+// A "{0} chooses to honor {1}" follow-up. The server records these as kind "target",
+// naming both the ability's source and the cards chosen; without a record the client
+// falls back to spotting the `chooses` verb and taking whatever cards the entry names.
 export function parseTargetContinuation(message: any): SpotlightCard[] {
+    const record = recordOf(message);
+    if(record) {
+        return record.kind === "target" ? (record.targets ?? []).map(toSpotlightCard) : [];
+    }
+
     const fragments = flattenMessage(message);
     if(fragments.length === 0 || isChatMessage(fragments) || !isTargetContinuation(fragments)) {
         return [];

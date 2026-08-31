@@ -23,8 +23,10 @@ import {
     fragmentToCard,
     isChatMessage,
     isRecordFragment,
-    isStringFragment
+    isStringFragment,
+    recordOf
 } from "./messageFragments";
+import type { MessageRecord, RecordedCard } from "./messageFragments";
 import type { SpotlightCard, SpotlightEvent } from "./cardPlaySpotlight";
 import type { ConflictLedgerEntry } from "./conflictLedger";
 
@@ -79,6 +81,21 @@ export type HistoryRow =
     | HistoryPlayRow
     | HistoryNoteRow
     | HistoryTextRow;
+
+function fromRecordedCard(card: RecordedCard): SpotlightCard {
+    return {
+        uuid: card.uuid,
+        id: card.id,
+        name: card.name,
+        packId: card.packId,
+        type: card.type,
+        element: card.element
+    };
+}
+
+function fromRecordedCards(cards: RecordedCard[] | undefined): SpotlightCard[] {
+    return (cards ?? []).map(fromRecordedCard);
+}
 
 function cardsIn(fragments: any[]): SpotlightCard[] {
     const seen = new Set<string>();
@@ -155,9 +172,55 @@ function conflictRowFrom(fragments: any[], key: string): HistoryConflictRow | nu
 export function buildGameHistory(messages: any[], ledger: ConflictLedgerEntry[] = []): HistoryRow[] {
     const rows: HistoryRow[] = [];
     let conflictIndex = 0;
+    // Conflict rows built from server records are completed in place as the covert and
+    // defender entries arrive later in the log.
+    const recordedConflicts = new Map<number, HistoryConflictRow>();
 
     (messages || []).forEach((message, index) => {
         const key = `history-${index}`;
+        const record = recordOf(message);
+
+        // A recorded conflict needs no guesswork: the server names the participants, and
+        // the covert pairing it publishes is the real one rather than a count match.
+        if(record && record.kind === "conflict-declared") {
+            const row: HistoryConflictRow = {
+                kind: "conflict",
+                key,
+                playerName: record.player ?? "",
+                conflictType: record.conflictType ?? "",
+                province: record.province ? fromRecordedCard(record.province) : null,
+                ring: record.ring ? fromRecordedCard(record.ring) : null,
+                attackers: fromRecordedCards(record.attackers),
+                defenders: [],
+                covert: [],
+                text: fragmentsText(flattenMessage(message))
+            };
+            if(record.conflictId !== undefined) {
+                recordedConflicts.set(record.conflictId, row);
+            }
+            conflictIndex += 1;
+            rows.push(row);
+            return;
+        }
+
+        if(record && record.kind === "conflict-covert") {
+            const row = record.conflictId === undefined ? undefined : recordedConflicts.get(record.conflictId);
+            if(row) {
+                row.covert = (record.covert ?? []).map(pair => ({
+                    source: fromRecordedCard(pair.source),
+                    target: fromRecordedCard(pair.target)
+                }));
+                return;
+            }
+        }
+
+        if(record && record.kind === "conflict-defenders") {
+            const row = record.conflictId === undefined ? undefined : recordedConflicts.get(record.conflictId);
+            if(row) {
+                row.defenders = fromRecordedCards(record.defenders);
+                return;
+            }
+        }
 
         const phase = phaseRowFrom(message, key);
         if(phase) {
@@ -172,6 +235,7 @@ export function buildGameHistory(messages: any[], ledger: ConflictLedgerEntry[] 
 
         const conflict = conflictRowFrom(fragments, key);
         if(conflict) {
+            // FALLBACK for a game recorded before the server emitted conflict records.
             // conflictLedger keys its entries on this same declaration count, so the
             // two line up without either side having to guess conflict boundaries.
             const entry = ledger[conflictIndex];
