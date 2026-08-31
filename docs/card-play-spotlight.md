@@ -97,7 +97,18 @@ and skipped rather than fired one overlay per entry.
 
 The played card slides in at the right edge with a curved arrow to each target still on
 the board; newer entries stack over older ones, and a cancel points at the rail card
-below it. Entries hold for `SPOTLIGHT_DURATION_MS` (3s — the CSS fade-out delays must be
+below it.
+
+**One entry per source card.** A card played and then given its target in a separate log
+entry is one thing happening, so the second entry merges its targets into the entry
+already showing that card instead of stacking a duplicate. Merging never refreshes the
+lifetime, so a stream of follow-ups cannot pin an entry on screen. This replaced an
+earlier rule that attached any follow-up to whatever was played last: with no record
+there is nothing in a follow-up naming its own ability, and every unrelated prompt
+re-showed the last played card with a fresh arrow. A recorded follow-up names its source,
+so it now arrives as an ordinary event and lands on the right card; the positional
+attachment survives only as the no-record fallback, and only onto an entry still on
+screen. Entries hold for `SPOTLIGHT_DURATION_MS` (3s — the CSS fade-out delays must be
 kept in step with it), cap at `SPOTLIGHT_MAX_VISIBLE` (3) simultaneous entries, are
 `pointer-events: none` so they never eat a click, and collapse to a plain fade under
 `prefers-reduced-motion`.
@@ -121,6 +132,11 @@ root and the ring pulse is scoped under it, so turning the feature off removes i
   **Their React key must not include the anchor tick.** A changed key remounts the
   element, which replays its entry animation — at a 250ms re-measure tick that reads as a
   permanent pulse. Position comes from `style`; the key is the card uuid.
+The overlay sits at `z-index: 60` — above the board cards (`--layer-cards: 45`) and pile
+headers (55), below the card collection (100), the prompt (110), card menus (120), the
+chat (800) and the draggable hand (`.player-home-row-container`, 1030). It was drawing
+over the player's own hand at 1150.
+
 - **Province marker.** Crossed swords over the contested province on a dark radial disc
   (needed to stay readable over card art), switching to a skull once `conflict.breaking`
   is true — the engine already computes that as "some conflict province's strength minus

@@ -80,9 +80,14 @@ function toSpotlightCard(card: RecordedCard): SpotlightCard {
 // and the targets outright, so it covers abilities whose message follows no fixed shape
 // -- ring effects, province reveals, duels, anything with a custom properties.message --
 // which the verb heuristic below can never read.
+//
+// A "target" record (the "{0} chooses to honor {1}" follow-up) is read as an event in its
+// own right rather than as something to be attached to whatever was played last. It
+// names its own source, so the overlay can point from the right card; the caller folds
+// it into the entry already showing that source.
 function eventFromRecord(message: any, key: string): SpotlightEvent | null {
     const record = recordOf(message);
-    if(!record || record.kind !== "play" || !record.source) {
+    if(!record || (record.kind !== "play" && record.kind !== "target") || !record.source) {
         return null;
     }
     const text = fragmentsText(flattenMessage(message));
@@ -158,13 +163,13 @@ export function mergeTargets(existing: SpotlightCard[], incoming: SpotlightCard[
 // The cards named by a "{0} chooses to honor {1}" follow-up, which is where 76 cards
 // record the target that their own play entry does not name. Returns [] for anything
 // that is a play in its own right, so a play entry is never also read as a follow-up.
-// A "{0} chooses to honor {1}" follow-up. The server records these as kind "target",
-// naming both the ability's source and the cards chosen; without a record the client
-// falls back to spotting the `chooses` verb and taking whatever cards the entry names.
+// FALLBACK ONLY, for a server that sends no records. A "{0} chooses to honor {1}"
+// follow-up names the chosen cards but never the ability that chose them, so these cards
+// can only be attached to a play by position -- which is why a recorded entry is read as
+// its own event instead (eventFromRecord) and never comes through here.
 export function parseTargetContinuation(message: any): SpotlightCard[] {
-    const record = recordOf(message);
-    if(record) {
-        return record.kind === "target" ? (record.targets ?? []).map(toSpotlightCard) : [];
+    if(recordOf(message)) {
+        return [];
     }
 
     const fragments = flattenMessage(message);

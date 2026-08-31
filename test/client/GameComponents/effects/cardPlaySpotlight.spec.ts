@@ -266,21 +266,28 @@ describe("server-recorded events", () => {
         expect(parseSpotlightEvent(recorded, "k").cancels).toBe(true);
     });
 
-    it("takes the follow-up targets from a target record", () => {
+    // A recorded follow-up names its own source, so it stands as an event rather than
+    // being attached to whatever was played last -- attaching by position is what showed
+    // an unrelated card again on every prompt.
+    it("reads a recorded follow-up as an event of its own", () => {
         const recorded = {
             message: [{ name: "kingitus" }, " ", "chooses"],
             record: { kind: "target", player: "kingitus", source, targets: [target] }
         };
-        expect(parseTargetContinuation(recorded).map(card => card.name)).toEqual(["Doji Whisperer"]);
+        const event = parseSpotlightEvent(recorded, "k");
+        expect(event.source.name).toBe("Kudaka");
+        expect(event.targets.map(card => card.name)).toEqual(["Doji Whisperer"]);
     });
 
-    // A recorded entry that is not a follow-up must not have its cards harvested as one.
-    it("ignores a non-target record when looking for follow-ups", () => {
-        const recorded = {
-            message: [{ name: "kingitus" }, " ", "chooses"],
-            record: { kind: "play", player: "kingitus", source, targets: [target] }
-        };
-        expect(parseTargetContinuation(recorded)).toEqual([]);
+    // Nothing recorded ever comes through the positional path.
+    it("never treats a recorded entry as an orphan follow-up", () => {
+        for(const kind of ["target", "play"]) {
+            const recorded = {
+                message: [{ name: "kingitus" }, " ", "chooses"],
+                record: { kind, player: "kingitus", source, targets: [target] }
+            };
+            expect(parseTargetContinuation(recorded)).toEqual([]);
+        }
     });
 
     it("falls back to the prose when there is no record", () => {

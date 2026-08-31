@@ -317,10 +317,14 @@
     }
 }
 
+/* Above the board cards (--layer-cards: 45) and pile headers (55), but below everything
+   that is meant to sit over the board: the card collection (100), the prompt (110), card
+   menus (120), the chat (800) and the draggable hand (.player-home-row-container, 1030).
+   At 1150 the marks drew over the player's own hand. */
 .conflict-arrows {
     position: fixed;
     inset: 0;
-    z-index: 1150;
+    z-index: 60;
     pointer-events: none;
 }
 

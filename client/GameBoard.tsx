@@ -98,7 +98,6 @@ export class InnerGameBoard extends React.Component {
         this._slamEffectSequence = 0;
         this._spotlightSequence = 0;
         this._spotlightTimers = [];
-        this._lastSpotlightEvent = null;
         this._declarationTally = { count: 0, scanned: 0 };
 
         this.state = {
@@ -172,8 +171,8 @@ export class InnerGameBoard extends React.Component {
         }
     }
 
-    // EXPERIMENTAL card-play spotlight. "off" short-circuits before any parsing, so the
-    // feature costs nothing while disabled.
+    // Card-play spotlight. Disabled short-circuits before any parsing, so the feature
+    // costs nothing while off.
     collectSpotlightEvents(prevGame, currentGame) {
         if(!this.state.spotlightEnabled) {
             return;
@@ -181,50 +180,66 @@ export class InnerGameBoard extends React.Component {
 
         this._spotlightSequence += 1;
         const events = detectNewSpotlightEvents(prevGame.messages || [], currentGame.messages || [], this._spotlightSequence);
-        // A card whose target is chosen in a follow-up prompt records that target in a
-        // separate log entry ("{0} chooses to honor {1}", 76 cards), so the play entry
-        // alone has no target to point at -- Court Games showed with no arrow.
-        const continuations = detectNewTargetContinuations(prevGame.messages || [], currentGame.messages || []);
-        if(events.length === 0 && continuations.length === 0) {
+        // FALLBACK for a server that sends no records: a "{0} chooses to honor {1}"
+        // follow-up names the chosen cards but not the ability that chose them, so they
+        // can only be attached to whatever is already on screen. A recorded follow-up
+        // names its own source and arrives above as an ordinary event instead.
+        const orphanTargets = detectNewTargetContinuations(prevGame.messages || [], currentGame.messages || []);
+        if(events.length === 0 && orphanTargets.length === 0) {
             return;
         }
 
-        for(const event of events) {
-            this._lastSpotlightEvent = event;
-        }
-
-        // The prompt that picks the target can outlive the overlay -- a human takes as
-        // long as they like -- so a follow-up whose play has already faded brings it
-        // back rather than being dropped.
-        let revived = null;
-        if(continuations.length > 0 && this._lastSpotlightEvent) {
-            this._spotlightSequence += 1;
-            const merged = {
-                ...this._lastSpotlightEvent,
-                targets: mergeTargets(this._lastSpotlightEvent.targets, continuations)
-            };
-            this._lastSpotlightEvent = merged;
-            revived = { ...merged, key: `${merged.key}-t${this._spotlightSequence}` };
-        }
-
-        const arriving = revived ? [...events, revived] : events;
-        const supersededKeys = revived ? new Set([this._lastSpotlightEvent.key, ...events.map(event => event.key)]) : null;
-
         this.setState(state => {
-            const kept = supersededKeys
-                ? state.spotlightEvents.filter(event => !supersededKeys.has(event.key) && !event.key.startsWith(`${this._lastSpotlightEvent.key}-t`))
-                : state.spotlightEvents;
-            return { spotlightEvents: [...kept, ...arriving].slice(-SPOTLIGHT_MAX_VISIBLE) };
+            let next = state.spotlightEvents;
+
+            for(const event of events) {
+                // One entry per source card: a card played and then given its target in a
+                // follow-up entry is ONE thing happening, so the arrow joins the entry
+                // already showing that card rather than stacking a second copy of it.
+                const existing = next.findIndex(shown => shown.source.uuid === event.source.uuid);
+                if(existing >= 0) {
+                    const merged = {
+                        ...next[existing],
+                        targets: mergeTargets(next[existing].targets, event.targets)
+                    };
+                    next = [...next.slice(0, existing), ...next.slice(existing + 1), merged];
+                } else {
+                    next = [...next, event];
+                }
+            }
+
+            // Only ever attached to an entry still on screen. Attaching to the last card
+            // played regardless showed an unrelated card again on every prompt.
+            if(orphanTargets.length > 0 && next.length > 0) {
+                const last = next[next.length - 1];
+                next = [...next.slice(0, -1), { ...last, targets: mergeTargets(last.targets, orphanTargets) }];
+            }
+
+            return { spotlightEvents: next.slice(-SPOTLIGHT_MAX_VISIBLE) };
         });
 
-        const keys = new Set(arriving.map(event => event.key));
+        if(events.length === 0) {
+            return;
+        }
+
+        // Each arriving event keeps its own lifetime; a merge refreshes nothing, so an
+        // entry cannot be held on screen indefinitely by a stream of follow-ups.
+        const keys = new Set(events.map(event => event.key));
+        const sources = new Set(events.map(event => event.source.uuid));
         const timer = setTimeout(() => {
             this._spotlightTimers = this._spotlightTimers.filter(entry => entry !== timer);
             this.setState(state => ({
-                spotlightEvents: state.spotlightEvents.filter(event => !keys.has(event.key))
+                spotlightEvents: state.spotlightEvents.filter(
+                    event => !keys.has(event.key) && !sources.has(event.source.uuid)
+                )
             }));
         }, SPOTLIGHT_DURATION_MS);
         this._spotlightTimers.push(timer);
+    }
+
+    onSpotlightToggle(enabled) {
+        saveSpotlightEnabled(enabled);
+        this.setState({ spotlightEnabled: enabled, spotlightEvents: [] });
     }
 
     onHistoryClick(event) {
@@ -234,12 +249,6 @@ export class InnerGameBoard extends React.Component {
 
     onHistoryClose() {
         this.setState({ showHistory: false });
-    }
-
-    onSpotlightToggle(enabled) {
-        saveSpotlightEnabled(enabled);
-        this._lastSpotlightEvent = null;
-        this.setState({ spotlightEnabled: enabled, spotlightEvents: [] });
     }
 
     playSlamEffect(variant, additionalState = {}) {

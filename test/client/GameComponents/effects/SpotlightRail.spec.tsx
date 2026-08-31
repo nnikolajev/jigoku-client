@@ -97,3 +97,35 @@ describe("the <SpotlightRail /> overlay", () => {
         expect(parseInt(cards[1].style.right, 10)).toBeGreaterThan(parseInt(cards[0].style.right, 10));
     });
 });
+
+// One rail entry per source card. A card played and then given its target in a separate
+// log entry is ONE thing happening, so the second entry must join the first rather than
+// stack a duplicate -- and an unrelated card must never inherit that arrow.
+describe("one entry per source card", () => {
+    function play(uuid: string, name: string, targets = []) {
+        return {
+            key: `k-${uuid}`,
+            verb: "uses",
+            playerName: "kingitus",
+            source: { uuid, id: name.toLowerCase(), name, type: "character", packId: "core" },
+            targets,
+            cancels: false,
+            text: `kingitus uses ${name}`
+        };
+    }
+
+    it("shows one card per distinct source", () => {
+        const { container } = render(
+            <SpotlightRail events={ [play("u1", "Kudaka"), play("u2", "Shinobi")] } />
+        );
+        expect(container.querySelectorAll(".spotlight-rail__card")).toHaveLength(2);
+    });
+
+    it("draws an arrow for a target that arrived on a later entry", () => {
+        plant("u-target");
+        const merged = play("u1", "Kudaka", [{ uuid: "u-target", id: "t", name: "Target", type: "character" }]);
+        const { container } = render(<SpotlightRail events={ [merged] } />);
+        expect(container.querySelectorAll(".spotlight-rail__card")).toHaveLength(1);
+        expect(container.querySelectorAll("path.spotlight-arrow")).toHaveLength(1);
+    });
+});
