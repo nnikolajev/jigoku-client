@@ -21,36 +21,6 @@ const shortNames = {
     vengeance: "N"
 };
 
-// Native implementation of finding nearest element matching selector
-function findNearestElement(element, selector) {
-    const rect = element.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    const candidates = document.querySelectorAll(selector);
-    let nearest = null;
-    let minDistance = Infinity;
-
-    candidates.forEach(candidate => {
-        if(candidate === element || candidate.contains(element)) {
-            return;
-        }
-        const candidateRect = candidate.getBoundingClientRect();
-        const candidateCenterX = candidateRect.left + candidateRect.width / 2;
-        const candidateCenterY = candidateRect.top + candidateRect.height / 2;
-        const distance = Math.sqrt(
-            Math.pow(centerX - candidateCenterX, 2) +
-            Math.pow(centerY - candidateCenterY, 2)
-        );
-        if(distance < minDistance) {
-            minDistance = distance;
-            nearest = candidate;
-        }
-    });
-
-    return nearest;
-}
-
 function Card(props) {
     const {
         card,
@@ -78,7 +48,6 @@ function Card(props) {
 
     const [showPopup, setShowPopup] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
-    const [touchStart, setTouchStart] = useState(null);
     const cardRef = useRef(null);
 
     // Flip animation state: "out" shows the card back rotating away, "in" shows the face rotating in.
@@ -131,73 +100,6 @@ function Card(props) {
     const onCardDragStart = (event, cardData, sourceArea) => {
         const dragData = { card: cardData, source: sourceArea };
         event.dataTransfer.setData("Text", JSON.stringify(dragData));
-    };
-
-    const onTouchMove = (event) => {
-        event.preventDefault();
-        const touch = event.targetTouches[0];
-        event.currentTarget.style.left = `${touch.screenX - 32}px`;
-        event.currentTarget.style.top = `${touch.screenY - 42}px`;
-        event.currentTarget.style.position = "fixed";
-    };
-
-    const getReactComponentFromDOMNode = (dom) => {
-        for(const key in dom) {
-            if(key.indexOf("__reactInternalInstance$") === 0) {
-                const compInternals = dom[key]._currentElement;
-                const compWrapper = compInternals._owner;
-                const comp = compWrapper._instance;
-                return comp;
-            }
-        }
-        return null;
-    };
-
-    const onTouchStart = (event) => {
-        const rect = event.currentTarget.getBoundingClientRect();
-        setTouchStart({ left: rect.left, top: rect.top });
-    };
-
-    const onTouchEnd = (event) => {
-        const target = event.currentTarget;
-        const targetRect = target.getBoundingClientRect();
-        const nearestPile = findNearestElement(target, ".card-pile, .hand, .player-board");
-
-        if(!nearestPile) {
-            return;
-        }
-
-        const pileRect = nearestPile.getBoundingClientRect();
-
-        if(touchStart && targetRect.left === touchStart.left && targetRect.top === touchStart.top) {
-            return;
-        }
-
-        if(targetRect.left + targetRect.width > pileRect.left - 10 && targetRect.left < pileRect.left + pileRect.width + 10) {
-            let dropTarget = "";
-            const pileClasses = nearestPile.className || "";
-
-            if(pileClasses.includes("hand")) {
-                dropTarget = "hand";
-            } else if(pileClasses.includes("player-board")) {
-                dropTarget = "play area";
-            } else {
-                const component = getReactComponentFromDOMNode(nearestPile);
-                if(component) {
-                    dropTarget = component.props.source;
-                }
-            }
-
-            if(dropTarget && onDragDrop) {
-                onDragDrop(card, source, dropTarget);
-            }
-        }
-
-        if(touchStart) {
-            target.style.left = `${touchStart.left}px`;
-            target.style.top = `${touchStart.top}px`;
-        }
-        event.currentTarget.style.position = "initial";
     };
 
     const handleClick = (event, cardData) => {
@@ -640,9 +542,6 @@ function Card(props) {
             <div
                 className={ frameClassName }
                 ref={ cardRef }
-                onTouchMove={ ev => onTouchMove(ev) }
-                onTouchEnd={ ev => onTouchEnd(ev) }
-                onTouchStart={ ev => onTouchStart(ev) }
             >
                 { getCardOrder() }
                 <div

@@ -530,6 +530,13 @@ export function InnerProfile({ refreshUser, socket, user }) {
                                         </div>
                                         <span className="bg-label">XXL</span>
                                     </div>
+                                    <div className="card-settings" onClick={ () => handleCardClick("auto") }>
+                                        <div className={ `card vertical${selectedCardSize === "auto" ? " selected" : ""}` }>
+                                            <img className="card vertical"
+                                                src="img/cards/dynastycardback.png" />
+                                        </div>
+                                        <span className="bg-label">Auto (fit screen)</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

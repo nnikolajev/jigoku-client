@@ -241,25 +241,25 @@
     grid-column-end: 4;
     display: grid;
     grid-template-rows: minmax(calc(2 * var(--card-height) + 2 * var(--attachment-offset)), max-content) 1fr var(--center-bar-height) 1fr minmax(calc(2 * var(--card-height) + 2 * var(--attachment-offset)), max-content);
-    grid-template-columns: minmax(calc(9 * (var(--card-width) + 10px)), auto) 1fr minmax(var(--chat-width), 2fr);
+    grid-template-columns: minmax(calc(9 * (var(--card-width) + 10px)), auto) 1fr var(--play-area-chat-track, minmax(var(--chat-width), 2fr));
 
     &.small {
         grid-template-rows: minmax(calc(2 * var(--card-sm-height) + 2 * var(--attachment-offset-sm)), max-content) 1fr var(--center-bar-height) 1fr minmax(calc(2 * var(--card-sm-height) + 2 * var(--attachment-offset-sm)), max-content);
-        grid-template-columns: minmax(calc(9 * (var(--card-sm-width) + 10px)), auto) 1fr minmax(var(--chat-width), 2fr);
+        grid-template-columns: minmax(calc(9 * (var(--card-sm-width) + 10px)), auto) 1fr var(--play-area-chat-track, minmax(var(--chat-width), 2fr));
     }
 
     &.large {
         grid-template-rows: minmax(calc(2 * var(--card-lg-height) + 2 * var(--attachment-offset-lg)), max-content) 1fr var(--center-bar-height) 1fr minmax(calc(2 * var(--card-lg-height) + 2 * var(--attachment-offset-lg)), max-content);
-        grid-template-columns: minmax(calc(9 * (var(--card-lg-width) + 10px)), auto) 1fr minmax(var(--chat-width), 2fr);
+        grid-template-columns: minmax(calc(9 * (var(--card-lg-width) + 10px)), auto) 1fr var(--play-area-chat-track, minmax(var(--chat-width), 2fr));
     }
 
     &.x-large {
         grid-template-rows: minmax(calc(2 * var(--card-xl-height) + 2 * var(--attachment-offset-xl)), max-content) 1fr var(--center-bar-height) 1fr minmax(calc(2 * var(--card-xl-height) + 2 * var(--attachment-offset-xl)), max-content);
-        grid-template-columns: minmax(calc(9 * (var(--card-xl-width) + 10px)), auto) 1fr minmax(var(--chat-width), 2fr);
+        grid-template-columns: minmax(calc(9 * (var(--card-xl-width) + 10px)), auto) 1fr var(--play-area-chat-track, minmax(var(--chat-width), 2fr));
     }
 
     &.xxl {
         grid-template-rows: minmax(calc(2 * var(--card-xxl-height) + 2 * var(--attachment-offset-xxl)), max-content) 1fr var(--center-bar-height) 1fr minmax(calc(2 * var(--card-xxl-height) + 2 * var(--attachment-offset-xxl)), max-content);
-        grid-template-columns: minmax(calc(9 * (var(--card-xxl-width) + 10px)), auto) 1fr minmax(var(--chat-width), 2fr);
+        grid-template-columns: minmax(calc(9 * (var(--card-xxl-width) + 10px)), auto) 1fr var(--play-area-chat-track, minmax(var(--chat-width), 2fr));
     }
 }

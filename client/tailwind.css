@@ -35,6 +35,7 @@
 @import "./css/cardsPlayedTracker.css";
 @import "./css/replay.css";
 @import "./css/site.css";
+@import "./css/gameboard/touch.css";
 
 @import "tailwindcss";
 @source "../client/**/*.{jsx,js}";

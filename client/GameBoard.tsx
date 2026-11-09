@@ -14,6 +14,8 @@ import HonorFan from "./GameComponents/HonorFan.jsx";
 import ActivePlayerPrompt from "./GameComponents/ActivePlayerPrompt.jsx";
 import Avatar from "./Avatar.jsx";
 import CardZoom from "./GameComponents/CardZoom.jsx";
+import { installTouchGestures } from "./GameComponents/touchGestures.js";
+import { resolveCardSize } from "./cardSize.js";
 import Card from "./GameComponents/Card.jsx";
 import Chat from "./GameComponents/Chat.jsx";
 import Controls from "./GameComponents/Controls.jsx";
@@ -105,7 +107,8 @@ export class InnerGameBoard extends React.Component {
 
         this.state = {
             cardToZoom: undefined,
-            showChat: true,
+            // Touch tablets start with the chat drawer closed so the board gets the space.
+            showChat: !window.matchMedia?.("(pointer: coarse)").matches,
             showChatAlert: false,
             showConflictDeck: false,
             showDynastyDeck: false,
@@ -125,6 +128,8 @@ export class InnerGameBoard extends React.Component {
 
     componentDidMount() {
         this.updateContextMenu(this.props);
+        this._uninstallTouchGestures = installTouchGestures(document);
+        window.addEventListener("resize", this.onWindowResize);
     }
 
     componentDidUpdate(prevProps) {
@@ -136,8 +141,20 @@ export class InnerGameBoard extends React.Component {
     }
 
     componentWillUnmount() {
+        this._uninstallTouchGestures?.();
+        window.removeEventListener("resize", this.onWindowResize);
         this._spotlightTimers.forEach(timer => clearTimeout(timer));
         this._spotlightTimers = [];
+    }
+
+    onWindowResize = () => {
+        if(this.props.user.settings.cardSize === "auto") {
+            this.forceUpdate();
+        }
+    };
+
+    getCardSize() {
+        return resolveCardSize(this.props.user.settings.cardSize, window.innerHeight);
     }
 
     playGameEffects(prevProps) {
@@ -474,7 +491,7 @@ export class InnerGameBoard extends React.Component {
         let cacheKey = isMe ? "me" : "other";
         let cached = this._cardsInPlayCache[cacheKey];
         let conflict = this.props.currentGame.conflict;
-        let cardSize = this.props.user.settings.cardSize;
+        let cardSize = this.getCardSize();
         let disableCardStats = this.props.user.settings.optionSettings.disableCardStats;
 
         if(cached &&
@@ -627,11 +644,11 @@ export class InnerGameBoard extends React.Component {
         const showRingEffects = thisPlayer?.optionSettings?.showRingEffects;
         const gameMode = this.props.currentGame.gameMode;
         return (<div className={ className } >
-            { !this.props.currentGame.rings.air.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.air } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-            { !this.props.currentGame.rings.earth.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.earth } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-            { !this.props.currentGame.rings.fire.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.fire } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-            { !this.props.currentGame.rings.void.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.void } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-            { !this.props.currentGame.rings.water.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.water } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+            { !this.props.currentGame.rings.air.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.air } onClick={ this.onRingClick } size={ this.getCardSize() } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+            { !this.props.currentGame.rings.earth.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.earth } onClick={ this.onRingClick } size={ this.getCardSize() } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+            { !this.props.currentGame.rings.fire.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.fire } onClick={ this.onRingClick } size={ this.getCardSize() } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+            { !this.props.currentGame.rings.void.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.void } onClick={ this.onRingClick } size={ this.getCardSize() } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+            { !this.props.currentGame.rings.water.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.water } onClick={ this.onRingClick } size={ this.getCardSize() } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
         </div>);
     }
 
@@ -641,11 +658,11 @@ export class InnerGameBoard extends React.Component {
         const gameMode = this.props.currentGame.gameMode;
         return (
             <div className={ className }>
-                { this.props.currentGame.rings.air.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.air } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-                { this.props.currentGame.rings.earth.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.earth } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-                { this.props.currentGame.rings.fire.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.fire } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-                { this.props.currentGame.rings.void.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.void } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-                { this.props.currentGame.rings.water.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.water } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+                { this.props.currentGame.rings.air.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.air } onClick={ this.onRingClick } size={ this.getCardSize() } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+                { this.props.currentGame.rings.earth.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.earth } onClick={ this.onRingClick } size={ this.getCardSize() } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+                { this.props.currentGame.rings.fire.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.fire } onClick={ this.onRingClick } size={ this.getCardSize() } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+                { this.props.currentGame.rings.void.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.void } onClick={ this.onRingClick } size={ this.getCardSize() } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+                { this.props.currentGame.rings.water.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.water } onClick={ this.onRingClick } size={ this.getCardSize() } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
             </div>
         );
     }
@@ -754,7 +771,7 @@ export class InnerGameBoard extends React.Component {
         let ringAttachmentWidthModifier = 0.8;
         let attachmentOffset = 13 * ringAttachmentWidthModifier;
         let cardLayer = 45;
-        switch(this.props.user.settings.cardSize) {
+        switch(this.getCardSize()) {
             case "large":
                 attachmentOffset *= 1.4;
                 break;
@@ -775,7 +792,7 @@ export class InnerGameBoard extends React.Component {
                             <Card source="play area" card={ card } disableMouseOver={ card.facedown && !card.code }
                                 onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
                                 showStats={ false }
-                                onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ this.props.user.settings.cardSize } isMe={ amController }
+                                onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ this.getCardSize() } isMe={ amController }
                             />
                         </div>);
                     })
@@ -797,7 +814,7 @@ export class InnerGameBoard extends React.Component {
         return card.controller.name === player.name;
     }
     renderSidebar(thisPlayer, otherPlayer, visualSuggestions) {
-        let size = this.props.user.settings.cardSize;
+        let size = this.getCardSize();
         return (
             <div className={ `province-pane ${size}` }>
                 <div className="player-nameplate">
@@ -904,7 +921,7 @@ export class InnerGameBoard extends React.Component {
                         onDragDrop={ this.onDragDrop }
                         onMouseOut={ this.onMouseOut }
                         onMouseOver={ this.onMouseOver }
-                        cardSize={ this.props.user.settings.cardSize } />
+                        cardSize={ this.getCardSize() } />
                 </div>
             </Draggable>);
         }
@@ -945,7 +962,7 @@ export class InnerGameBoard extends React.Component {
                     onDragDrop={ this.onDragDrop }
                     onMouseOut={ this.onMouseOut }
                     onMouseOver={ this.onMouseOver }
-                    cardSize={ this.props.user.settings.cardSize } />
+                    cardSize={ this.getCardSize() } />
             </div>
         </Draggable>);
     }
@@ -1062,10 +1079,10 @@ export class InnerGameBoard extends React.Component {
                         />
                     </div>
                 */ }
-                <div className={ `main-window ${this.props.user.settings.cardSize}` }>
+                <div className={ `main-window ${this.getCardSize()}` }>
                     { this.renderSidebar(thisPlayer, otherPlayer, visualSuggestions) }
-                    <div className={ `play-area${this.props.user.settings.cardSize ? ` ${this.props.user.settings.cardSize}` : ""}` }>
-                        <div className={ `player-board their-side${this.props.user.settings.cardSize ? ` ${this.props.user.settings.cardSize}` : ""}` }>
+                    <div className={ `play-area${this.getCardSize() ? ` ${this.getCardSize()}` : ""}` }>
+                        <div className={ `player-board their-side${this.getCardSize() ? ` ${this.getCardSize()}` : ""}` }>
                             <div className="player-deck-row">
                                 <DynastyRow
                                     conflictDiscardPile={ otherPlayer ? otherPlayer.cardPiles.conflictDiscardPile : [] }
@@ -1087,7 +1104,7 @@ export class InnerGameBoard extends React.Component {
                                     otherPlayer= { otherPlayer }
                                     isSkirmish = { this.props.currentGame.skirmishMode || this.props.currentGame.gameMode === GameModes.Skirmish }
                                     visualSuggestions={ visualSuggestions }
-                                    cardSize={ this.props.user.settings.cardSize } />
+                                    cardSize={ this.getCardSize() } />
                             </div>
                             { otherPlayerCards }
                             <StrongholdRow
@@ -1098,11 +1115,11 @@ export class InnerGameBoard extends React.Component {
                                 strongholdProvinceCards={ otherPlayer ? otherPlayer.strongholdProvince : [] }
                                 role={ otherPlayer ? otherPlayer.role : null }
                                 isSkirmish = { this.props.currentGame.skirmishMode || this.props.currentGame.gameMode === GameModes.Skirmish }
-                                cardSize={ this.props.user.settings.cardSize }
+                                cardSize={ this.getCardSize() }
                             />
                         </div>
                         { this.renderCenterBar(thisPlayer, otherPlayer, this.props.currentGame.conflict) }
-                        <div className={ `player-board our-side${this.props.user.settings.cardSize ? ` ${this.props.user.settings.cardSize}` : ""}` } onDragOver={ this.onDragOver }
+                        <div className={ `player-board our-side${this.getCardSize() ? ` ${this.getCardSize()}` : ""}` } onDragOver={ this.onDragOver }
                             onDrop={ event => this.onDragDropEvent(event, "play area") } >
                             <StrongholdRow isMe={ !this.state.spectating }
                                 spectating={ this.state.spectating }
@@ -1115,7 +1132,7 @@ export class InnerGameBoard extends React.Component {
                                 role={ thisPlayer.role }
                                 thisPlayer ={ thisPlayer }
                                 isSkirmish = { this.props.currentGame.skirmishMode || this.props.currentGame.gameMode === GameModes.Skirmish }
-                                cardSize={ this.props.user.settings.cardSize } />
+                                cardSize={ this.getCardSize() } />
                             {
                                 !thisPlayer.hideProvinceDeck &&
                                 <div className="province-group our-side no-highlight">
@@ -1130,7 +1147,7 @@ export class InnerGameBoard extends React.Component {
                                         onDragDrop={ this.onDragDrop }
                                         disableMenu={ this.state.spectating }
                                         closeOnClick
-                                        size={ this.props.user.settings.cardSize } />
+                                        size={ this.getCardSize() } />
                                 </div>
                             }
                             { thisPlayerCards }
@@ -1164,7 +1181,7 @@ export class InnerGameBoard extends React.Component {
                                     onMenuItemClick={ this.onMenuItemClick }
                                     isSkirmish = { this.props.currentGame.skirmishMode || this.props.currentGame.gameMode === GameModes.Skirmish }
                                     visualSuggestions={ visualSuggestions }
-                                    cardSize={ this.props.user.settings.cardSize } />
+                                    cardSize={ this.getCardSize() } />
                             </div>
                         </div>
                     </div>

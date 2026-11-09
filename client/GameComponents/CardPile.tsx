@@ -22,7 +22,6 @@ function CardPile({
     onMenuItemClick,
     onMouseOut,
     onMouseOver,
-    onTouchMove,
     orientation = "vertical",
     popupLocation,
     popupMenu,
@@ -146,7 +145,6 @@ function CardPile({
                     disableMouseOver={ disableMouseOver }
                     onMouseOver={ onMouseOver }
                     onMouseOut={ onMouseOut }
-                    onTouchMove={ onTouchMove }
                     onClick={ () => handleCardClick(card) }
                     onDragDrop={ onDragDrop }
                     orientation={ orientation === "bowed" ? "vertical" : orientation }
