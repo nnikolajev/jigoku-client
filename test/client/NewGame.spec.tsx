@@ -126,7 +126,7 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(payload.bot).not.toHaveProperty("v2Mode");
     });
 
-    it("offers a bot advantage checkbox that is off by default and sends it with the bot config", () => {
+    it("offers a bot difficulty dropdown that defaults to base and sends the level with the bot config", () => {
         const emit = vi.fn();
         render(
             <InnerNewGame
@@ -138,17 +138,23 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         );
 
         enableBotOpponent();
-        const advantage = screen.getByRole("checkbox", { name: "Bot advantage" });
-        expect(advantage).not.toBeChecked();
+        const difficulty = screen.getByLabelText("Bot difficulty");
+        expect(difficulty).toHaveValue("base");
+        expect(within(difficulty).getByRole("option", { name: "Base (no bonuses, standard game)" })).toHaveValue("base");
+        expect(within(difficulty).getByRole("option", { name: "Small (+1 starting fate, +2 starting honor)" })).toHaveValue("small");
+        expect(within(difficulty).getByRole("option",
+            { name: "Medium (+1 starting fate, +2 starting honor, +1 fate per turn)" })).toHaveValue("medium");
+        expect(within(difficulty).getByRole("option",
+            { name: "Hard (+1 starting fate, +2 starting honor, +1 fate and +1 card per turn)" })).toHaveValue("hard");
         fireEvent.click(screen.getByRole("button", { name: "Submit" }));
         expect(emit).toHaveBeenLastCalledWith("newgame", expect.objectContaining({
-            bot: expect.objectContaining({ enabled: true, advantage: false })
+            bot: expect.objectContaining({ enabled: true, advantage: "base" })
         }));
 
-        fireEvent.click(advantage);
+        fireEvent.change(difficulty, { target: { value: "medium" } });
         fireEvent.click(screen.getByRole("button", { name: "Submit" }));
         expect(emit).toHaveBeenLastCalledWith("newgame", expect.objectContaining({
-            bot: expect.objectContaining({ enabled: true, advantage: true })
+            bot: expect.objectContaining({ enabled: true, advantage: "medium" })
         }));
     });
 

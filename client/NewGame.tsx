@@ -113,6 +113,14 @@ const customBotDeck = "custom";
 // so the lobby no longer offers an engine choice.
 const botEngineVersion = "v1";
 
+// Bot difficulty = handicap on top of the bot's play (jigoku PlayerAdvantage.ts).
+export const botDifficultyOptions = [
+    { value: "base", label: "Base (no bonuses, standard game)" },
+    { value: "small", label: "Small (+1 starting fate, +2 starting honor)" },
+    { value: "medium", label: "Medium (+1 starting fate, +2 starting honor, +1 fate per turn)" },
+    { value: "hard", label: "Hard (+1 starting fate, +2 starting honor, +1 fate and +1 card per turn)" }
+];
+
 // Player-facing strategy seeds. Hidden information is a separate capability.
 const botSeedOptions = [
     {
@@ -244,7 +252,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     const [botDeckId, setBotDeckId] = useState("");
     const [botSeed, setBotSeed] = useState("1");
     const [botOmniscient, setBotOmniscient] = useState(false);
-    const [botAdvantage, setBotAdvantage] = useState(false);
+    const [botDifficulty, setBotDifficulty] = useState("base");
     const [showBotMatchups, setShowBotMatchups] = useState(false);
 
     const handleCancelClick = (event) => {
@@ -301,7 +309,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                 engineVersion: botEngineVersion,
                 seed: botSeed.trim(),
                 omniscient: botOmniscient,
-                advantage: botAdvantage
+                advantage: botDifficulty
             }
         });
 
@@ -498,19 +506,17 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                         Omniscient (sees hidden cards)
                                     </label>
                                 </div>
-                                <div className="checkbox">
-                                    <label>
-                                        <input
-                                            type="checkbox"
-                                            onChange={ (event) => setBotAdvantage(event.target.checked) }
-                                            checked={ botAdvantage }
-                                        />
-                                        Bot advantage
-                                    </label>
-                                    <small className="text-muted">
-                                        Bot starts with +1 fate and +2 honor, and gets +1 fate and +1 card every round.
-                                    </small>
-                                </div>
+                                <label htmlFor="botDifficulty">Bot difficulty</label>
+                                <select
+                                    id="botDifficulty"
+                                    className="form-control"
+                                    onChange={ (event) => setBotDifficulty(event.target.value) }
+                                    value={ botDifficulty }
+                                >
+                                    { botDifficultyOptions.map((opt) => (
+                                        <option key={ opt.value } value={ opt.value }>{ opt.label }</option>
+                                    )) }
+                                </select>
                                 <div aria-label="Standard bot benchmark">
                                     <small className="text-muted">
                                         { !selectedBotDeck ? (
