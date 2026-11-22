@@ -432,6 +432,7 @@ class Lobby {
             engineVersion: botDetails.engineVersion === "v2" ? "v2" : "v1",
             v2Mode: botDetails.engineVersion === "v2" ? "enabled" : undefined,
             omniscient: botDetails.omniscient === true,
+            advantage: botDetails.advantage === true,
             difficulty: botDetails.difficulty || "mvp",
             policy: botDetails.policy,
             trace: botDetails.trace !== false,

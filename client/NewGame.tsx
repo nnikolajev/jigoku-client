@@ -244,6 +244,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     const [botDeckId, setBotDeckId] = useState("");
     const [botSeed, setBotSeed] = useState("1");
     const [botOmniscient, setBotOmniscient] = useState(false);
+    const [botAdvantage, setBotAdvantage] = useState(false);
     const [showBotMatchups, setShowBotMatchups] = useState(false);
 
     const handleCancelClick = (event) => {
@@ -299,7 +300,8 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                 deckId: botDeckChoice === customBotDeck ? botDeckId.trim() : botDeckChoice,
                 engineVersion: botEngineVersion,
                 seed: botSeed.trim(),
-                omniscient: botOmniscient
+                omniscient: botOmniscient,
+                advantage: botAdvantage
             }
         });
 
@@ -495,6 +497,19 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                                         />
                                         Omniscient (sees hidden cards)
                                     </label>
+                                </div>
+                                <div className="checkbox">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            onChange={ (event) => setBotAdvantage(event.target.checked) }
+                                            checked={ botAdvantage }
+                                        />
+                                        Bot advantage
+                                    </label>
+                                    <small className="text-muted">
+                                        Bot starts with +1 fate and +2 honor, and gets +1 fate and +1 card every round.
+                                    </small>
                                 </div>
                                 <div aria-label="Standard bot benchmark">
                                     <small className="text-muted">

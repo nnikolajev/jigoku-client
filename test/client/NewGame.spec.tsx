@@ -126,6 +126,32 @@ describe("the <InnerNewGame /> bot deck selector", () => {
         expect(payload.bot).not.toHaveProperty("v2Mode");
     });
 
+    it("offers a bot advantage checkbox that is off by default and sends it with the bot config", () => {
+        const emit = vi.fn();
+        render(
+            <InnerNewGame
+                cancelNewGame={ vi.fn() }
+                defaultGameName="Bot test"
+                loadDecks={ vi.fn() }
+                socket={ { emit } }
+            />
+        );
+
+        enableBotOpponent();
+        const advantage = screen.getByRole("checkbox", { name: "Bot advantage" });
+        expect(advantage).not.toBeChecked();
+        fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+        expect(emit).toHaveBeenLastCalledWith("newgame", expect.objectContaining({
+            bot: expect.objectContaining({ enabled: true, advantage: false })
+        }));
+
+        fireEvent.click(advantage);
+        fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+        expect(emit).toHaveBeenLastCalledWith("newgame", expect.objectContaining({
+            bot: expect.objectContaining({ enabled: true, advantage: true })
+        }));
+    });
+
     it("updates bot focus text and exposes the selected deck link", () => {
         render(
             <InnerNewGame
